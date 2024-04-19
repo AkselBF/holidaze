@@ -52,11 +52,11 @@ const Header: React.FC = () => {
                 <HomeRoundedIcon />
                 <p className='ml-3'>Home</p>
               </Link>
-              <Link to="/" className="text-md my-2 flex flex-row" onClick={toggleMenu}>
+              <Link to="/venues" className="text-md my-2 flex flex-row" onClick={toggleMenu}>
                 <HotelRoundedIcon />
                 <p className='ml-3'>Venues</p>
               </Link>
-              <Link to="/" className="text-md my-2 flex flex-row" onClick={toggleMenu}>
+              <Link to="/login" className="text-md my-2 flex flex-row" onClick={toggleMenu}>
                 <PersonRoundedIcon />
                 <p className='ml-3'>Login</p>
               </Link>

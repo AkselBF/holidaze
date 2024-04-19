@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './common/components/Layout/index';
 import Home from './common/pages/Home/index';
 import Venues from './common/pages/Venues/index';
@@ -9,7 +9,12 @@ import Success from './common/pages/Success/index';
 import Login from './common/pages/Login/index';
 import Profile from './common/pages/Profile/index';
 
+import { useAuthStore } from './common/storage/authStore';
+
 const App: React.FC = () => {
+  const { user } = useAuthStore();
+  //const accessToken = localStorage.getItem('accessToken');
+
   return (
     <Router>
       <Layout>
@@ -19,8 +24,8 @@ const App: React.FC = () => {
           <Route path="/hotel" element={<Hotel />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/success" element={<Success />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={user ? <Navigate to="/profile" /> : <Login />} />
+          <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
         </Routes>
       </Layout>
     </Router>
