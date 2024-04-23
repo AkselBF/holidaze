@@ -47,7 +47,7 @@ export const useAuthStore = create<AuthState>((set) => {
           const data = await response.json();
           const token = data.data.accessToken;
           localStorage.setItem('accessToken', token);
-          setUser({ ...data.data, token });
+          setUser({ ...data.data, token, avatar: data.data.avatar?.url || null });
         } else {
           throw new Error('Login failed');
         }
@@ -87,7 +87,7 @@ export const useAuthStore = create<AuthState>((set) => {
           const data = await response.json();
           const token = data.data.accessToken;
           localStorage.setItem('accessToken', token);
-          setUser({ ...data.data, token });
+          setUser({ ...data.data, token, avatar: data.data.avatar?.url || null });
         } else {
           throw new Error('Login failed');
         }

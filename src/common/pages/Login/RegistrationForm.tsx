@@ -1,7 +1,9 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import { TextField, Checkbox, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../storage/authStore';
+import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 
 interface RegistrationFormValues {
   name: string;
@@ -11,40 +13,109 @@ interface RegistrationFormValues {
   venueManager?: boolean;
 }
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#ffffff', 
+    },
+    secondary: {
+      main: '#FF5C00',
+    }
+  },
+});
+
+const StyledTextField = styled(TextField)({
+  '& .MuiInputLabel-root': {
+    color: '#d9d9d9', // Field label color
+  },
+  '& .MuiInputBase-root': {
+    color: '#d9d9d9',
+    borderRadius: 0, // Adjust border radius
+    borderBottom: '2px solid #ffffff',
+    borderLeft: '2px solid transparent', // Left border
+    borderRight: '2px solid transparent', // Right border
+    borderTop: '2px solid transparent', // Top border
+    '&:hover': {
+      borderBottomColor: '#d9d9d9',
+    },
+    '&.Mui-focused': {
+      borderBottomColor: '#ffffff',
+    },
+  },
+  '& .MuiInputBase-input': {
+    color: '#d9d9d9',
+  },
+});
+
 const RegistrationForm: React.FC = () => {
-  const { register, handleSubmit } = useForm<RegistrationFormValues>();
+  const { control, handleSubmit } = useForm<RegistrationFormValues>();
   const navigate = useNavigate();
   const { register: registerUser } = useAuthStore();
 
-  const onSubmit = async (data: RegistrationFormValues) => {
+  const onSubmit: SubmitHandler<RegistrationFormValues> = async (data) => {
     await registerUser(data.name, data.email, data.password, data.avatar, data.venueManager);
-    navigate('/profile');
+    navigate('/profiles');
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label>Username:</label>
-        <input {...register('name')} type="text" required />
-      </div>
-      <div>
-        <label>Email:</label>
-        <input {...register('email')} type="email" required />
-      </div>
-      <div>
-        <label>Password:</label>
-        <input {...register('password')} type="password" required />
-      </div>
-      <div>
-        <label>Avatar URL (optional):</label>
-        <input {...register('avatar')} type="text" />
-      </div>
-      <div>
-        <label>Venue Manager:</label>
-        <input type="checkbox" {...register('venueManager')} />
-      </div>
-      <button type="submit">Register</button>
-    </form>
+    <ThemeProvider theme={theme}>
+      <form onSubmit={handleSubmit(onSubmit)} className='mx-auto w-[50%] bg-[#171717cc] rounded-b-lg pb-10 justify-center text-center'>
+        <div className='w-[80%] mx-auto text-white pt-8 pb-3'>
+          <Controller
+            name="name"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <StyledTextField {...field} label="Username" variant="outlined" type="text" required fullWidth />
+            )}
+          />
+        </div>
+        <div className='w-[80%] mx-auto text-white pt-3 pb-3'>
+          <Controller
+            name="email"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <StyledTextField {...field} label="Email" variant="outlined" type="email" required fullWidth />
+            )}
+          />
+        </div>
+        <div className='w-[80%] mx-auto text-white pt-3 pb-3'>
+          <Controller
+            name="password"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <StyledTextField {...field} label="Password" variant="outlined" type="password" required fullWidth />
+            )}
+          />
+        </div>
+        <div className='w-[80%] mx-auto text-white pt-3 pb-3'>
+          <Controller
+            name="avatar"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <StyledTextField {...field} label="Avatar URL (optional)" variant="outlined" type="text" fullWidth />
+            )}
+          />
+        </div>
+        <div className='w-[80%] mx-auto text-white pt-3 pb-5 text-left'>
+          <Controller
+            name="venueManager"
+            control={control}
+            defaultValue={false}
+            render={({ field }) => (
+              <Checkbox {...field} />
+            )}
+          />
+          <label>Venue Manager</label>
+        </div>
+        <Button type="submit" variant="contained" color="secondary" className='w-[50%] mx-auto'>
+          Register
+        </Button>
+      </form>
+    </ThemeProvider>
   );
 };
 
