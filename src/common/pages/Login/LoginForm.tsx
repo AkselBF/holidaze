@@ -47,6 +47,7 @@ const StyledTextField = styled(TextField)({
   },
   '& .MuiInputBase-input': {
     color: '#d9d9d9',
+    height: '15px',
   },
 });
 

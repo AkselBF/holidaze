@@ -11,9 +11,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (!user) {
       navigate('/login');
-    } else {
-      console.log('User data:', user);
-    }
+    } 
   }, [user, navigate]);
 
   return (

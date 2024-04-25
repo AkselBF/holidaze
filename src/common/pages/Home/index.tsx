@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import darkLogo from "../../images/Finished_logo_dark.png"
 import hero from "../../images/heroOne.png";
 
+import Carousel from "../../components/Carousel";
+
 const Home: React.FC = () => {
   return (
     <div className="flex flex-col items-center">
@@ -18,7 +20,9 @@ const Home: React.FC = () => {
         </div>
       </div>
 
-      <div className="mb-10"></div>
+      <div className="mb-10">
+        <Carousel />
+      </div>
       
       <div className="bg-[#171717] w-full py-8 justify-center text-center">
         <div className="w-[50%] mx-auto">
