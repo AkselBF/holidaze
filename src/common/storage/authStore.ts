@@ -43,11 +43,23 @@ export const useAuthStore = create<AuthState>((set) => {
           },
           body: JSON.stringify({ email, password }),
         });
+        const data = await response.json();
         if (response.ok) {
-          const data = await response.json();
           const token = data.data.accessToken;
+          const avatar = data.data.avatar?.url || null;
+          let venueManager = false;
+          if (data.data.venueManager !== undefined) {
+            venueManager = data.data.venueManager;
+          }
+          const userInfo: User = {
+            name: data.data.name,
+            email: data.data.email,
+            avatar,
+            venueManager,
+            token,
+          };
           localStorage.setItem('accessToken', token);
-          setUser({ ...data.data, token });
+          setUser(userInfo);
         } else {
           throw new Error('Login failed');
         }
@@ -87,7 +99,7 @@ export const useAuthStore = create<AuthState>((set) => {
           const data = await response.json();
           const token = data.data.accessToken;
           localStorage.setItem('accessToken', token);
-          setUser({ ...data.data, token });
+          setUser({ ...data.data, token, avatar: data.data.avatar?.url || null });
         } else {
           throw new Error('Login failed');
         }

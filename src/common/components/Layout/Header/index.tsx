@@ -16,13 +16,13 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-[#171717] text-white p-2 sticky rounded-lg top-0 z-50">
+    <header className="sticky top-2 bg-[#171717] text-white m-2 px-4 lg:px-2 py-2 rounded-lg z-50">
       <nav className="container mx-auto flex justify-between items-center">
-        <div className="hidden lg:flex flex-grow justify-start">
-          <Link to="/" className="text-md mx-4">
+        <div className="hidden lg:flex flex-grow justify-start mx-4">
+          <Link to="/" className="text-md mx-4 p-2 bg-black rounded-full">
             <HomeRoundedIcon />
           </Link>
-          <Link to="/venues" className="text-md mx-4">
+          <Link to="/venues" className="text-md mx-4 p-2 bg-black rounded-full">
             <HotelRoundedIcon />
           </Link>
         </div>
@@ -31,11 +31,11 @@ const Header: React.FC = () => {
           <img src={Logo} alt="Logo" className="h-12" />
         </Link>
 
-        <div className="hidden lg:flex flex-grow justify-end">
-          <Link to="/login" className="text-md mx-4">
+        <div className="hidden lg:flex flex-grow justify-end mx-4">
+          <Link to="/login" className="text-md mx-4 p-2 bg-black rounded-full">
             <PersonRoundedIcon />
           </Link>
-          <div className="text-md mx-4 cursor-pointer">
+          <div className="text-md mx-4 cursor-pointer p-2 bg-black rounded-full">
             <DarkModeSharpIcon />
           </div>
         </div>
@@ -48,19 +48,19 @@ const Header: React.FC = () => {
           </div>
           <div className={`lg:hidden absolute rounded-bl-xl top-14 w-40 right-0 bg-[#171717cc] text-white pt-4 pb-6 ${isMenuOpen ? 'block' : 'hidden'}`}>
             <div className="container mx-auto flex flex-col px-6 items-start">
-              <Link to="/" className="text-md my-2 flex flex-row" onClick={toggleMenu}>
+              <Link to="/" className="text-md my-3 flex flex-row" onClick={toggleMenu}>
                 <HomeRoundedIcon />
                 <p className='ml-3'>Home</p>
               </Link>
-              <Link to="/venues" className="text-md my-2 flex flex-row" onClick={toggleMenu}>
+              <Link to="/venues" className="text-md my-3 flex flex-row" onClick={toggleMenu}>
                 <HotelRoundedIcon />
                 <p className='ml-3'>Venues</p>
               </Link>
-              <Link to="/login" className="text-md my-2 flex flex-row" onClick={toggleMenu}>
+              <Link to="/login" className="text-md my-3 flex flex-row" onClick={toggleMenu}>
                 <PersonRoundedIcon />
                 <p className='ml-3'>Login</p>
               </Link>
-              <div className="text-md my-2 flex flex-row cursor-pointer" onClick={toggleMenu}>
+              <div className="text-md my-3 flex flex-row cursor-pointer" onClick={toggleMenu}>
                 <DarkModeSharpIcon />
                 <p className='ml-3'>Dark</p>
               </div>
