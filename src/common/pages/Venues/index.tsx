@@ -44,7 +44,7 @@ const Venues: React.FC = () => {
       <img src={venuesHero} alt="venues hero" className='w-full min-h-[260px] max-h-[580px] object-cover -mt-[80px]' />
       <ul className='text-left w-[90%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-center my-5 mx-auto'>
         {venues.map((venue) => (
-          <li key={venue.id} className='mx-auto my-4 w-[300px] bg-white rounded-b-lg'>
+          <li key={venue.id} className='mx-auto my-4 w-[300px] bg-white rounded-lg'>
             <Link to={`/venues/${venue.id}`}>
               <img 
                 src={venue.media.length > 0 ? venue.media[0].url : noImage} 
