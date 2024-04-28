@@ -9,6 +9,7 @@ interface Venue {
   price: number;
   rating: number;
   location: { address: string; city: string; country: string };
+  meta: { wifi: boolean; parking: boolean; breakfast: boolean; pets: boolean };
 }
 
 interface VenuesState {

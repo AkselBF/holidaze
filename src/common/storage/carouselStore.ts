@@ -1,13 +1,15 @@
 import { create } from 'zustand';
 import { url } from '../constants/apiUrl';
 
-interface Venue {
+export interface Venue {
   id: string;
   name: string;
   media: { url: string; alt: string }[];
   price: number;
   rating: number;
   location: { address: string; city: string; country: string };
+  meta: { wifi: boolean; parking: boolean; breakfast: boolean; pets: boolean };
+  description: string;
 }
 
 interface CarouselState {
@@ -31,6 +33,6 @@ export const useCarouselStore = create<CarouselState>((set) => ({
   },
   rotate: (direction) =>
     set((state) => ({
-      currdeg: direction === "n" ? state.currdeg + 60 : state.currdeg - 60,
+      currdeg: direction === "n" ? state.currdeg - 60 : state.currdeg + 60,
     })),
 }));
