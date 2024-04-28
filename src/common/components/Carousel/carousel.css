@@ -94,6 +94,22 @@
   animation: fadeOutUp 0.5s forwards;
 }
 
+.centered_venue_data {
+  position: absolute;
+  bottom: 20px; /* Adjust the vertical position as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%; /* Adjust the width of the container */
+  min-width: 80vw;
+  padding: 20px;
+  /*
+  max-width: 600px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  */
+}
+
 @keyframes fadeOutUp {
   0% {
     opacity: 1;

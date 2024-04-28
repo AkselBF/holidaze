@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useCarouselStore } from "../../storage/carouselStore";
-//import { Link } from "react-router-dom";
+import { useCarouselStore, Venue } from "../../storage/carouselStore";
+import { Link } from "react-router-dom";
 
 import "./carousel.css";
 
@@ -14,6 +14,7 @@ import EmptyStarIcon from '../../images/emptyStarIcon.png';
 const Carousel: React.FC = () => {
   const { currdeg, venues, fetchNewestVenues, rotate } = useCarouselStore();
   const [isTriangleVisible, setIsTriangleVisible] = useState(true);
+  const [centeredVenue, setCenteredVenue] = useState<Venue | null>(null);
 
   useEffect(() => {
     fetchNewestVenues();
@@ -26,6 +27,13 @@ const Carousel: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, [currdeg]);
+
+  useEffect(() => {
+    // Calculate the index of the centered venue
+    const centerIndex = Math.floor(((-currdeg + 30) % 360) / 60);
+    const adjustedIndex = centerIndex >= 0 ? centerIndex : centerIndex + venues.length;
+    setCenteredVenue(venues[adjustedIndex]); // Store the data of the centered venue
+  }, [currdeg, venues]);
 
   const calculatePosition = (index: number): number => {
     let position = (index * 60 + currdeg) % 360;
@@ -55,28 +63,32 @@ const Carousel: React.FC = () => {
 
   const renderRatingStars = (rating: number) => {
     const totalStars = 5;
-    const fullStars = Math.floor(rating / 2);
-    const halfStars = rating % 2 === 0 ? 0 : 1;
-  
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+
     const stars = [];
   
+    // Render full stars
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<img key={`star-${i}`} src={StarIcon} alt="star" />);
+        stars.push(<img key={`star-${i}`} src={StarIcon} alt="star" />);
     }
   
-    if (halfStars === 1) {
-      stars.push(<img key="half-star" src={HalfStarIcon} alt="half star" />);
+    // Render half star if applicable
+    if (hasHalfStar) {
+        stars.push(<img key="half-star" src={HalfStarIcon} alt="half star" />);
     }
   
-    for (let i = stars.length; i < totalStars; i++) {
-      stars.push(<img key={`empty-star-${i}`} src={EmptyStarIcon} alt="empty star" />);
+    // Render empty stars to fill the rest
+    const emptyStars = totalStars - fullStars - (hasHalfStar ? 1 : 0);
+    for (let i = 0; i < emptyStars; i++) {
+        stars.push(<img key={`empty-star-${i}`} src={EmptyStarIcon} alt="empty star" />);
     }
   
     return stars;
   };
 
   return (
-    <div className="carousel_container mb-[300px]">
+    <div className="carousel_container mb-[800px]">
       <div className="carousel transform" style={{ transform: `rotateY(${currdeg}deg)` }}>
         {venues.map((venue, index) => (
           <div
@@ -102,19 +114,45 @@ const Carousel: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="next_venue -mr-[300px]" onClick={() => {
+      <div className="next_venue -mr-[300px] mt-[200px]" onClick={() => {
         setIsTriangleVisible(false); 
         rotate("n");
       }}>
         <ArrowForwardIosRoundedIcon />
       </div>
-      <div className="prev_venue -ml-[300px]" onClick={() => {
+      <div className="prev_venue -ml-[300px] mt-[200px]" onClick={() => {
         setIsTriangleVisible(false);
         rotate("p");
       }}>
         <ArrowBackIosRoundedIcon />
       </div>
       <div className={`triangle ${isTriangleVisible ? '' : 'hidden'}`}></div>
+
+      {centeredVenue && (
+        <div className="centered_venue_data absolute top-[550px] lg:top-[600px] w-full flex flex-col lg:flex-row justify-between mx-auto">
+          <div className="w-[80%] lg:w-[45%] mx-auto">
+            <img src={centeredVenue.media[0].url} alt={centeredVenue.name} className="w-full" />
+          </div>
+          <div className="w-[80%] lg:w-[45%] mx-auto">
+            <p className="text-5xl font-semibold">{centeredVenue.name}</p>
+            <div className=" h-1 bg-slate-400 my-5 w-full"></div>
+            <div className="flex flex-row space-x-5">
+              <p>Rating: {centeredVenue.rating}</p>
+              <p>{centeredVenue.meta.wifi ? "Yes" : "No"}</p>
+              <p>{centeredVenue.meta.parking ? "Yes" : "No"}</p>
+              <p>{centeredVenue.meta.breakfast ? "Yes" : "No"}</p>
+              <p>{centeredVenue.meta.pets ? "Allowed" : "Not allowed"}</p>
+            </div>
+            <p>{centeredVenue.description}</p>
+            <div className="flex flex-row justify-between pt-10">
+              <p className="font-semibold">{centeredVenue.price} kr,-</p>
+              <Link to={`/venues/${centeredVenue.id}`}>
+                <button className="bg-[#171717] text-white font-semibold py-2 px-10 rounded-lg">See more</button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
