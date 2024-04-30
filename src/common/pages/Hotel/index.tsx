@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { url } from '../../constants/apiUrl';
-
+/*
 import StarIcon from '../../images/starIcon.png';
 import HalfStarIcon from '../../images/halfStarIcon.png';
 import EmptyStarIcon from '../../images/emptyStarIcon.png';
-
+*/
 interface Venue {
   id: string;
   name: string;
@@ -38,6 +38,7 @@ const Hotel: React.FC = () => {
     fetchVenueDetails();
   }, [id]);
 
+  /*
   const renderRatingStars = (rating: number) => {
     const totalStars = 5;
     const fullStars = Math.floor(rating / 2);
@@ -58,7 +59,7 @@ const Hotel: React.FC = () => {
     }
   
     return stars;
-  };
+  };*/
 
   if (!venue) {
     return <div>Loading...</div>;
@@ -67,13 +68,16 @@ const Hotel: React.FC = () => {
   return (
     <div>
       <div className='h-[3px] bg-[#ADADAD] w-[80%] justify-center mx-auto'></div>
-      <div className='flex flex-row relative'>
+      <div className='flex flex-row relative mb-5'>
         <h1 className='text-3xl text-center font-semibold justify-center mx-auto'>{venue.name}</h1>
         <p className='absolute right-[10%] top-2'>Location: {venue.location.city}, {venue.location.country}</p>
       </div>
+      {/*
       <div className='flex flex-row justify-center my-5'>
         {renderRatingStars(venue.rating)}
       </div>
+      */}
+      
       <div className='px-[10%] flex flex-col md:flex-row'>
         <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} 
         className='w-[50%]' />

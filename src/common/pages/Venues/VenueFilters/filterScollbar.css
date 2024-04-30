@@ -1,0 +1,16 @@
+/* Filter scrollbar */
+.filter-container::-webkit-scrollbar {
+  width: 16px;
+}
+
+.filter-container::-webkit-scrollbar-track {
+  background: transparent;
+  padding: 2px;
+}
+
+.filter-container::-webkit-scrollbar-thumb {
+  background-color: #b9b9b9cc;
+  border-radius: 8px; 
+  border: 4px #000000 solid;
+  margin: auto; 
+}
