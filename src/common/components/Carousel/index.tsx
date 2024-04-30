@@ -128,7 +128,7 @@ const Carousel: React.FC = () => {
       </div>
       <div className={`triangle ${isTriangleVisible ? '' : 'hidden'}`}></div>
 
-      {centeredVenue && (
+      {centeredVenue && centeredVenue.media && centeredVenue.media.length > 0 && (
         <div className="centered_venue_data absolute top-[550px] lg:top-[600px] w-full flex flex-col lg:flex-row justify-between mx-auto">
           <div className="w-[80%] lg:w-[45%] mx-auto">
             <img src={centeredVenue.media[0].url} alt={centeredVenue.name} className="w-full" />
