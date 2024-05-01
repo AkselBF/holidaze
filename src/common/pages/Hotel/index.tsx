@@ -1,11 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { url } from '../../constants/apiUrl';
+import { Link } from 'react-router-dom';
 /*
 import StarIcon from '../../images/starIcon.png';
 import HalfStarIcon from '../../images/halfStarIcon.png';
 import EmptyStarIcon from '../../images/emptyStarIcon.png';
 */
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Allowed from '../../images/allowed.png';
+import Unallowed from '../../images/unallowed.png';
+
+import StarIcon from '@mui/icons-material/Star';
+import WifiIcon from '@mui/icons-material/Wifi';
+import LocalParkingIcon from '@mui/icons-material/LocalParking';
+import FreeBreakfastIcon from '@mui/icons-material/FreeBreakfast';
+import PetsIcon from '@mui/icons-material/Pets';
+//import ManIcon from '@mui/icons-material/Man';
+//import WomanIcon from '@mui/icons-material/Woman';
+//import BoyIcon from '@mui/icons-material/Boy';
+//import GirlIcon from '@mui/icons-material/Girl';
+
 interface Venue {
   id: string;
   name: string;
@@ -14,6 +29,7 @@ interface Venue {
   rating: number;
   price: number;
   location: { country: string; city: string };
+  meta: { wifi: boolean; parking: boolean; breakfast: boolean; pets: boolean };
 }
 
 const Hotel: React.FC = () => {
@@ -67,10 +83,13 @@ const Hotel: React.FC = () => {
 
   return (
     <div>
-      <div className='h-[3px] bg-[#ADADAD] w-[80%] justify-center mx-auto'></div>
+      <div className='h-[3px] bg-[#ADADAD] w-[80%] justify-center mx-auto my-5'></div>
       <div className='flex flex-row relative mb-5'>
         <h1 className='text-3xl text-center font-semibold justify-center mx-auto'>{venue.name}</h1>
-        <p className='absolute right-[10%] top-2'>Location: {venue.location.city}, {venue.location.country}</p>
+        <div className='absolute right-[10%] top-2 flex flex-row'>
+          <LocationOnIcon />
+          <p className='ml-2'> {venue.location.city}, {venue.location.country}</p>
+        </div>
       </div>
       {/*
       <div className='flex flex-row justify-center my-5'>
@@ -81,9 +100,34 @@ const Hotel: React.FC = () => {
       <div className='px-[10%] flex flex-col md:flex-row'>
         <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} 
         className='w-[50%]' />
-        <div className='w-[50%] ml-6'>
+        <div className='w-[50%] ml-6 relative'>
+          <div className="flex flex-row space-x-8">
+            <div className='flex flex-row'>
+              <StarIcon />
+              <p className='ml-2 font-semibold text-[#FF5C00]'>{venue.rating}</p>
+            </div>
+            <div className='flex flex-row'>
+              <WifiIcon />
+              <p className='ml-2'>{venue.meta.wifi ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+            </div>
+            <div className='flex flex-row'>
+              <LocalParkingIcon />
+              <p className='ml-2'>{venue.meta.parking ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+            </div>
+            <div className='flex flex-row'>
+              <FreeBreakfastIcon />
+              <p className='ml-2'>{venue.meta.breakfast ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+            </div>
+            <div className='flex flex-row'>
+              <PetsIcon />
+              <p className='ml-2'>{venue.meta.pets ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+            </div>
+          </div>
           <p>{venue.description}</p>
-          <p>Price: {venue.price} kr,-</p>
+          <p className='font-semibold'>Price: {venue.price} kr,-</p>
+          <Link to={`/booking`}>
+            <button className='absolute bottom-0 right-0 bg-black text-white font-semibold py-2 px-12 rounded-lg'>Book venue</button>
+          </Link>
         </div>
       </div>
     </div>

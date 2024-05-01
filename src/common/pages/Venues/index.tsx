@@ -10,7 +10,7 @@ import StarIcon from '../../images/starIcon.png';
 import HalfStarIcon from '../../images/halfStarIcon.png';
 import EmptyStarIcon from '../../images/emptyStarIcon.png';
 
-//import LocationOnIcon from '@mui/icons-material/LocationOn';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const Venues: React.FC = () => {
   const { venues, fetchVenues } = useVenuesStore();
@@ -96,7 +96,7 @@ const Venues: React.FC = () => {
         />
       </div>
       
-      <ul className='text-left w-[90%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-center my-5 mx-auto'>
+      <ul className='text-left w-[90%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-0 gap-y-4 justify-center my-5 mx-auto'>
       {filteredVenues.length > 0 ? (
         filteredVenues.map((venue) => (
           <li key={venue.id} className='mx-auto my-4 w-[300px] bg-white rounded-lg'>
@@ -112,7 +112,10 @@ const Venues: React.FC = () => {
               </div>
               <p className='line-clamp-2 h-[48px] px-5 my-3'>{venue.description}</p>
               <div className='text-white flex flex-row justify-between bg-[#171717] px-5 py-3 rounded-b-lg'>
-                <p className='line-clamp-1'>{venue.location.country}, {venue.location.city}</p>
+                <div className='flex flex-row'>
+                  <LocationOnIcon />
+                  <p className='line-clamp-1 ml-2'>{venue.location.country}, {venue.location.city}</p>
+                </div>
                 <p className='line-clamp-1'>{venue.price} kr,-</p>
               </div>
             </Link>
@@ -133,7 +136,10 @@ const Venues: React.FC = () => {
               </div>
               <p className='line-clamp-2 h-[48px] px-5 my-3'>{venue.description}</p>
               <div className='text-white flex flex-row justify-between bg-[#171717] px-5 py-3 rounded-b-lg'>
-                <p className='line-clamp-1'>{venue.location.country}, {venue.location.city}</p>
+                <div className='flex flex-row'>
+                  <LocationOnIcon />
+                  <p className='line-clamp-1 ml-2'>{venue.location.country}, {venue.location.city}</p>
+                </div>
                 <p className='line-clamp-1'>{venue.price} kr,-</p>
               </div>
             </Link>
