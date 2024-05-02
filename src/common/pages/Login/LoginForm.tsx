@@ -29,15 +29,15 @@ const theme = createTheme({
 
 const StyledTextField = styled(TextField)({
   '& .MuiInputLabel-root': {
-    color: '#d9d9d9', // Field label color
+    color: '#d9d9d9',
   },
   '& .MuiInputBase-root': {
     color: '#d9d9d9',
-    borderRadius: 0, // Adjust border radius
+    borderRadius: 0,
     borderBottom: '2px solid #ffffff',
-    borderLeft: '2px solid transparent', // Left border
-    borderRight: '2px solid transparent', // Right border
-    borderTop: '2px solid transparent', // Top border
+    borderLeft: '2px solid transparent',
+    borderRight: '2px solid transparent',
+    borderTop: '2px solid transparent',
     '&:hover': {
       borderBottomColor: '#d9d9d9',
     },
@@ -63,7 +63,7 @@ const LoginForm: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <form onSubmit={handleSubmit(onSubmit)} className='mx-auto w-[50%] bg-[#171717cc] rounded-b-lg pb-10 justify-center text-center'>
+      <form onSubmit={handleSubmit(onSubmit)} className='mx-auto w-[96%] md:w-[80%] lg:w-[50%] xl:w-[40%] bg-[#171717cc] rounded-b-lg pb-10 justify-center text-center'>
         <div className='w-[80%] mx-auto text-white pt-8 pb-3'>
           <Controller
             name="email"

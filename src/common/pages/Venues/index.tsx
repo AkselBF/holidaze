@@ -106,7 +106,7 @@ const Venues: React.FC = () => {
                 alt={venue.name} 
                 className='w-[300px] h-[180px] object-cover rounded-t-lg'
                />
-              <h2 className='text-center text-xl font-semibold my-3'>{venue.name}</h2>
+              <h2 className='text-center text-xl font-semibold my-3 line-clamp-1'>{venue.name}</h2>
               <div className='flex flex-row justify-center my-3 h-6'>
                 {renderRatingStars(venue.rating)}
               </div>
