@@ -166,7 +166,7 @@ const Carousel: React.FC = () => {
                 <p className='ml-2'>{centeredVenue.meta.pets ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
               </div>
             </div>
-            <p>{centeredVenue.description}</p>
+            <p className="line-clamp-3">{centeredVenue.description}</p>
             <div className="flex flex-row justify-between pt-10">
               <p className="font-semibold">{centeredVenue.price} kr,-</p>
               <Link to={`/venues/${centeredVenue.id}`}>

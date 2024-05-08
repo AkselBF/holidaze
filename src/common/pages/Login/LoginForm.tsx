@@ -70,7 +70,7 @@ const LoginForm: React.FC = () => {
             control={control}
             defaultValue=""
             render={({ field }) => (
-              <StyledTextField {...field} label="Email" variant="outlined" type="email" required fullWidth />
+              <StyledTextField {...field} label="Email" variant="outlined" type="email" required fullWidth autoComplete="off" />
             )}
           />
         </div>
@@ -80,7 +80,7 @@ const LoginForm: React.FC = () => {
             control={control}
             defaultValue=""
             render={({ field }) => (
-              <StyledTextField {...field} label="Password" variant="outlined" type="password" required fullWidth />
+              <StyledTextField {...field} label="Password" variant="outlined" type="password" required fullWidth autoComplete="off" />
             )}
           />
         </div>

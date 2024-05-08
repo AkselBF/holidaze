@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { url } from '../../constants/apiUrl';
-import { Link } from 'react-router-dom';
+import { useAuthStore } from '../../storage/authStore';
 /*
 import StarIcon from '../../images/starIcon.png';
 import HalfStarIcon from '../../images/halfStarIcon.png';
@@ -21,6 +21,8 @@ import PetsIcon from '@mui/icons-material/Pets';
 //import BoyIcon from '@mui/icons-material/Boy';
 //import GirlIcon from '@mui/icons-material/Girl';
 
+import LoginModal from './LoginModal';
+
 interface Venue {
   id: string;
   name: string;
@@ -35,6 +37,9 @@ interface Venue {
 const Hotel: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [venue, setVenue] = useState<Venue | null>(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchVenueDetails = async () => {
@@ -76,6 +81,18 @@ const Hotel: React.FC = () => {
   
     return stars;
   };*/
+
+  const handleBookVenue = () => {
+    if (user) {
+      // Redirect to booking page for the specific venue
+      // You can use react-router-dom's history or Link component for navigation
+      
+      //navigate(`/booking/${id}`);
+      navigate(`/booking/${id}`, { state: { venue } });
+    } else {
+      setIsLoginModalOpen(true);
+    }
+  };
 
   if (!venue) {
     return <div>Loading...</div>;
@@ -125,11 +142,15 @@ const Hotel: React.FC = () => {
           </div>
           <p>{venue.description}</p>
           <p className='font-semibold'>Price: {venue.price} kr,-</p>
-          <Link to={`/booking`}>
-            <button className='absolute bottom-0 right-0 bg-black text-white font-semibold py-2 px-12 rounded-lg'>Book venue</button>
-          </Link>
+          <button 
+            onClick={handleBookVenue} 
+            className='absolute bottom-0 right-0 bg-black text-white font-semibold py-2 px-12 rounded-lg'
+          >
+            Book venue
+          </button>
         </div>
       </div>
+      {isLoginModalOpen && <LoginModal onClose={() => setIsLoginModalOpen(false)} id={id || ''} />}
     </div>
   );
 };

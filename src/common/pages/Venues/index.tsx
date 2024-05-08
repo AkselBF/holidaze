@@ -106,13 +106,13 @@ const Venues: React.FC = () => {
                 alt={venue.name} 
                 className='w-[300px] h-[180px] object-cover rounded-t-lg'
                />
-              <h2 className='text-center text-xl font-semibold my-3 line-clamp-1'>{venue.name}</h2>
+              <h2 className='text-center text-xl font-semibold my-3 line-clamp-1 w-[60%] mx-auto'>{venue.name}</h2>
               <div className='flex flex-row justify-center my-3 h-6'>
                 {renderRatingStars(venue.rating)}
               </div>
               <p className='line-clamp-2 h-[48px] px-5 my-3'>{venue.description}</p>
               <div className='text-white flex flex-row justify-between bg-[#171717] px-5 py-3 rounded-b-lg'>
-                <div className='flex flex-row'>
+                <div className='flex flex-row w-[50%]'>
                   <LocationOnIcon />
                   <p className='line-clamp-1 ml-2'>{venue.location.country}, {venue.location.city}</p>
                 </div>
@@ -136,7 +136,7 @@ const Venues: React.FC = () => {
               </div>
               <p className='line-clamp-2 h-[48px] px-5 my-3'>{venue.description}</p>
               <div className='text-white flex flex-row justify-between bg-[#171717] px-5 py-3 rounded-b-lg'>
-                <div className='flex flex-row'>
+                <div className='flex flex-row w-[50%]'>
                   <LocationOnIcon />
                   <p className='line-clamp-1 ml-2'>{venue.location.country}, {venue.location.city}</p>
                 </div>
