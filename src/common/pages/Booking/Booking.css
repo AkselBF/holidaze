@@ -1,0 +1,6 @@
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  padding-right: 12px;
+  padding-left: 12px;
+  cursor: pointer;
+}

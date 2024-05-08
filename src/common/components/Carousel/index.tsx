@@ -7,9 +7,17 @@ import "./carousel.css";
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 
-import StarIcon from '../../images/starIcon.png';
+import WholeStarIcon from '../../images/starIcon.png';
 import HalfStarIcon from '../../images/halfStarIcon.png';
 import EmptyStarIcon from '../../images/emptyStarIcon.png';
+import Allowed from '../../images/allowed.png';
+import Unallowed from '../../images/unallowed.png';
+
+import StarIcon from '@mui/icons-material/Star';
+import WifiIcon from '@mui/icons-material/Wifi';
+import LocalParkingIcon from '@mui/icons-material/LocalParking';
+import FreeBreakfastIcon from '@mui/icons-material/FreeBreakfast';
+import PetsIcon from '@mui/icons-material/Pets';
 
 const Carousel: React.FC = () => {
   const { currdeg, venues, fetchNewestVenues, rotate } = useCarouselStore();
@@ -70,7 +78,7 @@ const Carousel: React.FC = () => {
   
     // Render full stars
     for (let i = 0; i < fullStars; i++) {
-        stars.push(<img key={`star-${i}`} src={StarIcon} alt="star" />);
+        stars.push(<img key={`star-${i}`} src={WholeStarIcon} alt="star" />);
     }
   
     // Render half star if applicable
@@ -136,14 +144,29 @@ const Carousel: React.FC = () => {
           <div className="w-[80%] lg:w-[45%] mx-auto">
             <p className="text-5xl font-semibold">{centeredVenue.name}</p>
             <div className=" h-1 bg-slate-400 my-5 w-full"></div>
-            <div className="flex flex-row space-x-5">
-              <p>Rating: {centeredVenue.rating}</p>
-              <p>{centeredVenue.meta.wifi ? "Yes" : "No"}</p>
-              <p>{centeredVenue.meta.parking ? "Yes" : "No"}</p>
-              <p>{centeredVenue.meta.breakfast ? "Yes" : "No"}</p>
-              <p>{centeredVenue.meta.pets ? "Allowed" : "Not allowed"}</p>
+            <div className="flex flex-row space-x-8">
+              <div className='flex flex-row'>
+                <StarIcon />
+                <p className='ml-2 font-semibold text-[#FF5C00]'>{centeredVenue.rating}</p>
+              </div>
+              <div className='flex flex-row'>
+                <WifiIcon />
+                <p className='ml-2'>{centeredVenue.meta.wifi ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+              </div>
+              <div className='flex flex-row'>
+                <LocalParkingIcon />
+                <p className='ml-2'>{centeredVenue.meta.parking ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+              </div>
+              <div className='flex flex-row'>
+                <FreeBreakfastIcon />
+                <p className='ml-2'>{centeredVenue.meta.breakfast ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+              </div>
+              <div className='flex flex-row'>
+                <PetsIcon />
+                <p className='ml-2'>{centeredVenue.meta.pets ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+              </div>
             </div>
-            <p>{centeredVenue.description}</p>
+            <p className="line-clamp-3">{centeredVenue.description}</p>
             <div className="flex flex-row justify-between pt-10">
               <p className="font-semibold">{centeredVenue.price} kr,-</p>
               <Link to={`/venues/${centeredVenue.id}`}>

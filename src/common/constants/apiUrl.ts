@@ -2,7 +2,7 @@
 export const url = "https://v2.api.noroff.dev/holidaze";
 
 // Auth endpoints
-export const loginUrl = "https://v2.api.noroff.dev/auth/login";
+export const loginUrl = "https://v2.api.noroff.dev/auth/login?_holidaze=true";
 export const registerUrl = "https://v2.api.noroff.dev/auth/register";
 
 // Api key name: Aksel

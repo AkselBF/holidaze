@@ -9,14 +9,14 @@ interface RegistrationFormValues {
   name: string;
   email: string;
   password: string;
-  avatar?: string;
+  repeatPassword: string;
   venueManager?: boolean;
 }
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#ffffff', 
+      main: '#ffffff',
     },
     secondary: {
       main: '#FF5C00',
@@ -26,15 +26,15 @@ const theme = createTheme({
 
 const StyledTextField = styled(TextField)({
   '& .MuiInputLabel-root': {
-    color: '#d9d9d9', // Field label color
+    color: '#d9d9d9',
   },
   '& .MuiInputBase-root': {
     color: '#d9d9d9',
-    borderRadius: 0, // Adjust border radius
+    borderRadius: 0,
     borderBottom: '2px solid #ffffff',
-    borderLeft: '2px solid transparent', // Left border
-    borderRight: '2px solid transparent', // Right border
-    borderTop: '2px solid transparent', // Top border
+    borderLeft: '2px solid transparent',
+    borderRight: '2px solid transparent',
+    borderTop: '2px solid transparent',
     '&:hover': {
       borderBottomColor: '#d9d9d9',
     },
@@ -48,26 +48,37 @@ const StyledTextField = styled(TextField)({
   },
 });
 
+const StyledCheckbox = styled(Checkbox)({
+  color: '#ffffff',
+});
+
 const RegistrationForm: React.FC = () => {
-  const { control, handleSubmit } = useForm<RegistrationFormValues>();
+  const { control, handleSubmit, setError,/* clearErrors,*/ watch } = useForm<RegistrationFormValues>();
   const navigate = useNavigate();
   const { register: registerUser } = useAuthStore();
 
   const onSubmit: SubmitHandler<RegistrationFormValues> = async (data) => {
-    await registerUser(data.name, data.email, data.password, data.avatar, data.venueManager);
+    if (data.password !== data.repeatPassword) {
+      setError('repeatPassword', { type: 'manual', message: 'Passwords must match' });
+      return;
+    }
+
+    await registerUser(data.name, data.email, data.password, data.venueManager ? 'true' : undefined);
     navigate('/profiles');
   };
 
+  const password = watch('password');
+
   return (
     <ThemeProvider theme={theme}>
-      <form onSubmit={handleSubmit(onSubmit)} className='mx-auto w-[50%] bg-[#171717cc] rounded-b-lg pb-10 justify-center text-center'>
+      <form onSubmit={handleSubmit(onSubmit)} className='mx-auto w-[96%] md:w-[80%] lg:w-[50%] xl:w-[40%] bg-[#171717cc] rounded-b-lg pb-10 justify-center text-center'>
         <div className='w-[80%] mx-auto text-white pt-8 pb-3'>
           <Controller
             name="name"
             control={control}
             defaultValue=""
             render={({ field }) => (
-              <StyledTextField {...field} label="Username" variant="outlined" type="text" required fullWidth />
+              <StyledTextField {...field} label="Username" variant="outlined" type="text" required fullWidth autoComplete="off" />
             )}
           />
         </div>
@@ -77,7 +88,7 @@ const RegistrationForm: React.FC = () => {
             control={control}
             defaultValue=""
             render={({ field }) => (
-              <StyledTextField {...field} label="Email" variant="outlined" type="email" required fullWidth />
+              <StyledTextField {...field} label="Email" variant="outlined" type="email" required fullWidth autoComplete="off" />
             )}
           />
         </div>
@@ -87,17 +98,17 @@ const RegistrationForm: React.FC = () => {
             control={control}
             defaultValue=""
             render={({ field }) => (
-              <StyledTextField {...field} label="Password" variant="outlined" type="password" required fullWidth />
+              <StyledTextField {...field} label="Password" variant="outlined" type="password" required fullWidth autoComplete="off" />
             )}
           />
         </div>
         <div className='w-[80%] mx-auto text-white pt-3 pb-3'>
           <Controller
-            name="avatar"
+            name="repeatPassword"
             control={control}
             defaultValue=""
             render={({ field }) => (
-              <StyledTextField {...field} label="Avatar URL (optional)" variant="outlined" type="text" fullWidth />
+              <StyledTextField {...field} label="Repeat Password" variant="outlined" type="password" required fullWidth autoComplete="off" error={!!password && password !== field.value} helperText={!!password && password !== field.value && 'Passwords must match'} />
             )}
           />
         </div>
@@ -107,7 +118,7 @@ const RegistrationForm: React.FC = () => {
             control={control}
             defaultValue={false}
             render={({ field }) => (
-              <Checkbox {...field} />
+              <StyledCheckbox {...field} />
             )}
           />
           <label>Venue Manager</label>

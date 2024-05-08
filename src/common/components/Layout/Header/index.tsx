@@ -7,9 +7,11 @@ import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import DarkModeSharpIcon from '@mui/icons-material/DarkModeSharp';
 //import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import { useAuthStore } from '../../../storage/authStore';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useAuthStore();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -32,9 +34,15 @@ const Header: React.FC = () => {
         </Link>
 
         <div className="hidden lg:flex flex-grow justify-end mx-4">
-          <Link to="/login" className="text-md mx-4 p-2 bg-black rounded-full">
-            <PersonRoundedIcon />
-          </Link>
+          {user ? (
+            <Link to="/profiles" className="text-md mx-4 p-2 bg-black rounded-full">
+              <PersonRoundedIcon />
+            </Link>
+          ) : (
+            <Link to="/login" className="text-md mx-4 p-2 bg-black rounded-full">
+              <PersonRoundedIcon />
+            </Link>
+          )}
           <div className="text-md mx-4 cursor-pointer p-2 bg-black rounded-full">
             <DarkModeSharpIcon />
           </div>
@@ -56,10 +64,17 @@ const Header: React.FC = () => {
                 <HotelRoundedIcon />
                 <p className='ml-3'>Venues</p>
               </Link>
-              <Link to="/login" className="text-md my-3 flex flex-row" onClick={toggleMenu}>
-                <PersonRoundedIcon />
-                <p className='ml-3'>Login</p>
-              </Link>
+              {user ? (
+                <Link to="/profiles" className="text-md my-3 flex flex-row" onClick={toggleMenu}>
+                  <PersonRoundedIcon />
+                  <p className='ml-3'>Profile</p>
+                </Link>
+              ) : (
+                <Link to="/login" className="text-md my-3 flex flex-row" onClick={toggleMenu}>
+                  <PersonRoundedIcon />
+                  <p className='ml-3'>Login</p>
+                </Link>
+              )}
               <div className="text-md my-3 flex flex-row cursor-pointer" onClick={toggleMenu}>
                 <DarkModeSharpIcon />
                 <p className='ml-3'>Dark</p>
