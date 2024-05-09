@@ -35,7 +35,7 @@ const Header: React.FC = () => {
 
         <div className="hidden lg:flex flex-grow justify-end mx-4">
           {user ? (
-            <Link to="/profiles" className="text-md mx-4 p-2 bg-black rounded-full">
+            <Link to={`/profiles/${user.name}`} className="text-md mx-4 p-2 bg-black rounded-full">
               <PersonRoundedIcon />
             </Link>
           ) : (
@@ -65,7 +65,7 @@ const Header: React.FC = () => {
                 <p className='ml-3'>Venues</p>
               </Link>
               {user ? (
-                <Link to="/profiles" className="text-md my-3 flex flex-row" onClick={toggleMenu}>
+                <Link to={`/profiles/${user.name}`} className="text-md my-3 flex flex-row" onClick={toggleMenu}>
                   <PersonRoundedIcon />
                   <p className='ml-3'>Profile</p>
                 </Link>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { url } from '../../constants/apiUrl';
+import { url, apiKey } from '../../constants/apiUrl';
+import { useAuthStore, User } from '../../storage/authStore';
 import { Venue } from '../../storage/venuesStore';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { TextField, Button } from '@mui/material';
@@ -27,7 +28,12 @@ interface BookingFormValues {
   cvc: string;
 }
 
-const Booking: React.FC = () => {
+interface BookingProps {
+  onNewBooking: () => void;
+  user: User | null;
+}
+
+const Booking: React.FC<BookingProps> = (props) => {
   const { id } = useParams<{ id: string }>();
   const { control, handleSubmit, formState: { errors } } = useForm<BookingFormValues>();
   const navigate = useNavigate();
@@ -46,14 +52,20 @@ const Booking: React.FC = () => {
   const [isCvcValid, setIsCvcValid] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false); // Add this state variable
 
-// Determine overall form validity
-useEffect(() => {
-  setIsFormValid(isCardNumberValid && isExpiryDateValid && isCvcValid && !!arrivalDate && !!departureDate);
-}, [isCardNumberValid, isExpiryDateValid, isCvcValid, arrivalDate, departureDate]);
+  const { user } = useAuthStore();
+
+  // Determine overall form validity
+  useEffect(() => {
+    setIsFormValid(isCardNumberValid && isExpiryDateValid && isCvcValid && !!arrivalDate && !!departureDate);
+  }, [isCardNumberValid, isExpiryDateValid, isCvcValid, arrivalDate, departureDate]);
 
   useEffect(() => {
     const fetchVenueDetails = async () => {
       try {
+        if (!id) {
+          // If id is undefined, don't make the fetch request
+          return;
+        }
         const response = await fetch(`${url}/venues/${id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch venue details');
@@ -130,10 +142,46 @@ useEffect(() => {
   };
   */
 
-  const onSubmit: SubmitHandler<BookingFormValues> = async (data) => {
-    // Handle form submission here, e.g., payment processing
-    navigate('/success');
-    console.log(data);
+
+  const onSubmit: SubmitHandler<BookingFormValues> = async () => {
+    try {
+      if (!user || !venue) {
+        throw new Error('User or venue is not available');
+      }
+  
+      // Create new booking
+      const newBooking = {
+        venueId: venue.id,
+        dateFrom: arrivalDate, // Assuming arrivalDate is set elsewhere in your component
+        dateTo: departureDate, // Assuming departureDate is set elsewhere in your component
+        guests: numAdults + numChildren, // Total number of guests
+      };
+
+      const response = await fetch(`${url}/bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+            'X-Noroff-API-Key': apiKey,
+        },
+        body: JSON.stringify(newBooking),
+      });
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          // Handle conflict
+          console.error('Booking conflict: There is already a booking for this venue during the specified time period.');
+          // Display a message to the user or suggest alternative dates
+        } else {
+          throw new Error('Failed to create booking');
+        }
+      } else {
+        props.onNewBooking();
+        navigate('/success');
+      }
+    } catch (error) {
+      console.error('Error processing booking:', error);
+    }
   };
 
   const cardTheme = createTheme({

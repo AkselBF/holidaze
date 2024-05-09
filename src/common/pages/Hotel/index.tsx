@@ -116,7 +116,7 @@ const Hotel: React.FC = () => {
       
       <div className='px-[10%] flex flex-col md:flex-row'>
         <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} 
-        className='w-[50%]' />
+        className='w-[50%] max-h-[280px] object-cover' />
         <div className='w-[50%] ml-6 relative'>
           <div className="flex flex-row space-x-8">
             <div className='flex flex-row'>

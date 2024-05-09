@@ -57,8 +57,21 @@ const LoginForm: React.FC = () => {
   const { login } = useAuthStore();
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
-    await login(data.email, data.password);
-    navigate('/profiles');
+    try {
+      await login(data.email, data.password);
+      // After successful login, extract the username from the response data
+      const userData = localStorage.getItem('userData');
+      if (userData) {
+        const { name } = JSON.parse(userData);
+        // Redirect to the user's profile page using the extracted username
+        navigate(`/profiles/${name}`);
+      } else {
+        // Handle error if user data is not available
+        console.error('User data not found after login');
+      }
+    } catch (error) {
+      console.error('Error logging in:', error);
+    }
   };
 
   return (

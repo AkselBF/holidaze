@@ -64,7 +64,7 @@ const RegistrationForm: React.FC = () => {
     }
 
     await registerUser(data.name, data.email, data.password, data.venueManager ? 'true' : undefined);
-    navigate('/profiles');
+    navigate(`/profiles/${data.name}`);
   };
 
   const password = watch('password');

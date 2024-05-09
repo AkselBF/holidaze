@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { loginUrl, registerUrl, url, apiKey } from '../constants/apiUrl';
 import avatarImage from '../images/avatarBase.png';
 
-interface User {
+export interface User {
   id?: string;
   name?: string;
   email?: string;

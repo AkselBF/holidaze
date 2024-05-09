@@ -15,6 +15,12 @@ const App: React.FC = () => {
   const { user } = useAuthStore();
   //const accessToken = localStorage.getItem('accessToken');
 
+  const handleNewBooking = () => {
+    // Define what happens when a new booking is made
+    console.log('New booking made!');
+    // You can add more logic here, like updating state or performing actions
+  };
+
   return (
     <Router>
       <Layout>
@@ -22,10 +28,10 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/venues" element={<Venues />} />
           <Route path="/venues/:id" element={<Hotel />} />
-          <Route path="/booking/:id" element={<Booking />} />
+          <Route path="/booking/:id" element={<Booking onNewBooking={handleNewBooking} />} />
           <Route path="/success" element={<Success />} />
           <Route path="/login" element={user ? <Navigate to="/profile" /> : <Login />} />
-          <Route path="/profiles" element={user ? <Profile /> : <Navigate to="/login" />} />
+          <Route path="/profiles/:name" element={user ? <Profile /> : <Navigate to="/login" />} />
         </Routes>
       </Layout>
     </Router>
