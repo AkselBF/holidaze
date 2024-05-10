@@ -4,11 +4,10 @@ import { useAuthStore } from '../../storage/authStore';
 import background from '../../images/backgroundImg.png';
 import { url, apiKey } from '../../constants/apiUrl';
 import Booking from '../Booking';
+import BookingsSection from './BookingsSection';
+import VenueSection from './VenueSection';
+import ToggleSectionButton from '../../components/ToggleSectionButton';
 import './Modal.css';
-
-import StarIcon from '../../images/starIcon.png';
-import HalfStarIcon from '../../images/halfStarIcon.png';
-import EmptyStarIcon from '../../images/emptyStarIcon.png';
 
 interface Booking {
   id: string;
@@ -18,9 +17,7 @@ interface Booking {
   venue: {
     name: string;
     rating: number;
-    // Other venue properties
   }
-  // Add other properties as needed
 }
 
 const Profile: React.FC = () => {
@@ -31,6 +28,8 @@ const Profile: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newAvatarUrl, setNewAvatarUrl] = useState('');
   const [avatarInputError, setAvatarInputError] = useState('');
+  const [isVenueManager, setIsVenueManager] = useState(false);
+  const [showBookings, setShowBookings] = useState<boolean>(true);
 
   useEffect(() => {
     if (!user) {
@@ -38,6 +37,7 @@ const Profile: React.FC = () => {
     } 
     else {
       fetchUserBookings();
+      setIsVenueManager(user.venueManager || false);
     }
   }, [user, navigate]);
 
@@ -66,6 +66,10 @@ const Profile: React.FC = () => {
     }
   };
 
+  const toggleSection = () => {
+    setShowBookings(!showBookings);
+  };
+
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
     setNewAvatarUrl(''); // Reset input value when modal opens/closes
@@ -80,8 +84,6 @@ const Profile: React.FC = () => {
     }
 
     // Update user's avatar and save it in the application
-    // For now, let's assume there's a function updateUserAvatar in useAuthStore
-    // that updates the user's avatar in the state and persists it
     // Replace it with the appropriate function from your useAuthStore implementation
     updateUserAvatar(newAvatarUrl);
     
@@ -106,40 +108,6 @@ const Profile: React.FC = () => {
     // Define the logic for handling a new booking
     console.log('New booking created');
     // You can add more logic here as needed
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
-  };
-
-  const renderRatingStars = (rating: number) => {
-    const totalStars = 5;
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-
-    const stars = [];
-  
-    // Render full stars
-    for (let i = 0; i < fullStars; i++) {
-        stars.push(<img key={`star-${i}`} src={StarIcon} alt="star" />);
-    }
-  
-    // Render half star if applicable
-    if (hasHalfStar) {
-        stars.push(<img key="half-star" src={HalfStarIcon} alt="half star" />);
-    }
-  
-    // Render empty stars to fill the rest
-    const emptyStars = totalStars - fullStars - (hasHalfStar ? 1 : 0);
-    for (let i = 0; i < emptyStars; i++) {
-        stars.push(<img key={`empty-star-${i}`} src={EmptyStarIcon} alt="empty star" />);
-    }
-  
-    return stars;
   };
 
   return (
@@ -174,39 +142,28 @@ const Profile: React.FC = () => {
                   </div>
                 </>
               )}
-              <h1 className='text-2xl text-white text-center font-semibold mt-4'>{user.name}</h1>
+              <h1 className='text-2xl text-white text-center font-semibold'>{user.name}</h1>
             </div>
-            {/*<p>Venue Manager: {user.venueManager ? 'Yes' : 'No'}</p>*/}
-            <button onClick={logout} className='text-white text-lg font-semibold bg-black w-[200px] h-[50px] rounded-lg md:mr-[5%] mt-10 md:mt-24 mx-auto'>Logout</button>
+            <div className='mt-4 md:-mt-16'>
+              {isVenueManager && (
+                <ToggleSectionButton onClick={toggleSection} showBookings={showBookings} />
+              )}
+              {/*<p>Venue Manager: {user.venueManager ? 'Yes' : 'No'}</p>*/}
+              <button onClick={logout} className='text-white text-lg font-semibold bg-black w-[200px] h-[50px] rounded-lg md:mr-[5%] mx-auto mt-10'>Logout</button>
+            </div>
           </div>
-          {/* Display bookings */}
-          <div className='bg-[#171717cc] w-[90%] mx-auto mt-10 px-10 py-5 rounded-t-xl'>
-            <h2 className='text-xl font-semibold text-white'>Bookings:</h2>
-            <div className='h-[2px] bg-[#ADADAD] w-[240px] rounded-full mt-3 mb-6'></div>
-          </div>
-          <div className='bg-[#171717cc] w-[90%] mx-auto px-10 pb-5 rounded-b-xl overflow-x-auto whitespace-nowrap scrollbar-hide'>
-            {bookings ? (
-              <ul className='scrollbar-hide text-white flex flex-row p-0 m-0'>
-                {bookings.map((booking) => (
-                  <li key={booking.id} className='flex-shrink-0 mr-5 w-[280px] h-[70px]'>
-                    <div className='bg-black w-full h-full rounded-md flex flex-row justify-between'>
-                      <div className='w-[55%] mx-4 my-2'>
-                        <p className='font-semibold truncate'>{booking.venue.name}</p>
-                        <div className='flex flex-row my-2 h-5'>
-                          {renderRatingStars(booking.venue.rating)}
-                        </div>
-                      </div>
-                      <div className='bg-[#FF5C00] w-[45%] p-2 items-center rounded-r-md'>
-                        <p className='text-wrap font-semibold'>{formatDate(booking.dateFrom)} - {formatDate(booking.dateTo)}</p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-white">No bookings found.</p>
-            )}
-          </div>
+          {/* Conditional rendering based on showBookings state */}
+          {showBookings ? (
+            <div>
+              {/* Render the BookingsSection component if showBookings is true */}
+              <BookingsSection bookings={bookings} />
+            </div>
+          ) : (
+            <div>
+              {/* Render the VenueSection component if showBookings is false */}
+              <VenueSection />
+            </div>
+          )}
         </div>
       )}
 
