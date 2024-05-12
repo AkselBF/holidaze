@@ -2,20 +2,73 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../storage/authStore';
 import background from '../../images/backgroundImg.png';
+import { url, apiKey } from '../../constants/apiUrl';
+import Booking from '../Booking';
+import BookingsSection from './BookingsSection';
+import VenueSection from './VenueSection';
+import ToggleSectionButton from '../../components/ToggleSectionButton';
 import './Modal.css';
+
+interface Booking {
+  id: string;
+  dateFrom: string;
+  dateTo: string;
+  guests: number;
+  venue: {
+    name: string;
+    rating: number;
+  }
+}
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout, updateUserAvatar } = useAuthStore();
+  const [bookings, setBookings] = useState<Booking[]>([]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newAvatarUrl, setNewAvatarUrl] = useState('');
   const [avatarInputError, setAvatarInputError] = useState('');
+  const [isVenueManager, setIsVenueManager] = useState(false);
+  const [showBookings, setShowBookings] = useState<boolean>(true);
 
   useEffect(() => {
     if (!user) {
       navigate('/login');
+    } 
+    else {
+      fetchUserBookings();
+      setIsVenueManager(user.venueManager || false);
     }
   }, [user, navigate]);
+
+  const fetchUserBookings = async () => {
+    try {
+      if (user && user.token) {
+        const response = await fetch(`${url}/profiles/${user.name}/?_bookings=true&_venues=true`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`,
+            'X-Noroff-API-Key': apiKey,
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch user bookings');
+        }
+        const responseData = await response.json();
+        console.log(responseData);
+        setBookings(responseData.data.bookings); // Update to use responseData.data.bookings
+      } else {
+        throw new Error('User not found or token missing');
+      }
+    } catch (error) {
+      console.error('Error fetching user bookings:', error);
+    }
+  };
+
+  const toggleSection = () => {
+    setShowBookings(!showBookings);
+  };
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -31,8 +84,6 @@ const Profile: React.FC = () => {
     }
 
     // Update user's avatar and save it in the application
-    // For now, let's assume there's a function updateUserAvatar in useAuthStore
-    // that updates the user's avatar in the state and persists it
     // Replace it with the appropriate function from your useAuthStore implementation
     updateUserAvatar(newAvatarUrl);
     
@@ -53,8 +104,19 @@ const Profile: React.FC = () => {
     return /^(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)$/.test(url);
   };
 
+  const handleNewBooking = () => {
+    // Define the logic for handling a new booking
+    console.log('New booking created');
+    // You can add more logic here as needed
+  };
+
+  /*
+  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(to bottom, rgba(219,16,162,73) 0%,rgba(118,21,152,1) 100%)' }}></div>
+  linear-gradient(to bottom, #DB10A2, #761598)
+  */
+
   return (
-    <div className='p-2' style={{ backgroundImage: `url(${background})`, backgroundSize: 'cover', height: '90.2vh', marginTop: '-80px' }}>
+    <div className='p-2 min-h-[90.2vh]' style={{ backgroundImage: `url(${background})`, backgroundSize: 'cover', height: '100%', marginTop: '-80px', overflowY: 'auto' }}>
       {user && (
         <div className='mt-[100px] mb-[80px]'>
           <div className='flex flex-col md:flex-row w-full justify-between'>
@@ -85,13 +147,32 @@ const Profile: React.FC = () => {
                   </div>
                 </>
               )}
-              <h1 className='text-2xl text-center font-semibold mt-4'>{user.name}</h1>
+              <h1 className='text-2xl text-white text-center font-semibold'>{user.name}</h1>
             </div>
-            {/*<p>Venue Manager: {user.venueManager ? 'Yes' : 'No'}</p>*/}
-            <button onClick={logout} className='text-white text-lg font-semibold bg-black w-[200px] h-[50px] rounded-lg md:mr-[5%] mt-10 md:mt-24 mx-auto'>Logout</button>
+            <div className='mt-4 md:-mt-16'>
+              {isVenueManager && (
+                <ToggleSectionButton onClick={toggleSection} showBookings={showBookings} />
+              )}
+              {/*<p>Venue Manager: {user.venueManager ? 'Yes' : 'No'}</p>*/}
+              <button onClick={logout} className='text-white text-lg font-semibold bg-black w-[200px] h-[50px] rounded-lg md:mr-[5%] mx-auto mt-10'>Logout</button>
+            </div>
           </div>
+          {/* Conditional rendering based on showBookings state */}
+          {showBookings ? (
+            <div>
+              {/* Render the BookingsSection component if showBookings is true */}
+              <BookingsSection bookings={bookings} />
+            </div>
+          ) : (
+            <div>
+              {/* Render the VenueSection component if showBookings is false */}
+              <VenueSection />
+            </div>
+          )}
         </div>
       )}
+
+      <Booking user={user} onNewBooking={handleNewBooking} />
     </div>
   );
 };
