@@ -17,6 +17,7 @@ interface AuthState {
   register: (name: string, email: string, password: string, avatar?: string, venueManager?: boolean) => Promise<void>;
   logout: () => void;
   updateUserAvatar: (avatarUrl: string) => void;
+  token: string | null;
 }
 
 export const useAuthStore = create<AuthState>((set) => {
@@ -36,6 +37,7 @@ export const useAuthStore = create<AuthState>((set) => {
 
   return {
     user,
+    token: user ? user.token : null,
     login: async (email, password) => {
       try {
         const response = await fetch(`${loginUrl}`, {

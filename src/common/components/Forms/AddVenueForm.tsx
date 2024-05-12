@@ -2,6 +2,9 @@ import React from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { TextField, Checkbox, Button } from '@mui/material';
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import { useAuthStore } from '../../storage/authStore';
+import { useVenuesStore } from '../../storage/venuesStore';
+import { url, apiKey } from '../../constants/apiUrl';
 import './Scrollbar.css';
 
 const theme = createTheme({
@@ -64,16 +67,15 @@ const StyledCheckbox = styled(Checkbox)({
 interface VenueFormData {
   name: string; // minimum of 3 characters
   description: string; // minimum of 16 characters
-  image: string; // URL for the main image
-  additionalImages?: string[]; // URLs for additional images (optional, max 6)
-  price: number; // numbers only with a maximum of 10000, two decimal digits
-  maxGuests: number; // numbers only with a maximum of 12, no decimal numbers
-  rating?: number; // numbers only, one decimal digit (optional)
-  meta: {
-    wifi: boolean; // optional (default: false)
-    parking: boolean; // optional (default: false)
-    breakfast: boolean; // optional (default: false)
-    pets: boolean; // optional (default: false)
+  media?: { url: string; alt?: string }[];
+  price: string; // numbers only with a maximum of 10000, two decimal digits
+  maxGuests: string; // numbers only with a maximum of 12, no decimal numbers
+  rating: string; // numbers only, one decimal digit (optional)
+  meta?: {
+    wifi?: boolean; // optional (default: false)
+    parking?: boolean; // optional (default: false)
+    breakfast?: boolean; // optional (default: false)
+    pets?: boolean; // optional (default: false)
   };
   location?: {
     city?: string; // optional
@@ -88,11 +90,52 @@ interface AddVenueFormProps {
 
 const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose }) => {
   const { control, handleSubmit, formState: { errors } } = useForm<VenueFormData>();
+  const { fetchVenues } = useVenuesStore();
+  const user = useAuthStore();
 
   const onSubmit: SubmitHandler<VenueFormData> = async (data) => {
+    const requestData = {
+      name: data.name,
+      description: data.description,
+      media: data.media, // Assuming media is an array of objects with url and alt properties
+      price: parseFloat(data.price), // Convert to number
+      maxGuests: parseFloat(data.maxGuests), // Convert to number
+      rating: parseFloat(data.rating), // Convert to number
+      meta: {
+        wifi: data.meta?.wifi || false, // Use provided value or default to false
+        parking: data.meta?.parking || false,
+        breakfast: data.meta?.breakfast || false,
+        pets: data.meta?.pets || false,
+      },
+      location: {
+        city: data.location?.city || '', // Use provided value or default to empty string
+        country: data.location?.country || '',
+        continent: data.location?.continent || '',
+      },
+    };
     // Handle form submission
-    console.log(data);
-    onClose(); // Close the modal after form submission
+    try {
+      if (user && user.token) {
+        const response = await fetch(`${url}/venues`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`,
+            'X-Noroff-API-Key': apiKey,
+          },
+          body: JSON.stringify(requestData),
+        });
+        if (!response.ok) {
+          // Handle error
+          console.error('Failed to add venue:', response.statusText);
+          return;
+        }
+        await fetchVenues();
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error adding venue:', error);
+    }
   };
 
   return (
@@ -128,14 +171,26 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose }) => {
               {errors.description && <p className="error">Description is required and must be at least 16 characters long</p>}
             </div>
 
-            {/* Image */}
+            {/* Image URL */}
             <div className='w-[80%] mx-auto text-white py-3'>
               <Controller
-                name="image"
+                name="media.0.url" // Assuming you're only adding one image
                 control={control}
                 defaultValue=""
                 render={({ field }) => (
-                  <StyledTextField {...field} label="Image" variant="outlined" type="url" />
+                  <StyledTextField {...field} label="Image URL" variant="outlined" type="url" />
+                )}
+              />
+            </div>
+
+            {/* Image Alt Text */}
+            <div className='w-[80%] mx-auto text-white py-3'>
+              <Controller
+                name="media.0.alt" // Ensure the name matches the property in VenueFormData
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <StyledTextField {...field} label="Image Alt Text" variant="outlined" />
                 )}
               />
             </div>
@@ -147,7 +202,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose }) => {
                 <Controller
                   name="price"
                   control={control}
-                  defaultValue={0}
+                  defaultValue=''
                   render={({ field }) => (
                     <StyledTextField {...field} label="Price" variant="outlined" type="number" InputProps={{
                       inputProps: {
@@ -166,7 +221,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose }) => {
                 <Controller
                   name="maxGuests"
                   control={control}
-                  defaultValue={0}
+                  defaultValue=''
                   render={({ field }) => (
                     <StyledTextField {...field} label="Max guests" variant="outlined" type="number" InputProps={{
                       inputProps: {
@@ -184,7 +239,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose }) => {
                 <Controller
                   name="rating"
                   control={control}
-                  defaultValue={0}
+                  defaultValue=''
                   render={({ field }) => (
                     <StyledTextField {...field} label="Rating" variant="outlined" type="number" InputProps={{
                       inputProps: {
@@ -201,7 +256,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose }) => {
 
             {/* Location details */}
             <div className='w-[80%] mx-auto text-white py-3'>
-              <label>Location:</label>
+              <h3 className='mb-3 font-semibold'>Location:</h3>
               <div className="location-inputs space-x-2">
                 <Controller
                   name="location.city"
@@ -232,7 +287,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose }) => {
 
             {/* Meta details */}
             <div className='w-[80%] mx-auto text-white py-3'>
-              <label>Venue features:</label>
+              <h3 className='mb-1 font-semibold'>Venue features:</h3>
               <div className="meta-checkboxes flex flex-row space-x-3">
                 <div>
                   <Controller

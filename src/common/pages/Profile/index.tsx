@@ -110,8 +110,13 @@ const Profile: React.FC = () => {
     // You can add more logic here as needed
   };
 
+  /*
+  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(to bottom, rgba(219,16,162,73) 0%,rgba(118,21,152,1) 100%)' }}></div>
+  linear-gradient(to bottom, #DB10A2, #761598)
+  */
+
   return (
-    <div className='p-2' style={{ backgroundImage: `url(${background})`, backgroundSize: 'cover', height: '90.2vh', marginTop: '-80px' }}>
+    <div className='p-2 min-h-[90.2vh]' style={{ backgroundImage: `url(${background})`, backgroundSize: 'cover', height: '100%', marginTop: '-80px', overflowY: 'auto' }}>
       {user && (
         <div className='mt-[100px] mb-[80px]'>
           <div className='flex flex-col md:flex-row w-full justify-between'>
