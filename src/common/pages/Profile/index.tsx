@@ -56,7 +56,7 @@ const Profile: React.FC = () => {
           throw new Error('Failed to fetch user bookings');
         }
         const responseData = await response.json();
-        console.log(responseData);
+        //console.log(responseData);
         setBookings(responseData.data.bookings); // Update to use responseData.data.bookings
       } else {
         throw new Error('User not found or token missing');

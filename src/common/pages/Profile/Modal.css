@@ -51,6 +51,25 @@
 }
 
 
+.venue-hover-overlay {
+  opacity: 0;
+}
+
+.venue-buttons {
+  opacity: 0;
+  pointer-events: none; /* Prevent interaction with buttons when hidden */
+}
+
+li:hover .venue-hover-overlay {
+  opacity: 0.5; /* Adjust the opacity value as needed */
+}
+
+li:hover .venue-buttons {
+  opacity: 1;
+  pointer-events: auto; /* Allow interaction with buttons when visible */
+}
+
+
 .scrollbar-hide::-webkit-scrollbar {
   background: transparent;  /* Make scrollbar track invisible */
   padding: 4px;

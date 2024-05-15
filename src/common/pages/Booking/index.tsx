@@ -21,6 +21,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 //import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 import './Booking.css';
+import '../../components/Forms/Scrollbar.css';
 
 interface BookingFormValues {
   cardNumber: string;
@@ -226,9 +227,9 @@ const Booking: React.FC<BookingProps> = (props) => {
           <div className='flex flex-grow w-full mb-5 relative'>
             <h1 className='text-3xl text-center font-semibold justify-center mx-auto'>Booking: {venue.name}</h1>
           </div>
-          <div className='flex flex-row justify-center space-x-3'>
-            <div className='w-[45%]'>
-              <div className='booking_options justify-center bg-[#171717cc] flex flex-row h-[80px] rounded-t-lg items-center'>
+          <div className='flex flex-col lg:flex-row justify-center'>
+            <div className='w-[80%] mx-auto lg:w-[45%] lg:mx-0 justify-center lg:mr-3'>
+              <div className='scrollbar-hide booking_options justify-center bg-[#171717cc] flex flex-row h-[80px] rounded-t-lg items-center px-2 overflow-x-auto'>
                 <div className='flex flex-row bg-black text-white rounded-md mx-2 h-[40px]'>
                   <div className='flex flex-row my-auto'>
                     <ManIcon className='-mr-2' />
@@ -310,8 +311,8 @@ const Booking: React.FC<BookingProps> = (props) => {
                 <p className='mb-3'>Choose a number of extra treatments such as training, pool free access and spa. The options can be crossed bellow:</p>
               </div>
 
-              <div className='flex flex-row mt-10'>
-                <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} className='w-[50%] mr-5' />
+              <div className='flex flex-col lg:flex-row mt-10 space-y-3'>
+                <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} className='lg:w-[50%] lg:mr-5' />
                 <div>
                   <div className='flex flex-row'>
                     <StarIcon />
@@ -325,7 +326,7 @@ const Booking: React.FC<BookingProps> = (props) => {
                 </div>
               </div>
             </div>
-            <div className='w-[45%] px-12 pt-6 pb-12 text-white bg-[#171717] rounded-lg justify-center text-center'>
+            <div className='w-[80%] lg:w-[45%] mx-auto lg:mr-0 lg:ml-3 my-5 lg:my-0 px-12 pt-6 pb-12 text-white bg-[#171717] rounded-lg justify-center text-center'>
               <h2 className='text-lg text-center font-semibold'>Enter credit card data</h2>
               <div className='h-[2px] mx-auto my-5 w-[50%] bg-[#ADADAD]'></div>
               <ThemeProvider theme={cardTheme}> {/* Moved ThemeProvider here */}
