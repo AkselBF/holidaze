@@ -96,15 +96,15 @@ const Venues: React.FC = () => {
         />
       </div>
       
-      <ul className='text-left w-[90%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-0 gap-y-4 justify-center mt-20 mb-6 xl:my-5 mx-auto'>
+      <ul className='text-left w-[90%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-center mt-20 mb-6 xl:my-5 mx-auto'>
       {filteredVenues.length > 0 ? (
         filteredVenues.map((venue) => (
-          <li key={venue.id} className='mx-auto my-4 w-[300px] bg-white rounded-lg'>
+          <li key={venue.id} className='mx-auto my-1 w-full min-w-[240px] max-w-[380px] bg-white rounded-lg'>
             <Link to={`/venues/${venue.id}`}>
               <img 
                 src={venue.media.length > 0 ? venue.media[0].url : noImage} 
                 alt={venue.name} 
-                className='w-[300px] h-[180px] object-cover rounded-t-lg'
+                className='w-full min-w-[240px] max-w-[380px] h-[180px] object-cover rounded-t-lg'
                />
               <h2 className='text-center text-xl font-semibold my-3 line-clamp-1 w-[60%] mx-auto'>{venue.name}</h2>
               <div className='flex flex-row justify-center my-3 h-6'>
@@ -123,12 +123,12 @@ const Venues: React.FC = () => {
         ))
       ) : (
         venues.map((venue) => (
-          <li key={venue.id} className='mx-auto my-4 w-[300px] bg-white rounded-lg'>
+          <li key={venue.id} className='mx-auto my-4 w-full min-w-[240px] max-w-[380px] bg-white rounded-lg'>
             <Link to={`/venues/${venue.id}`}>
               <img 
                 src={venue.media.length > 0 ? venue.media[0].url : noImage} 
                 alt={venue.name} 
-                className='w-[300px] h-[180px] object-cover rounded-t-lg'
+                className='w-full min-w-[240px] max-w-[380px] h-[180px] object-cover rounded-t-lg'
                />
               <h2 className='text-center text-xl font-semibold my-3'>{venue.name}</h2>
               <div className='flex flex-row justify-center my-3 h-6'>

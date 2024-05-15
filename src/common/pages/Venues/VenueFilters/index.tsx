@@ -83,28 +83,26 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
     setSearchQuery(query);
     onSearch(query); // Call onSearch function
   };
-  /*
-  "absolute bg-[#171717cc] text-white w-[90%] left-[5%] -mt-[20%] lg:-mt-[25%] xl:-mt-20 rounded-lg px-16 py-6 flex flex-col xl:flex-row space-y-4 xl:space-y-0"
-  */
+  
 
   return (
     <div className='relative'>
       <button
-        className="xl:hidden fixed w-14 h-14 top-24 left-2 bg-black text-white px-4 py-2 rounded-full z-10"
+        className="lg:hidden fixed w-16 h-16 top-24 left-2 bg-black text-white px-4 py-2 rounded-full z-10 border border-transparent bg-clip-border overflow-hidden"
         onClick={toggleDropdown}
       >
-        <SortRoundedIcon />
+        <SortRoundedIcon style={{ fontSize: '2rem', color: 'white' }} />
       </button>
 
-      <div className={`fixed xl:absolute bg-[#171717cc] text-white w-[300px] xl:w-[90%] left-20 xl:left-[5%] top-24 xl:top-full xl:-mt-20 rounded-lg px-16 py-6 flex flex-col xl:flex-row space-y-4 xl:space-y-0 ${isDropdownOpen ? 'block' : 'hidden'} xl:block`}>
-        <div className='flex flex-col xl:flex-row items-center space-x-0 xl:space-x-3 space-y-4 xl:space-y-0'>
+      <div className={`fixed lg:absolute bg-[#171717cc] text-white w-[95%] sm:w-[300px] lg:w-[90%] left-2 lg:left-[5%] top-24 lg:-top-10 xl:top-full lg:-mt-20 rounded-b-lg rounded-tr-lg rounded-tl-[32px] lg:rounded-lg lg:px-16 pt-24 pb-6 lg:py-6 flex flex-col xl:flex-row space-y-4 lg:space-y-0 ${isDropdownOpen ? 'block' : 'hidden'} lg:block`}>
+        <div className='flex flex-col lg:flex-row lg:justify-center xl:justify-normal items-center space-x-0 lg:space-x-3 space-y-4 lg:space-y-0'>
           {/* Country filter */}
           <div className='filter bg-black rounded-md flex flex-row py-2 px-3 cursor-pointer' onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}>
             <div><LocationOnIcon /></div>
             <div className='mx-2 text-left w-24 bg-transparent text-white outline-none'>{selectedCountry}</div>
             <div className='ml-2'><ArrowDropDownIcon /></div>
             {isCountryDropdownOpen && (
-              <div className='filter-container absolute top-full bg-black w-[192px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[260px] xl:-mt-7 -ml-3 z-[14]'>
+              <div className='filter-container absolute top-full bg-black w-[192px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[260px] lg:-mt-7 -ml-3 z-[14]'>
                 {countries.map((country, index) => (
                   <div key={index} className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleCountryChange(country)}>{country}</div>
                 ))}
@@ -115,10 +113,10 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
           {/* Guests filter */}
           <div className='filter bg-black rounded-md flex flex-row py-2 px-3 cursor-pointer' onClick={() => setIsGuestDropdownOpen(!isGuestDropdownOpen)}>
             <div><PersonIcon /></div>
-            <div className='mx-2 text-left w-24 xl:w-6 bg-transparent text-white outline-none'>{selectedGuests === 0 ? 'All' : selectedGuests}</div>
+            <div className='mx-2 text-left w-24 lg:w-6 bg-transparent text-white outline-none'>{selectedGuests === 0 ? 'All' : selectedGuests}</div>
             <div className='ml-2'><ArrowDropDownIcon /></div>
             {isGuestDropdownOpen && (
-              <div className='filter-container absolute top-full bg-black w-[192px] xl:w-[120px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[205px] xl:-mt-7 -ml-3 z-[12]'>
+              <div className='filter-container absolute top-full bg-black w-[192px] lg:w-[120px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[205px] lg:-mt-7 -ml-3 z-[12]'>
                 <div className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleGuestsChange(0)}>All</div>
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((guests, index) => (
                   <div key={index} className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleGuestsChange(guests)}>{guests}</div>
@@ -130,10 +128,10 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
           {/* Rating filter */}
           <div className='filter bg-black rounded-md flex flex-row py-2 px-3 cursor-pointer' onClick={() => setIsRatingDropdownOpen(!isRatingDropdownOpen)}>
             <div><StarIcon /></div>
-            <div className='mx-2 text-left w-24 xl:w-6 bg-transparent text-white outline-none'>{selectedRating === 0 ? 'All' : selectedRating}</div>
+            <div className='mx-2 text-left w-24 lg:w-6 bg-transparent text-white outline-none'>{selectedRating === 0 ? 'All' : selectedRating}</div>
             <div className='ml-2'><ArrowDropDownIcon /></div>
             {isRatingDropdownOpen && (
-              <div className='filter-container absolute top-full bg-black w-[192px] xl:w-[120px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[140px] xl:-mt-7 -ml-3 z-[11]'>
+              <div className='filter-container absolute top-full bg-black w-[192px] lg:w-[120px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[140px] lg:-mt-7 -ml-3 z-[11]'>
                 <div className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleRatingChange(0)}>All</div>
                 {[1, 2, 3, 4, 5].map((rating, index) => (
                   <div key={index} className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleRatingChange(rating)}>{rating}</div>
@@ -148,7 +146,7 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
             <div className='mx-2 text-left w-24 bg-transparent text-white outline-none'>{selectedPriceRange[0] === 0 ? 'All' : `${selectedPriceRange[0]}kr - ${selectedPriceRange[1]}kr`}</div>
             <div className='ml-2'><ArrowDropDownIcon /></div>
             {isPriceDropdownOpen && (
-              <div className='filter-container absolute top-full bg-black w-[192px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[85px] xl:-mt-7 -ml-3 z-[10]'>
+              <div className='filter-container absolute top-full bg-black w-[192px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[85px] lg:-mt-7 -ml-3 z-[10]'>
                 <div className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handlePriceRangeChange(0, 0)}>All</div>
                 {[
                   [10, 300],
@@ -172,15 +170,15 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
         </div>
 
         {/* Search bar */}
-        <div className='relative mx-auto xl:ml-auto xl:mr-0 text-end'>
+        <div className='relative mx-auto lg:ml-auto lg:mr-0 text-end lg:text-start xl:text-end'>
           <input
             type='text'
             placeholder='Search venues...'
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
-            className='bg-[#00000000] xl:absolute xl:right-0 xl:bottom-0 py-2 px-3 text-white focus:outline-none border-b-2 border-[#B9B9B9]'
+            className='bg-[#00000000] xl:absolute lg:right-0 lg:bottom-0 py-2 px-3 text-white focus:outline-none border-b-2 lg:mt-4 xl:mt-auto border-[#B9B9B9] lg:w-[400px] xl:w-[205px]'
           />
-          <SearchIcon className='absolute top-1/2 xl:-top-5 right-3 transform -translate-y-1/2 text-white' />
+          <SearchIcon className='absolute top-1/2 lg:top-9 xl:-top-5 right-2 lg:left-[371px] xl:right-2 xl:left-auto transform -translate-y-1/2 text-white' />
         </div>
       </div>
     </div>
