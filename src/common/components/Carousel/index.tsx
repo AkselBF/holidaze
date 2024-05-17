@@ -23,6 +23,7 @@ const Carousel: React.FC = () => {
   const { currdeg, venues, fetchNewestVenues, rotate } = useCarouselStore();
   const [isTriangleVisible, setIsTriangleVisible] = useState(true);
   const [centeredVenue, setCenteredVenue] = useState<Venue | null>(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     fetchNewestVenues();
@@ -37,11 +38,22 @@ const Carousel: React.FC = () => {
   }, [currdeg]);
 
   useEffect(() => {
-    // Calculate the index of the centered venue
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
     const centerIndex = Math.floor(((-currdeg + 30) % 360) / 60);
     const adjustedIndex = centerIndex >= 0 ? centerIndex : centerIndex + venues.length;
-    setCenteredVenue(venues[adjustedIndex]); // Store the data of the centered venue
-  }, [currdeg, venues]);
+    setCenteredVenue(venues[adjustedIndex]);
+  }, [currdeg, venues, windowWidth]);
 
   const calculatePosition = (index: number): number => {
     let position = (index * 60 + currdeg) % 360;
@@ -51,21 +63,29 @@ const Carousel: React.FC = () => {
     return position;
   };
 
+  // Modify calculateOpacity function
   const calculateOpacity = (index: number): number => {
     const position = calculatePosition(index);
-    if (position === 0 || position === 60 || position === 300) {
-      return 1;
+    const screenWidth = window.innerWidth;
+    const lgBreakpoint = 1024;
+
+    if (screenWidth < lgBreakpoint) {
+      return position === 0 ? 1 : 0;
     } else {
-      return 0;
+      return position === 0 || position === 60 || position === 300 ? 1 : 0;
     }
   };
 
+  // Modify calculateBlur function
   const calculateBlur = (index: number): string => {
     const position = calculatePosition(index);
-    if (position === 60 || position === 300) {
-      return "blur(3px)";
-    } else {
+    const screenWidth = window.innerWidth;
+    const lgBreakpoint = 1024;
+
+    if (screenWidth < lgBreakpoint) {
       return "blur(0)";
+    } else {
+      return position === 60 || position === 300 ? "blur(3px)" : "blur(0)";
     }
   };
 
@@ -96,7 +116,7 @@ const Carousel: React.FC = () => {
   };
 
   return (
-    <div className="carousel_container mb-[800px]">
+    <div className="carousel_container mb-[840px] lg:mb-[600px]">
       <div className="carousel transform" style={{ transform: `rotateY(${currdeg}deg)` }}>
         {venues.map((venue, index) => (
           <div
@@ -122,13 +142,13 @@ const Carousel: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="next_venue -mr-[300px] mt-[200px]" onClick={() => {
+      <div className="next_venue -mr-[240px] mt-[200px]" onClick={() => {
         setIsTriangleVisible(false); 
         rotate("n");
       }}>
         <ArrowForwardIosRoundedIcon />
       </div>
-      <div className="prev_venue -ml-[300px] mt-[200px]" onClick={() => {
+      <div className="prev_venue -ml-[240px] mt-[200px]" onClick={() => {
         setIsTriangleVisible(false);
         rotate("p");
       }}>
@@ -137,7 +157,7 @@ const Carousel: React.FC = () => {
       <div className={`triangle ${isTriangleVisible ? '' : 'hidden'}`}></div>
 
       {centeredVenue && centeredVenue.media && centeredVenue.media.length > 0 && (
-        <div className="centered_venue_data absolute top-[550px] lg:top-[600px] w-full flex flex-col lg:flex-row justify-between mx-auto">
+        <div className="centered_venue_data absolute top-[480px] lg:top-[460px] w-full flex flex-col lg:flex-row justify-between mx-auto">
           <div className="w-[80%] lg:w-[45%] mx-auto">
             <img src={centeredVenue.media[0].url} alt={centeredVenue.name} className="w-full max-h-[280px] object-cover" />
           </div>

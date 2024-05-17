@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { TextField, Checkbox, Button } from '@mui/material';
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import { useAuthStore } from '../../storage/authStore';
-import { useVenuesStore } from '../../storage/venuesStore';
+import { Venue } from '../../storage/venuesStore';
 import { url, apiKey } from '../../constants/apiUrl';
 import './Scrollbar.css';
 
@@ -65,86 +65,95 @@ const StyledCheckbox = styled(Checkbox)({
 });
 
 interface VenueFormData {
-  name: string; // minimum of 3 characters
-  description: string; // minimum of 16 characters
-  media?: { url?: string; alt?: string }[];
-  price: string; // numbers only with a maximum of 10000, two decimal digits
-  maxGuests: string; // numbers only with a maximum of 12, no decimal numbers
-  rating: string; // numbers only, one decimal digit (optional)
+  name?: string;
+  description?: string;
+  media?: { url: string; alt?: string }[];
+  price?: number;
+  maxGuests?: number;
+  rating?: number;
   meta?: {
-    wifi?: boolean; // optional (default: false)
-    parking?: boolean; // optional (default: false)
-    breakfast?: boolean; // optional (default: false)
-    pets?: boolean; // optional (default: false)
+    wifi?: boolean;
+    parking?: boolean;
+    breakfast?: boolean;
+    pets?: boolean;
   };
   location?: {
-    city?: string; // optional
-    country?: string; // optional
-    continent?: string; // optional
+    city?: string;
+    country?: string;
+    continent?: string;
   };
 }
 
-interface AddVenueFormProps {
+interface UpdateVenueFormProps {
+  isOpen: boolean;
   onClose: () => void;
-  onAdd: () => void;
+  venue: Venue;
+  onUpdate: () => void;
 }
 
-const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
-  const { control, handleSubmit, formState: { errors } } = useForm<VenueFormData>();
-  const { fetchVenues } = useVenuesStore();
+const UpdateVenueForm: React.FC<UpdateVenueFormProps> = ({ isOpen, onClose, venue, onUpdate }) => {
+  const { control, handleSubmit, setValue, formState: { errors } } = useForm<VenueFormData>();
   const user = useAuthStore();
 
-  const onSubmit: SubmitHandler<VenueFormData> = async (data) => {
-    const requestData = {
-      name: data.name,
-      description: data.description,
-      media: data.media,
-      price: parseFloat(data.price),
-      maxGuests: parseFloat(data.maxGuests),
-      rating: parseFloat(data.rating),
-      meta: {
-        wifi: data.meta?.wifi || false,
-        parking: data.meta?.parking || false,
-        breakfast: data.meta?.breakfast || false,
-        pets: data.meta?.pets || false,
-      },
-      location: {
-        city: data.location?.city || '',
-        country: data.location?.country || '',
-        continent: data.location?.continent || '',
-      },
-    };
-    // Handle form submission
-    try {
-      if (user && user.token) {
-        const response = await fetch(`${url}/venues`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`,
-            'X-Noroff-API-Key': apiKey,
-          },
-          body: JSON.stringify(requestData),
-        });
-        if (!response.ok) {
-          // Handle error
-          console.error('Failed to add venue:', response.statusText);
-          return;
-        }
-        await fetchVenues();
-        onAdd();
-        onClose();
+  useEffect(() => {
+    if (venue) {
+      setValue('name', venue.name || '');
+      setValue('description', venue.description || '');
+  
+      if (venue.media && venue.media.length > 0) {
+        setValue('media.0.url', venue.media[0].url || '');
+        setValue('media.0.alt', venue.media[0].alt || '');
       }
-    } catch (error) {
-      console.error('Error adding venue:', error);
+  
+      setValue('price', venue.price || 0);
+      setValue('maxGuests', venue.maxGuests || 0);
+      setValue('rating', venue.rating || 0);
+  
+      if (venue.location) {
+        setValue('location.city', venue.location.city || '');
+        setValue('location.country', venue.location.country || '');
+        setValue('location.continent', venue.location.continent || '');
+      }
+  
+      if (venue.meta) {
+        setValue('meta.wifi', venue.meta.wifi || false);
+        setValue('meta.parking', venue.meta.parking || false);
+        setValue('meta.breakfast', venue.meta.breakfast || false);
+        setValue('meta.pets', venue.meta.pets || false);
+      }
+    }
+  }, [venue, setValue]);
+
+  const onSubmit: SubmitHandler<VenueFormData> = async (data) => {
+    try {
+      const response = await fetch(`${url}/venues/${venue.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+          'X-Noroff-API-Key': apiKey,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update venue');
+      }
+
+      onUpdate();
+      onClose();
+    } 
+    catch (error) {
+        console.error('Error updating venue:', error);
     }
   };
 
   return (
     <ThemeProvider theme={theme}>
       <div className="modal-overlay">
-        <div className="modal-container scrollbar-hide w-[90%] h-[70%] overflow-y-auto">
-          <h3 className='text-[#FF5C00] text-2xl font-semibold text-center mt-3'>Add Venue</h3>
+        {isOpen && (
+          <div className="modal-container scrollbar-hide w-[90%] h-[70%] overflow-y-auto" >
+          <h3 className='text-[#FF5C00] text-2xl font-semibold text-center mt-3'>Update Venue</h3>
           <button className="close-button text-white bg-[#42A4FF] py-1 px-5 rounded-md" onClick={onClose}>Close</button>
           <form className='text-white flex flex-col' onSubmit={handleSubmit(onSubmit)}>
             {/* Name */}
@@ -204,7 +213,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                 <Controller
                   name="price"
                   control={control}
-                  defaultValue=''
+                  defaultValue={0}
                   render={({ field }) => (
                     <StyledTextField {...field} label="Price" variant="outlined" type="number" InputProps={{
                       inputProps: {
@@ -223,7 +232,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                 <Controller
                   name="maxGuests"
                   control={control}
-                  defaultValue=''
+                  defaultValue={0}
                   render={({ field }) => (
                     <StyledTextField {...field} label="Max guests" variant="outlined" type="number" InputProps={{
                       inputProps: {
@@ -241,7 +250,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                 <Controller
                   name="rating"
                   control={control}
-                  defaultValue=''
+                  defaultValue={0}
                   render={({ field }) => (
                     <StyledTextField {...field} label="Rating" variant="outlined" type="number" InputProps={{
                       inputProps: {
@@ -295,9 +304,9 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                   <Controller
                     name="meta.wifi"
                     control={control}
-                    defaultValue={false}
+                    defaultValue={venue.meta?.wifi || false}
                     render={({ field }) => (
-                      <StyledCheckbox {...field} />
+                      <StyledCheckbox {...field} checked={field.value} />
                     )}
                   />
                   <label>Wifi</label>
@@ -307,9 +316,9 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                   <Controller
                     name="meta.parking"
                     control={control}
-                    defaultValue={false}
+                    defaultValue={venue.meta?.parking || false}
                     render={({ field }) => (
-                      <StyledCheckbox {...field} />
+                      <StyledCheckbox {...field} checked={field.value} />
                     )}
                   />
                   <label>Parking</label>
@@ -319,9 +328,9 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                   <Controller
                     name="meta.breakfast"
                     control={control}
-                    defaultValue={false}
+                    defaultValue={venue.meta?.breakfast || false}
                     render={({ field }) => (
-                      <StyledCheckbox {...field} />
+                      <StyledCheckbox {...field} checked={field.value} />
                     )}
                   />
                   <label>Breakfast</label>
@@ -331,9 +340,9 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                   <Controller 
                     name="meta.pets"
                     control={control}
-                    defaultValue={false}
+                    defaultValue={venue.meta?.pets || false}
                     render={({ field }) => (
-                      <StyledCheckbox {...field} />
+                      <StyledCheckbox {...field} checked={field.value} />
                     )}
                   />
                   <label>Pets</label>
@@ -351,9 +360,11 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
             
           </form>
         </div>
+        )}
+        
       </div>
     </ThemeProvider>
   );
 };
 
-export default AddVenueForm;
+export default UpdateVenueForm;

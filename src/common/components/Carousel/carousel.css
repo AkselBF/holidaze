@@ -1,9 +1,9 @@
 .carousel_container {
   margin: 0 auto;
-  width: 250px;
-  height: 200px;
+  width: 200px;
+  height: 160px;
   position: relative;
-  perspective: 1000px;
+  perspective: 1200px;
 }
 
 .carousel {
@@ -18,8 +18,8 @@
   display: block;
   position: absolute;
   background: #000;
-  width: 250px;
-  height: 160px;
+  width: 200px;
+  height: 120px;
   text-align: center;
   color: #FFF;
   opacity: 0.95;
@@ -39,27 +39,27 @@
 }
 
 .a {
-  transform: rotateY(0deg) translateZ(250px);
+  transform: rotateY(0deg) translateZ(200px);
   background: #ed1c24;
 }
 .b {
-  transform: rotateY(60deg) translateZ(250px);
+  transform: rotateY(60deg) translateZ(200px);
   background: #0072bc;
 }
 .c {
-  transform: rotateY(120deg) translateZ(250px);
+  transform: rotateY(120deg) translateZ(200px);
   background: #39b54a;
 }
 .d {
-  transform: rotateY(180deg) translateZ(250px);
+  transform: rotateY(180deg) translateZ(200px);
   background: #f26522;
 }
 .e {
-  transform: rotateY(240deg) translateZ(250px);
+  transform: rotateY(240deg) translateZ(200px);
   background: #630460;
 } 
 .f {
-  transform: rotateY(300deg) translateZ(250px);
+  transform: rotateY(300deg) translateZ(200px);
   background: #8c6239;
 }
 
@@ -67,11 +67,11 @@
   color: #ffffff;
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  padding: 2em 1em;
+  transform: translateY(100%);
+  padding: 1em 1em;
   cursor: pointer;
   background: #171717;
-  border-radius: 5px;
+  border-radius: 100%;
 }
 .next_venue:hover, .prev_venue:hover { color: #ffffff; }
 .next_venue { right: 0; }
@@ -79,11 +79,11 @@
 
 .triangle {
   position: absolute;
-  bottom: -306px;
-  left: -17.1%;
+  bottom: -268px;
+  left: -10.1%;
   transform: translate(-50%, -50%);
-  border-left: 168px solid transparent;
-  border-right: 168px solid transparent;
+  border-left: 121px solid transparent;
+  border-right: 121px solid transparent;
   border-top: 60px solid #fff;
   opacity: 1;
   animation: fadeInDown 0.5s forwards;
