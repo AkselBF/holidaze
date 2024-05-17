@@ -19,6 +19,12 @@ interface Venue {
   maxGuests: number;
   rating: number;
   price: number;
+  meta: {
+    wifi: boolean;
+    parking: boolean;
+    breakfast: boolean;
+    pets: boolean;
+  };
 }
 
 interface VenueFiltersProps {
@@ -28,9 +34,13 @@ interface VenueFiltersProps {
   onChangeRating: (rating: number) => void;
   onChangePriceRange: (priceRange: [number, number]) => void;
   onSearch: (query: string) => void;
+  onFilterWifi: (wifi: boolean) => void;
+  onFilterParking: (parking: boolean) => void;
+  onFilterBreakfast: (breakfast: boolean) => void;
+  onFilterPets: (pets: boolean) => void;
 }
 
-const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, onChangeGuests, onChangeRating, onChangePriceRange, onSearch }) => {
+const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, onChangeGuests, onChangeRating, onChangePriceRange, onSearch, onFilterWifi, onFilterParking, onFilterBreakfast, onFilterPets }) => {
   const [selectedCountry, setSelectedCountry] = useState<string>('Default');
   const [selectedGuests, setSelectedGuests] = useState<number>(0);
   const [selectedRating, setSelectedRating] = useState<number>(0);
@@ -42,6 +52,10 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [isWifiChecked, setIsWifiChecked] = useState<boolean>(false);
+  const [isParkingChecked, setIsParkingChecked] = useState<boolean>(false);
+  const [isBreakfastChecked, setIsBreakfastChecked] = useState<boolean>(false);
+  const [isPetsChecked, setIsPetsChecked] = useState<boolean>(false);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -84,6 +98,25 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
     onSearch(query); // Call onSearch function
   };
   
+  const handleWifiChange = (checked: boolean) => {
+    setIsWifiChecked(checked);
+    onFilterWifi(checked);
+  };
+
+  const handleParkingChange = (checked: boolean) => {
+    setIsParkingChecked(checked);
+    onFilterParking(checked);
+  };
+
+  const handleBreakfastChange = (checked: boolean) => {
+    setIsBreakfastChecked(checked);
+    onFilterBreakfast(checked);
+  };
+
+  const handlePetsChange = (checked: boolean) => {
+    setIsPetsChecked(checked);
+    onFilterPets(checked);
+  };
 
   return (
     <div className='relative'>
@@ -94,7 +127,7 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
         <SortRoundedIcon style={{ fontSize: '2rem', color: 'white' }} />
       </button>
 
-      <div className={`fixed lg:absolute bg-[#171717cc] text-white w-[95%] sm:w-[300px] lg:w-[90%] left-2 lg:left-[5%] top-24 lg:-top-10 xl:top-full lg:-mt-20 rounded-b-lg rounded-tr-lg rounded-tl-[32px] lg:rounded-lg lg:px-16 pt-24 pb-6 lg:py-6 flex flex-col xl:flex-row space-y-4 lg:space-y-0 ${isDropdownOpen ? 'block' : 'hidden'} lg:block`}>
+      <div className={`fixed lg:absolute bg-[#171717cc] text-white w-[95%] sm:w-[300px] lg:w-[90%] left-2 lg:left-[5%] top-24 lg:-top-10 xl:-top-20 lg:-mt-20 rounded-b-lg rounded-tr-lg rounded-tl-[32px] lg:rounded-lg lg:px-16 pt-24 pb-6 lg:py-6 flex flex-col xl:flex-row space-y-4 lg:space-y-0 ${isDropdownOpen ? 'block' : 'hidden'} lg:block`}>
         <div className='flex flex-col lg:flex-row lg:justify-center xl:justify-normal items-center space-x-0 lg:space-x-3 space-y-4 lg:space-y-0'>
           {/* Country filter */}
           <div className='filter bg-black rounded-md flex flex-row py-2 px-3 cursor-pointer' onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}>
@@ -169,16 +202,68 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
           </div>
         </div>
 
-        {/* Search bar */}
-        <div className='relative mx-auto lg:ml-auto lg:mr-0 text-end lg:text-start xl:text-end'>
-          <input
-            type='text'
-            placeholder='Search venues...'
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-            className='bg-[#00000000] xl:absolute lg:right-0 lg:bottom-0 py-2 px-3 text-white focus:outline-none border-b-2 lg:mt-4 xl:mt-auto border-[#B9B9B9] lg:w-[400px] xl:w-[205px]'
-          />
-          <SearchIcon className='absolute top-1/2 lg:top-9 xl:-top-5 right-2 lg:left-[371px] xl:right-2 xl:left-auto transform -translate-y-1/2 text-white' />
+        <div className='flex flex-col lg:flex-row xl:flex-col lg:justify-between'>
+          {/* Search bar */}
+          <div className='relative mx-auto lg:ml-0 lg:mr-auto xl:ml-auto xl:mr-0 text-end lg:text-start xl:text-end'>
+            <input
+              type='text'
+              placeholder='Search venues...'
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              className='bg-[#00000000] xl:absolute lg:right-0 lg:bottom-0 py-2 px-3 text-white focus:outline-none border-b-2 lg:mt-4 xl:mt-auto border-[#B9B9B9] lg:w-[400px] xl:w-[205px]'
+            />
+            <SearchIcon className='absolute top-1/2 lg:top-9 xl:-top-5 right-2 lg:left-[371px] xl:right-2 xl:left-auto transform -translate-y-1/2 text-white' />
+          </div>
+
+          <div className='flex flex-row mx-auto my-6 lg:mt-6 lg:mb-0 xl:ml-auto xl:mr-0'>
+            <div className='flex flex-col lg:flex-row'>
+              {/* Wifi filter */}
+              <div className='flex items-center'>
+                <input
+                  type="checkbox"
+                  id="wifiCheckbox"
+                  checked={isWifiChecked}
+                  onChange={(e) => handleWifiChange(e.target.checked)}
+                />
+                <label htmlFor="wifiCheckbox" className="ml-2">Wifi</label>
+              </div>
+
+              {/* Parking filter */}
+              <div className='flex items-center'>
+                <input
+                  type="checkbox"
+                  id="parkingCheckbox"
+                  checked={isParkingChecked}
+                  onChange={(e) => handleParkingChange(e.target.checked)}
+                />
+                <label htmlFor="parkingCheckbox" className="ml-2">Parking</label>
+              </div>
+            </div>
+
+            <div className='flex flex-col lg:flex-row'>
+              {/* Breakfast filter */}
+              <div className='flex items-center'>
+                <input
+                  type="checkbox"
+                  id="breakfastCheckbox"
+                  checked={isBreakfastChecked}
+                  onChange={(e) => handleBreakfastChange(e.target.checked)}
+                />
+                <label htmlFor="breakfastCheckbox" className="ml-2">Breakfast</label>
+              </div>
+
+              {/* Pets filter */}
+              <div className='flex items-center'>
+                <input
+                  type="checkbox"
+                  id="petsCheckbox"
+                  checked={isPetsChecked}
+                  onChange={(e) => handlePetsChange(e.target.checked)}
+                />
+                <label htmlFor="petsCheckbox" className="ml-2">Pets</label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

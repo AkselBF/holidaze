@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { url } from '../../constants/apiUrl';
 import { Link } from 'react-router-dom';
 import { Venue, useVenuesStore } from '../../storage/venuesStore';
 
 import VenueFilters from './VenueFilters/index';
+import Pagination from './Pagination/index';
 
 import venuesHero from '../../images/hotelBg.png';
 import noImage from '../../images/no_image.png';
@@ -13,20 +15,52 @@ import EmptyStarIcon from '../../images/emptyStarIcon.png';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const Venues: React.FC = () => {
-  const { venues, fetchVenues } = useVenuesStore();
+  const { fetchVenues } = useVenuesStore();
+  const [venues, setVenues] = useState<Venue[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const [filteredVenues, setFilteredVenues] = useState<Venue[]>(venues);
   const [selectedCountry, setSelectedCountry] = useState<string>('Default');
   const [selectedGuests, setSelectedGuests] = useState<number>(0);
   const [selectedRating, setSelectedRating] = useState<number>(0);
   const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number]>([0, 0]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isWifiChecked, setIsWifiChecked] = useState<boolean>(false);
+  const [isParkingChecked, setIsParkingChecked] = useState<boolean>(false);
+  const [isBreakfastChecked, setIsBreakfastChecked] = useState<boolean>(false);
+  const [isPetsChecked, setIsPetsChecked] = useState<boolean>(false);
 
   useEffect(() => {
     fetchVenues();
   }, [fetchVenues]);
 
   useEffect(() => {
-    let filtered = venues;
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${url}/venues?page=${currentPage}&sort=created`);
+        const data = await response.json();
+        setVenues(data.data);
+        setTotalPages(data.meta.pageCount);
+      } catch (error) {
+        console.error('Error fetching venues:', error);
+      }
+    };
+  
+    fetchData();
+
+    return () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+  }, [currentPage]);
+
+  useEffect(() => {
+    // let filtered = venues;
+    let filtered = venues.filter(venue => {
+      // Filter out venues with invalid image URLs
+      return venue.media.some(media => {
+        return media.url && media.url.trim() !== '' && media.alt && media.alt.trim() !== '';
+      });
+    });
 
     // Filter by country
     if (selectedCountry !== 'Default') {
@@ -53,8 +87,35 @@ const Venues: React.FC = () => {
       filtered = filtered.filter(venue => venue.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }
 
+    if (isWifiChecked) {
+      filtered = filtered.filter(venue => venue.meta.wifi);
+    }
+    if (isParkingChecked) {
+      filtered = filtered.filter(venue => venue.meta.parking);
+    }
+    if (isBreakfastChecked) {
+      filtered = filtered.filter(venue => venue.meta.breakfast);
+    }
+    if (isPetsChecked) {
+      filtered = filtered.filter(venue => venue.meta.pets);
+    }
+
     setFilteredVenues(filtered);
-  }, [venues, selectedCountry, selectedGuests, selectedRating, selectedPriceRange, searchQuery]);
+  }, [venues, selectedCountry, selectedGuests, selectedRating, selectedPriceRange, searchQuery, isWifiChecked, isParkingChecked, isBreakfastChecked, isPetsChecked]);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const renderRatingStars = (rating: number) => {
     const totalStars = 5;
@@ -93,6 +154,10 @@ const Venues: React.FC = () => {
           onChangeRating={setSelectedRating}
           onChangePriceRange={setSelectedPriceRange}
           onSearch={setSearchQuery}
+          onFilterWifi={setIsWifiChecked}
+          onFilterParking={setIsParkingChecked}
+          onFilterBreakfast={setIsBreakfastChecked}
+          onFilterPets={setIsPetsChecked}
         />
       </div>
       
@@ -147,8 +212,33 @@ const Venues: React.FC = () => {
         ))
       )}
       </ul>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onNextPage={handleNextPage}
+        onPreviousPage={handlePreviousPage}
+      />
     </div>
   );
 };
 
 export default Venues;
+
+/*
+const [isLoading, setIsLoading] = useState(true);
+const [isError, setIsError] = useState(false);
+
+useEffect(() => {
+    const img = new Image();
+    img.src = venue.media[0]?.url;
+    img.alt = venue.media[0]?.alt;
+    img.onload = () => setIsLoading(false);
+    img.onerror = () => setIsError(true);
+  }, [venue]);
+
+  if (isError) {
+    return null;
+  }
+});
+*/

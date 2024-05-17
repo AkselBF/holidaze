@@ -86,9 +86,10 @@ interface VenueFormData {
 
 interface AddVenueFormProps {
   onClose: () => void;
+  onAdd: () => void;
 }
 
-const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose }) => {
+const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
   const { control, handleSubmit, formState: { errors } } = useForm<VenueFormData>();
   const { fetchVenues } = useVenuesStore();
   const user = useAuthStore();
@@ -131,6 +132,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose }) => {
           return;
         }
         await fetchVenues();
+        onAdd();
         onClose();
       }
     } catch (error) {

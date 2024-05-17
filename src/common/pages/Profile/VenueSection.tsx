@@ -84,6 +84,11 @@ const VenueSection: React.FC = () => {
     setVenueToDelete(venueId);
     setDeleteModalVisible(true);
   };
+
+  const handleDeleteVenue = (venueId: string) => {
+    // Remove the deleted venue from the state
+    setVenues(prevVenues => prevVenues.filter(venue => venue.id !== venueId));
+  };
   
   const closeDeleteModal = () => {
     setDeleteModalVisible(false);
@@ -108,12 +113,14 @@ const VenueSection: React.FC = () => {
     setShowModal(true);
   };
 
+  /*
   const closeModal = () => {
     setShowModal(false);
-  };
+  };*/
 
   const handleAddVenue = () => {
     openModal();
+    fetchVenues();
   };
   
   return (
@@ -200,16 +207,13 @@ const VenueSection: React.FC = () => {
         </ul>
       </div>
       
-      {showModal && <AddVenueForm onClose={closeModal} />}
+      {showModal && <AddVenueForm onClose={() => setShowModal(false)} onAdd={handleAddVenue} />}
 
       {deleteModalVisible && (
         <DeleteVenueModal
           id={venueToDelete || ''}
           name={venues.find(venue => venue.id === venueToDelete)?.name || ''}
-          onDelete={() => {
-            // Handle venue deletion (e.g., refetch venues)
-            closeDeleteModal(); // Close the modal after deletion
-          }}
+          onDelete={handleDeleteVenue} // Pass the handleDeleteVenue function
           onClose={closeDeleteModal}
         />
       )}

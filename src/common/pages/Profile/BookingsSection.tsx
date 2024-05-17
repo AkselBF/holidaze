@@ -66,13 +66,13 @@ const BookingsSection: React.FC<BookingsSectionProps> = ({ bookings }) => {
             {bookings.map((booking) => (
               <li key={booking.id} className='flex-shrink-0 mr-5 w-[280px] h-[70px]'>
                 <div className='bg-black w-full h-full rounded-md flex flex-row justify-between'>
-                  <div className='w-[55%] mx-4 my-2'>
+                  <div className='w-[52%] mx-4 my-2'>
                     <p className='font-semibold truncate'>{booking.venue.name}</p>
                     <div className='flex flex-row my-2 h-5'>
                       {renderRatingStars(booking.venue.rating)}
                     </div>
                   </div>
-                  <div className='bg-[#FF5C00] w-[45%] p-2 items-center rounded-r-md'>
+                  <div className='bg-[#FF5C00] w-[48%] p-2 items-center rounded-r-md'>
                     <p className='text-wrap font-semibold'>{formatDate(booking.dateFrom)} - {formatDate(booking.dateTo)}</p>
                   </div>
                 </div>

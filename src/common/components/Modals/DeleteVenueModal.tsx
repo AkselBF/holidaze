@@ -7,7 +7,7 @@ import '../../pages/Hotel/Modal.css';
 interface DeleteVenueModalProps {
   id: string;
   name: string;
-  onDelete: () => void;
+  onDelete: (venueId: string) => void; 
   onClose: () => void;
 }
 
@@ -27,7 +27,7 @@ const DeleteVenueModal: React.FC<DeleteVenueModalProps> = ({ id, name, onDelete,
         throw new Error('Failed to delete venue');
       }
       
-      onDelete();
+      onDelete(id);
     } catch (error) {
       console.error('Error deleting venue:', error);
     } finally {

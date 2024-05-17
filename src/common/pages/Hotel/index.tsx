@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { url } from '../../constants/apiUrl';
+import { url, apiKey } from '../../constants/apiUrl';
 import { useAuthStore } from '../../storage/authStore';
-/*
-import StarIcon from '../../images/starIcon.png';
-import HalfStarIcon from '../../images/halfStarIcon.png';
-import EmptyStarIcon from '../../images/emptyStarIcon.png';
-*/
+
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Allowed from '../../images/allowed.png';
 import Unallowed from '../../images/unallowed.png';
@@ -23,6 +19,30 @@ import GirlIcon from '@mui/icons-material/Girl';
 
 import LoginModal from './LoginModal';
 
+interface Customer {
+  name: string;
+  email: string;
+  bio: string;
+  avatar: {
+    url: string;
+    alt: string;
+  };
+  banner: {
+    url: string;
+    alt: string;
+  };
+}
+
+interface Booking {
+  id: string;
+  dateFrom: string;
+  dateTo: string;
+  guests: number;
+  created: string;
+  updated: string;
+  customer: Customer;
+}
+
 interface Venue {
   id: string;
   name: string;
@@ -32,11 +52,26 @@ interface Venue {
   price: number;
   location: { country: string; city: string };
   meta: { wifi: boolean; parking: boolean; breakfast: boolean; pets: boolean };
+  owner: {
+    name: string;
+    email: string;
+    bio: string;
+    avatar: {
+      url: string;
+      alt: string;
+    };
+    banner: {
+      url: string;
+      alt: string;
+    };
+  };
+  bookings: Booking[];
 }
 
 const Hotel: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [venue, setVenue] = useState<Venue | null>(null);
+  //const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { user } = useAuthStore();
   const navigate = useNavigate();
@@ -45,10 +80,19 @@ const Hotel: React.FC = () => {
   useEffect(() => {
     const fetchVenueDetails = async () => {
       try {
-        const response = await fetch(`${url}/venues/${id}`);
+        const response = await fetch(`${url}/venues/${id}?_bookings=true`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user?.token}`,
+            'X-Noroff-API-Key': apiKey,
+          },
+        });
+  
         if (!response.ok) {
-          throw new Error('Failed to fetch product details');
+          throw new Error('Failed to fetch venue details');
         }
+  
         const responseData = await response.json();
         const fetchedVenue = responseData.data;
         setVenue(fetchedVenue);
@@ -56,39 +100,12 @@ const Hotel: React.FC = () => {
         console.error('Error fetching venue details:', error);
       }
     };
-
+  
     fetchVenueDetails();
-  }, [id]);
-
-  /*
-  const renderRatingStars = (rating: number) => {
-    const totalStars = 5;
-    const fullStars = Math.floor(rating / 2);
-    const halfStars = rating % 2 === 0 ? 0 : 1;
-  
-    const stars = [];
-  
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<img key={`star-${i}`} src={StarIcon} alt="star" />);
-    }
-  
-    if (halfStars === 1) {
-      stars.push(<img key="half-star" src={HalfStarIcon} alt="half star" />);
-    }
-  
-    for (let i = stars.length; i < totalStars; i++) {
-      stars.push(<img key={`empty-star-${i}`} src={EmptyStarIcon} alt="empty star" />);
-    }
-  
-    return stars;
-  };*/
+  }, [id, user?.token]);
 
   const handleBookVenue = () => {
     if (user) {
-      // Redirect to booking page for the specific venue
-      // You can use react-router-dom's history or Link component for navigation
-      
-      //navigate(`/booking/${id}`);
       navigate(`/booking/${id}`, { state: { venue } });
     } else {
       setIsLoginModalOpen(true);
@@ -109,11 +126,6 @@ const Hotel: React.FC = () => {
         </div>
       </div>
       <div className='h-[3px] bg-[#ADADAD] w-[80%] justify-center mx-auto my-5'></div>
-      {/*
-      <div className='flex flex-row justify-center my-5'>
-        {renderRatingStars(venue.rating)}
-      </div>
-      */}
       
       <div className='px-[10%] flex flex-col md:flex-row'>
         <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} 
@@ -164,7 +176,7 @@ const Hotel: React.FC = () => {
                   <ManIcon />
                   <WomanIcon className='border-r-[3px] border-r-[#ADADAD]' />
                 </div>
-                <p className='font-semibold text-[#FF5C00]'>{venue.price} kr,-</p>
+                <p className='font-semibold text-[#FF5C00]'>{venue.price.toFixed(2)} kr,-</p>
               </div>
             </div>
             
@@ -175,11 +187,11 @@ const Hotel: React.FC = () => {
                   <BoyIcon />
                   <GirlIcon className='border-r-[3px] border-r-[#ADADAD]' />
                 </div>
-                <p className="font-semibold text-[#FF5C00]">{discountedPrice} kr,-</p>
+                <p className="font-semibold text-[#FF5C00]">{discountedPrice.toFixed(2)} kr,-</p>
               </div>
             </div>
           </div>
-          <p>{venue.description}</p>
+          <p className='max-h-[72px] overflow-y-auto'>{venue.description}</p>
           <button 
             onClick={handleBookVenue} 
             className='absolute bottom-0 right-0 bg-black text-white font-semibold py-2 px-12 rounded-lg'
@@ -188,6 +200,24 @@ const Hotel: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {venue && (
+      <div>
+        <h2>Bookings</h2>
+        <ul>
+          {venue.bookings.map((booking) => (
+            <li key={booking.id}>
+              <p>Date From: {booking.dateFrom}</p>
+              <p>Date To: {booking.dateTo}</p>
+              <p>Guests: {booking.guests}</p>
+              <p>Customer Name: {booking.customer.name}</p>
+              <p>Customer Email: {booking.customer.email}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
       {isLoginModalOpen && <LoginModal onClose={() => setIsLoginModalOpen(false)} id={id || ''} />}
     </div>
   );
