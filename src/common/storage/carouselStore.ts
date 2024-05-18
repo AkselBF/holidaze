@@ -24,7 +24,7 @@ export const useCarouselStore = create<CarouselState>((set) => ({
   venues: [],
   fetchNewestVenues: async () => {
     try {
-      const response = await fetch(`${url}/venues?order=-created_at&limit=6`);
+      const response = await fetch(`${url}/venues?sort=created&limit=6`);
       const data = await response.json();
       set({ venues: data.data });
     } catch (error) {

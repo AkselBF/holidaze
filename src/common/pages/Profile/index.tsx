@@ -8,6 +8,7 @@ import BookingsSection from './BookingsSection';
 import VenueSection from './VenueSection';
 import ToggleSectionButton from '../../components/ToggleSectionButton';
 import './Modal.css';
+import '../../components/Scrollbars/ProfileScrollbar.css';
 
 interface Booking {
   id: string;
@@ -56,8 +57,7 @@ const Profile: React.FC = () => {
           throw new Error('Failed to fetch user bookings');
         }
         const responseData = await response.json();
-        //console.log(responseData);
-        setBookings(responseData.data.bookings); // Update to use responseData.data.bookings
+        setBookings(responseData.data.bookings);
       } else {
         throw new Error('User not found or token missing');
       }
@@ -72,23 +72,23 @@ const Profile: React.FC = () => {
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
-    setNewAvatarUrl(''); // Reset input value when modal opens/closes
+    setNewAvatarUrl('');
     setAvatarInputError('');
   };
 
-  const handleAvatarChange = () => {
-    // Validate image URL
+  const handleAvatarChange = async () => {
     if (!isValidImageUrl(newAvatarUrl)) {
       setAvatarInputError('Invalid image URL');
       return;
     }
 
-    // Update user's avatar and save it in the application
-    // Replace it with the appropriate function from your useAuthStore implementation
-    updateUserAvatar(newAvatarUrl);
-    
-    // Close the modal
-    toggleModal();
+    try {
+      await updateUserAvatar(newAvatarUrl);
+      toggleModal();
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+      setAvatarInputError('Failed to update avatar');
+    }
   };
 
   const openModal = () => {
@@ -100,26 +100,18 @@ const Profile: React.FC = () => {
   };
 
   const isValidImageUrl = (url: string) => {
-    // Simple URL validation, you can add more sophisticated validation if needed
     return /^(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)$/.test(url);
   };
 
   const handleNewBooking = () => {
-    // Define the logic for handling a new booking
     console.log('New booking created');
-    // You can add more logic here as needed
   };
-
-  /*
-  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(to bottom, rgba(219,16,162,73) 0%,rgba(118,21,152,1) 100%)' }}></div>
-  linear-gradient(to bottom, #DB10A2, #761598)
-  */
 
   return (
     <div className='p-2 min-h-[90.2vh]' style={{ backgroundImage: `url(${background})`, backgroundSize: 'cover', height: '100%', marginTop: '-80px', overflowY: 'auto' }}>
       {user && (
         <div className='mt-[100px] mb-[80px]'>
-          <div className='flex flex-col md:flex-row w-full justify-between'>
+          <div className='flex flex-col md:flex-row w-full md:w-[95%] justify-between'>
             <div className='w-[120px] md:ml-[5%] mx-auto relative'>
               <img
                 src={user.avatar}
@@ -128,44 +120,39 @@ const Profile: React.FC = () => {
                 onClick={toggleModal}
               />
               <button onClick={openModal}></button>
-              {isModalOpen && (
-                <>
-                  <div className="modal-overlay" onClick={closeModal}></div>
-                  <div className="modal-container">
-                    {/* Your modal content here */}
-                    <input
-                      type="text"
-                      value={newAvatarUrl}
-                      onChange={(e) => setNewAvatarUrl(e.target.value)}
-                      className="modal-input"
-                      placeholder="Enter Image URL"
-                    />
-                    {avatarInputError && <p className="modal-error">{avatarInputError}</p>}
-                    <button onClick={handleAvatarChange} className="modal-confirm-button">
-                      Confirm
-                    </button>
-                  </div>
-                </>
-              )}
+                {isModalOpen && (
+                  <>
+                    <div className="modal-overlay" onClick={closeModal}></div>
+                    <div className="modal-container">
+                      <input
+                        type="text"
+                        value={newAvatarUrl}
+                        onChange={(e) => setNewAvatarUrl(e.target.value)}
+                        className="modal-input"
+                        placeholder="Enter Image URL"
+                      />
+                      {avatarInputError && <p className="modal-error">{avatarInputError}</p>}
+                      <button onClick={handleAvatarChange} className="modal-confirm-button">
+                        Confirm
+                      </button>
+                    </div>
+                  </>
+                )}
               <h1 className='text-2xl text-white text-center font-semibold'>{user.name}</h1>
             </div>
-            <div className='mt-4 md:-mt-16'>
+            <div className='mt-4 md:-mt-16 flex flex-col-reverse lg:flex-col'>
               {isVenueManager && (
                 <ToggleSectionButton onClick={toggleSection} showBookings={showBookings} />
               )}
-              {/*<p>Venue Manager: {user.venueManager ? 'Yes' : 'No'}</p>*/}
-              <button onClick={logout} className='text-white text-lg font-semibold bg-black w-[200px] h-[50px] rounded-lg md:mr-[5%] mx-auto mt-10'>Logout</button>
+              <button onClick={logout} className='text-white text-lg font-semibold bg-black w-[200px] h-[50px] rounded-lg md:mr-[5%] mx-auto mt-10 md:mt-24 md:-mb-14 lg:mb-0 lg:mt-10'>Logout</button>
             </div>
           </div>
-          {/* Conditional rendering based on showBookings state */}
           {showBookings ? (
             <div>
-              {/* Render the BookingsSection component if showBookings is true */}
               <BookingsSection bookings={bookings} />
             </div>
           ) : (
             <div>
-              {/* Render the VenueSection component if showBookings is false */}
               <VenueSection />
             </div>
           )}

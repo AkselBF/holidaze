@@ -1,68 +1,11 @@
 import React, { useEffect } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { TextField, Checkbox, Button } from '@mui/material';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import { Button, ThemeProvider } from '@mui/material';
 import { useAuthStore } from '../../storage/authStore';
 import { Venue } from '../../storage/venuesStore';
 import { url, apiKey } from '../../constants/apiUrl';
-import './Scrollbar.css';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#ffffff', 
-    },
-    secondary: {
-      main: '#FF5C00',
-    }
-  },
-});
-
-const StyledTextField = styled(TextField)({
-  '& .MuiInputLabel-root': {
-    color: '#d9d9d9',
-  },
-  '& .MuiInputBase-root': {
-    color: '#d9d9d9',
-    borderRadius: 0,
-    borderBottom: '2px solid #ffffff',
-    borderLeft: '2px solid transparent',
-    borderRight: '2px solid transparent',
-    borderTop: '2px solid transparent',
-    '&:hover': {
-      borderBottomColor: '#d9d9d9',
-    },
-    '&.Mui-focused': {
-      borderBottomColor: '#ffffff',
-    },
-  },
-  '& .MuiInputBase-input': {
-    color: '#d9d9d9',
-    height: '15px',
-  },
-});
-
-const StyledTextArea = styled('textarea')({
-  color: '#ffffff',
-  backgroundColor: '#171717',
-  borderRadius: 0,
-  borderBottom: '2px solid #ffffff',
-  borderLeft: '2px solid transparent',
-  borderRight: '2px solid transparent',
-  borderTop: '2px solid transparent',
-  '&:hover': {
-    borderBottomColor: '#d9d9d9',
-  },
-  '&:focus': {
-    borderBottomColor: '#ffffff',
-  },
-  height: '100px',
-  padding: '10px',
-});
-
-const StyledCheckbox = styled(Checkbox)({
-  color: '#ffffff',
-});
+import { theme, StyledTextField, StyledTextArea, StyledCheckbox } from '../StyledComponents';
+import '../../components/Scrollbars/FormsScrollbar.css';
 
 interface VenueFormData {
   name?: string;
@@ -152,7 +95,7 @@ const UpdateVenueForm: React.FC<UpdateVenueFormProps> = ({ isOpen, onClose, venu
     <ThemeProvider theme={theme}>
       <div className="modal-overlay">
         {isOpen && (
-          <div className="modal-container scrollbar-hide w-[90%] h-[70%] overflow-y-auto" >
+          <div className="modal-container scrollbar-form w-[90%] h-[70%] overflow-y-auto" >
           <h3 className='text-[#FF5C00] text-2xl font-semibold text-center mt-3'>Update Venue</h3>
           <button className="close-button text-white bg-[#42A4FF] py-1 px-5 rounded-md" onClick={onClose}>Close</button>
           <form className='text-white flex flex-col' onSubmit={handleSubmit(onSubmit)}>

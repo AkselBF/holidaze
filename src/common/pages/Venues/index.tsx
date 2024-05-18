@@ -2,15 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { url } from '../../constants/apiUrl';
 import { Link } from 'react-router-dom';
 import { Venue, useVenuesStore } from '../../storage/venuesStore';
+import RatingStars from '../../components/RatingStars';
 
 import VenueFilters from './VenueFilters/index';
 import Pagination from './Pagination/index';
 
 import venuesHero from '../../images/hotelBg.png';
 import noImage from '../../images/no_image.png';
-import StarIcon from '../../images/starIcon.png';
-import HalfStarIcon from '../../images/halfStarIcon.png';
-import EmptyStarIcon from '../../images/emptyStarIcon.png';
 
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
@@ -117,32 +115,6 @@ const Venues: React.FC = () => {
     }
   };
 
-  const renderRatingStars = (rating: number) => {
-    const totalStars = 5;
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-
-    const stars = [];
-  
-    // Render full stars
-    for (let i = 0; i < fullStars; i++) {
-        stars.push(<img key={`star-${i}`} src={StarIcon} alt="star" />);
-    }
-  
-    // Render half star if applicable
-    if (hasHalfStar) {
-        stars.push(<img key="half-star" src={HalfStarIcon} alt="half star" />);
-    }
-  
-    // Render empty stars to fill the rest
-    const emptyStars = totalStars - fullStars - (hasHalfStar ? 1 : 0);
-    for (let i = 0; i < emptyStars; i++) {
-        stars.push(<img key={`empty-star-${i}`} src={EmptyStarIcon} alt="empty star" />);
-    }
-  
-    return stars;
-  };
-
   return (
     <div className='justify-center text-center'>
       <img src={venuesHero} alt="venues hero" className='w-full min-h-[260px] max-h-[580px] object-cover -mt-[80px]' />
@@ -173,7 +145,7 @@ const Venues: React.FC = () => {
                />
               <h2 className='text-center text-xl font-semibold my-3 line-clamp-1 w-[60%] mx-auto'>{venue.name}</h2>
               <div className='flex flex-row justify-center my-3 h-6'>
-                {renderRatingStars(venue.rating)}
+                {RatingStars(venue.rating)}
               </div>
               <p className='line-clamp-2 h-[48px] px-5 my-3'>{venue.description}</p>
               <div className='text-white flex flex-row justify-between bg-[#171717] px-5 py-3 rounded-b-lg'>
@@ -197,7 +169,7 @@ const Venues: React.FC = () => {
                />
               <h2 className='text-center text-xl font-semibold my-3'>{venue.name}</h2>
               <div className='flex flex-row justify-center my-3 h-6'>
-                {renderRatingStars(venue.rating)}
+                {RatingStars(venue.rating)}
               </div>
               <p className='line-clamp-2 h-[48px] px-5 my-3'>{venue.description}</p>
               <div className='text-white flex flex-row justify-between bg-[#171717] px-5 py-3 rounded-b-lg'>

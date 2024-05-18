@@ -128,12 +128,12 @@ const VenueSection: React.FC = () => {
       <div className='w-[90%] text-white mx-auto bg-[#171717cc] px-10 py-5 rounded-xl'>
         <h2 className='text-xl font-semibold'>My venues</h2>
         <div className='w-[50%] h-[2px] bg-[#ADADAD] rounded-full mt-2 mb-5'></div>
-        <div className='flex flex-row items-end'>
-          <div className='w-[50%]'>
+        <div className='flex flex-col lg:flex-row lg:items-end'>
+          <div className='w-full lg:w-[50%]'>
             <p>Review any venues you have made as venue manager. All those successfully made will be kept in your profile in this part of the page.</p>
             <p>To close the venues, simply press the close button on the far right corner of this part.</p>
           </div>
-          <div className='w-[50%] text-right'>
+          <div className='w-full lg:w-[45%] mt-5 lg:mt-0 lg:mr-5 text-right'>
             <button className='relative bg-[#FF5C00] p-6 rounded-full' onClick={handleAddVenue}>
               <HotelRoundedIcon style={{ fontSize: '2rem' }} className='absolute text-black top-[20%] left-[18%]' />
               <p className='absolute font-bold text-3xl top-[30%] left-[50%]'>+</p>
@@ -144,10 +144,10 @@ const VenueSection: React.FC = () => {
         <div className='w-[95%] h-1 bg-[#ADADAD] rounded-full my-5'></div>
 
         {/* List of added venues */}
-        <ul className='text-left text-black w-[90%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-0 gap-y-4 justify-center my-5 mx-auto'>
+        <ul className='text-left text-black w-[90%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-center my-5 mx-auto'>
         {venues.length > 0 ? (
           venues.map((venue) => (
-            <li key={venue.id} className='mx-auto my-4 w-[260px] bg-white rounded-lg overflow-hidden hover:bg-black transition-all'>
+            <li key={venue.id} className='mx-auto my-4 min-w-[200px] max-w-[260px] bg-white rounded-lg overflow-hidden hover:bg-black transition-all'>
               <div className="relative">
                 <div className="venue-hover-overlay absolute inset-0 bg-black opacity-0 hover:opacity-50 transition-opacity"></div>
                 <div className="venue-buttons absolute inset-0 flex flex-col items-center justify-center top-[258px]">

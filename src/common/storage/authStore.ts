@@ -16,7 +16,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, avatar?: string, venueManager?: boolean) => Promise<void>;
   logout: () => void;
-  updateUserAvatar: (avatarUrl: string) => void;
+  updateUserAvatar: (avatarUrl: string) => Promise<void>;
   token: string | null;
 }
 
@@ -51,9 +51,7 @@ export const useAuthStore = create<AuthState>((set) => {
 
         if (response.ok) {
           const token = data.data.accessToken;
-          //const avatar = data.data.avatar?.url || null;
-          const defaultAvatarUrl = avatarImage;
-          const avatar = defaultAvatarUrl || data.data.avatar?.url;
+          const avatar = data.data.avatar?.url || avatarImage;
           let venueManager = false;
           if (data.data.venueManager !== undefined) {
             venueManager = data.data.venueManager;
@@ -74,21 +72,17 @@ export const useAuthStore = create<AuthState>((set) => {
         console.error('Error logging in:', error);
       }
     },
-    register: async (username, email, password,/* avatar,*/ isVenueManager) => {
+    register: async (username, email, password, isVenueManager) => {
       try {
-        //const avatarObject = avatar ? { url: avatar, alt: '' } : undefined;
-
         const requestBody: {
           name: string;
           email: string;
           password: string;
-          //avatar?: { url: string; alt: string };
           venueManager?: boolean;
         } = {
           name: username,
           email,
           password,
-          //avatar: avatarObject,
         };
 
         if (isVenueManager) {
@@ -107,12 +101,11 @@ export const useAuthStore = create<AuthState>((set) => {
           const data = await response.json();
           const token = data.data.accessToken;
           localStorage.setItem('accessToken', token);
-          //setUser({ ...data.data, token, avatar: data.data.avatar?.url || null });
-          const defaultAvatarUrl = avatarImage;
-          setUser({ ...data.data, token, avatar: defaultAvatarUrl });
+          const avatar = data.data.avatar?.url || avatarImage;
+          setUser({ ...data.data, token, avatar });
         } 
         else {
-          throw new Error('Login failed');
+          throw new Error('Registration failed');
         }
       } 
       catch (error) {
@@ -125,29 +118,35 @@ export const useAuthStore = create<AuthState>((set) => {
       setUser(null);
     },
     updateUserAvatar: async (avatarUrl) => {
-      if (user && user.name) {
-        const updatedUser = { ...user, avatar: avatarUrl };
-        setUser(updatedUser);
+      try {
+        const currentUser = user;
+        if (!currentUser) throw new Error('User not logged in');
 
-        // Update user profile on the server
-        try {
-          const response = await fetch(`${url}/profiles/${user.name}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({ avatar: { url: avatarUrl } }),
-          });
+        const response = await fetch(`${url}/profiles/${currentUser.name}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentUser.token}`,
+            'X-Noroff-API-Key': apiKey,
+          },
+          body: JSON.stringify({
+            avatar: { url: avatarUrl, alt: `${currentUser.name}'s avatar` },
+          }),
+        });
 
-          if (!response.ok) {
-            throw new Error('Failed to update user profile');
-          }
-        } catch (error) {
-          console.error('Error updating user profile:', error);
-          // Handle error appropriately, such as displaying an error message to the user
+        if (!response.ok) {
+          throw new Error('Failed to update avatar');
         }
+
+        const data = await response.json();
+        const updatedUser: User = {
+          ...currentUser,
+          avatar: data.data.avatar.url,
+        };
+        setUser(updatedUser);
+      } catch (error) {
+        console.error('Error updating avatar:', error);
       }
-    }
+    },
   };
 });

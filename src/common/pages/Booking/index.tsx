@@ -4,9 +4,10 @@ import { url, apiKey } from '../../constants/apiUrl';
 import { useAuthStore, User } from '../../storage/authStore';
 import { Venue } from '../../storage/venuesStore';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { TextField, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { cardTheme, StyledTextField } from '../../components/StyledComponents';
 
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -21,7 +22,8 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 //import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 import './Booking.css';
-import '../../components/Forms/Scrollbar.css';
+import '../../components/Scrollbars/BookingScrollbar.css';
+import '../../components/Scrollbars/HotelScrollbar.css';
 
 interface BookingFormValues {
   cardNumber: string;
@@ -44,14 +46,10 @@ const Booking: React.FC<BookingProps> = (props) => {
   const [arrivalDate, setArrivalDate] = useState('');
   const [departureDate, setDepartureDate] = useState('');
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
-  //const [isFormValid, setIsFormValid] = useState(false);
-  //const [cardNumber, setCardNumber] = useState('');
-  //const [expiryDate, setExpiryDate] = useState('');
-  //const [cvc, setCvc] = useState('');
   const [isCardNumberValid, setIsCardNumberValid] = useState(false);
   const [isExpiryDateValid, setIsExpiryDateValid] = useState(false);
   const [isCvcValid, setIsCvcValid] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(false); // Add this state variable
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const { user } = useAuthStore();
 
@@ -115,35 +113,6 @@ const Booking: React.FC<BookingProps> = (props) => {
     }
   };
 
-  /*
-  // Regex patterns
-  const cardNumberPattern = /^\d{16}$/;
-  const expiryDatePattern = /^(0[1-9]|1[0-2])\/\d{2}$/;
-  const cvcPattern = /^\d{3}$/;
-
-  // Check if all input fields are valid
-  const areInputsValid = () => {
-    return (
-      cardNumberPattern.test(cardNumber) &&
-      expiryDatePattern.test(expiryDate) &&
-      cvcPattern.test(cvc)
-    );
-  };
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCardNumber(e.target.value);
-  };
-
-  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setExpiryDate(e.target.value);
-  };
-
-  const handleCvcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCvc(e.target.value);
-  };
-  */
-
-
   const onSubmit: SubmitHandler<BookingFormValues> = async () => {
     try {
       if (!user || !venue) {
@@ -185,41 +154,6 @@ const Booking: React.FC<BookingProps> = (props) => {
     }
   };
 
-  const cardTheme = createTheme({
-    palette: {
-      primary: {
-        main: '#42A4FF', 
-      },
-      secondary: {
-        main: '#42A4FF80',
-      },
-    },
-  });
-  
-  const StyledTextField = styled(TextField)({
-    '& .MuiInputLabel-root': {
-      color: '#d9d9d9',
-    },
-    '& .MuiInputBase-root': {
-      color: '#d9d9d9',
-      borderRadius: 0,
-      borderBottom: '2px solid #ADADAD',
-      borderLeft: '2px solid transparent',
-      borderRight: '2px solid transparent',
-      borderTop: '2px solid transparent',
-      '&:hover': {
-        borderBottomColor: '#d9d9d9',
-      },
-      '&.Mui-focused': {
-        borderBottomColor: '#ffffff',
-      },
-    },
-    '& .MuiInputBase-input': {
-      color: '#d9d9d9',
-      height: '15px',
-    },
-  });
-
   return (
     <div>
       {venue && (
@@ -229,7 +163,7 @@ const Booking: React.FC<BookingProps> = (props) => {
           </div>
           <div className='flex flex-col lg:flex-row justify-center'>
             <div className='w-[90%] sm:w-[80%] lg:w-[45%] mx-auto lg:mx-0 justify-center lg:mr-3'>
-              <div className='scrollbar-hide booking_options bg-[#171717cc] flex flex-row h-[80px] rounded-t-lg items-center px-2 overflow-x-auto'>
+              <div className='scrollbar-booking-dates booking_options bg-[#171717cc] flex flex-row h-[80px] rounded-t-lg items-center px-2 overflow-x-auto'>
                 <div className="flex mx-auto items-center 2xl:justify-center" style={{ width: "100%" }}>
                   <div className='flex flex-row bg-black text-white rounded-md mx-2 h-[40px]'>
                     <div className='flex flex-row my-auto'>
@@ -290,7 +224,7 @@ const Booking: React.FC<BookingProps> = (props) => {
                     <input
                       type="date"
                       value={arrivalDate}
-                      min={new Date().toISOString().split('T')[0]} // Disable past dates
+                      min={new Date().toISOString().split('T')[0]}
                       onChange={handleDateChange}
                       name="arrivalDate" 
                       className='rounded-r-md text-white bg-black'
@@ -301,7 +235,7 @@ const Booking: React.FC<BookingProps> = (props) => {
                     <input
                       type="date"
                       value={departureDate}
-                      min={arrivalDate || new Date().toISOString().split('T')[0]} // Disable past dates and ensure departure is after arrival
+                      min={arrivalDate || new Date().toISOString().split('T')[0]}
                       onChange={handleDateChange}
                       name="departureDate"
                       className='rounded-r-md text-white bg-black'
@@ -325,7 +259,7 @@ const Booking: React.FC<BookingProps> = (props) => {
                     <LocationOnIcon />
                     <p className='ml-2'> {venue.location.city}, {venue.location.country}</p>
                   </div>
-                  <p>{venue.description}</p>
+                  <p className='scrollbar-hotel-desc max-h-[100px] overflow-y-auto px-2'>{venue.description}</p>
                 </div>
               </div>
             </div>
@@ -365,9 +299,19 @@ const Booking: React.FC<BookingProps> = (props) => {
                           fullWidth 
                           required 
                           onChange={(e) => {
-                            field.onChange(e);
-                            setIsExpiryDateValid(e.target.value.trim().length === 5 && !errors.cardNumber);
+                            let value = e.target.value;
+                            value = value.replace(/\D/g, '');
+
+                            if (value.length >= 3) {
+                              value = value.slice(0, 2) + '/' + value.slice(2);
+                            }
+
+                            value = value.slice(0, 5);
+                            
+                            field.onChange(value);
+                            setIsExpiryDateValid(value.trim().length === 5 && !errors.cardNumber);
                           }}
+                          value={field.value}
                         />
                       )}
                     />
@@ -420,3 +364,14 @@ const Booking: React.FC<BookingProps> = (props) => {
 };
 
 export default Booking;
+
+/*
+// For bookings of a single user
+const response = await fetch(`${url}/profiles/${user.name}/bookings`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`,
+            'X-Noroff-API-Key': apiKey,
+          },
+        });
+*/
