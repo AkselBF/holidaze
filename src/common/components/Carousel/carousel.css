@@ -64,14 +64,16 @@
 }
 
 .next_venue, .prev_venue {
-  color: #ffffff;
+  color: #ADADAD;
   position: absolute;
-  top: 50%;
-  transform: translateY(100%);
+  top: -10%;
+  transform: translateY(50%);
+  /*
   padding: 1em 1em;
   cursor: pointer;
   background: #171717;
   border-radius: 100%;
+  */
 }
 .next_venue:hover, .prev_venue:hover { color: #ffffff; }
 .next_venue { right: 0; }

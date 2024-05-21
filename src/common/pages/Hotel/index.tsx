@@ -75,8 +75,8 @@ const Hotel: React.FC = () => {
       <div className='w-[90%] md:w-[80%] mx-auto flex flex-col lg:flex-row'>
         <div className='w-full md:w-[80%] lg:w-[50%] mx-auto'>
           <img src={primaryImage} alt={venue.name} 
-          className='w-full lg:max-h-[280px] object-cover' />
-          {venue.media.length > 1 && ( // Add this conditional rendering
+          className='w-full lg:max-h-[280px] object-cover rounded-lg' />
+          {venue.media.length > 1 && (
             <div className='scrollbar-hotel-desc mt-4 overflow-x-auto'>
               <div className='flex space-x-2'>
                 {venue.media.map((mediaItem, index) => (
@@ -84,7 +84,7 @@ const Hotel: React.FC = () => {
                     key={index}
                     src={mediaItem.url}
                     alt={mediaItem.alt || `Venue Image ${index + 1}`}
-                    className='h-20 w-28 min-w-28 object-cover cursor-pointer mb-3'
+                    className='h-20 w-28 min-w-28 object-cover cursor-pointer mb-3 rounded-md'
                     onClick={() => setPrimaryImage(mediaItem.url)}
                   />
                 ))}
@@ -159,8 +159,10 @@ const Hotel: React.FC = () => {
               </div>
             </div>
           </div>
-          
+          {/*
           <p className={`scrollbar-hotel-desc max-h-[200px] lg:max-h-${venue.media.length > 1 ? '[96px]' : '[72px]'} overflow-y-auto px-2`}>{venue.description}</p>
+          */}
+          <p className='scrollbar-hotel-desc max-h-[200px] lg:max-h-[72px] overflow-y-auto px-2'>{venue.description}</p>
 
           <div className='justify-end text-right'>
             <button 
