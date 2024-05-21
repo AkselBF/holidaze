@@ -1,17 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { url, apiKey } from '../../constants/apiUrl';
 import { useAuthStore, User } from '../../storage/authStore';
-import { Venue } from '../../storage/venuesStore';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { cardTheme, StyledTextField } from '../../components/StyledComponents';
+import { fetchVenueDetails, createBooking } from '../../requests/Bookings/bookingVenue';
+import { Venue } from '../../interfaces/Venue/venueInterface';
+//import { User } from '../../interfaces/User/userInterface';
 
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+/*
+//imports for mui date picker:
 
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+*/
+
+/*
+//npm installs for date mui:
+
+npm install @mui/x-date-pickers
+// Install date library (if not already installed)
+npm install dayjs
+*/
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import StarIcon from '@mui/icons-material/Star';
 import ManIcon from '@mui/icons-material/Man';
@@ -53,35 +71,26 @@ const Booking: React.FC<BookingProps> = (props) => {
 
   const { user } = useAuthStore();
 
-  // Determine overall form validity
   useEffect(() => {
     setIsFormValid(isCardNumberValid && isExpiryDateValid && isCvcValid && !!arrivalDate && !!departureDate);
   }, [isCardNumberValid, isExpiryDateValid, isCvcValid, arrivalDate, departureDate]);
 
   useEffect(() => {
-    const fetchVenueDetails = async () => {
+    const fetchVenue = async () => {
       try {
-        if (!id) {
-          // If id is undefined, don't make the fetch request
-          return;
+        if (id) {
+          const fetchedVenue = await fetchVenueDetails(id);
+          setVenue(fetchedVenue);
         }
-        const response = await fetch(`${url}/venues/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch venue details');
-        }
-        const responseData = await response.json();
-        const fetchedVenue = responseData.data;
-        setVenue(fetchedVenue);
       } catch (error) {
         console.error('Error fetching venue details:', error);
       }
     };
 
-    fetchVenueDetails();
+    fetchVenue();
   }, [id]);
 
   useEffect(() => {
-    // Calculate total price when any of the relevant inputs change
     if (venue && arrivalDate && departureDate) {
       const durationInDays = Math.ceil((new Date(departureDate).getTime() - new Date(arrivalDate).getTime()) / (1000 * 60 * 60 * 24));
       const basePricePerAdult = venue.price;
@@ -92,23 +101,24 @@ const Booking: React.FC<BookingProps> = (props) => {
       const totalPriceForChildren = totalPricePerChild * numChildren;
       const totalPrice = totalPriceForAdults + totalPriceForChildren;
       setTotalPrice(totalPrice);
-    } else {
-      // If any required input is missing, set the total price back to the default price
+    } 
+    else {
       setTotalPrice(venue ? venue.price : null);
     }
   }, [venue, numAdults, numChildren, arrivalDate, departureDate]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const dateValue = e.target.value;
-    // Check if the selected date is not in the past
     const currentDate = new Date().toISOString().split('T')[0];
     if (dateValue >= currentDate) {
       if (e.target.name === 'arrivalDate') {
         setArrivalDate(dateValue);
-      } else {
+      } 
+      else {
         setDepartureDate(dateValue);
       }
-    } else {
+    } 
+    else {
       alert('Please select a future date.');
     }
   };
@@ -118,37 +128,10 @@ const Booking: React.FC<BookingProps> = (props) => {
       if (!user || !venue) {
         throw new Error('User or venue is not available');
       }
-  
-      // Create new booking
-      const newBooking = {
-        venueId: venue.id,
-        dateFrom: arrivalDate, // Assuming arrivalDate is set elsewhere in your component
-        dateTo: departureDate, // Assuming departureDate is set elsewhere in your component
-        guests: numAdults + numChildren, // Total number of guests
-      };
 
-      const response = await fetch(`${url}/bookings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
-            'X-Noroff-API-Key': apiKey,
-        },
-        body: JSON.stringify(newBooking),
-      });
-
-      if (!response.ok) {
-        if (response.status === 409) {
-          // Handle conflict
-          console.error('Booking conflict: There is already a booking for this venue during the specified time period.');
-          // Display a message to the user or suggest alternative dates
-        } else {
-          throw new Error('Failed to create booking');
-        }
-      } else {
-        props.onNewBooking();
-        navigate('/success');
-      }
+      await createBooking(user, venue.id, arrivalDate, departureDate, numAdults + numChildren);
+      props.onNewBooking();
+      navigate('/success');
     } catch (error) {
       console.error('Error processing booking:', error);
     }
@@ -177,12 +160,12 @@ const Booking: React.FC<BookingProps> = (props) => {
                       MenuProps={{
                         PaperProps: {
                           style: {
-                            backgroundColor: 'black', // Change the background color here
+                            backgroundColor: 'black',
                           },
                         },
                         sx: {
                           '& .MuiMenuItem-root': {
-                            color: 'white', // Change the color of the menu items
+                            color: 'white',
                           },
                         },
                       }}
@@ -204,12 +187,12 @@ const Booking: React.FC<BookingProps> = (props) => {
                       MenuProps={{
                         PaperProps: {
                           style: {
-                            backgroundColor: 'black', // Change the background color here
+                            backgroundColor: 'black',
                           },
                         },
                         sx: {
                           '& .MuiMenuItem-root': {
-                            color: 'white', // Change the color of the menu items
+                            color: 'white',
                           },
                         },
                       }}
@@ -266,7 +249,7 @@ const Booking: React.FC<BookingProps> = (props) => {
             <div className='w-[90%] sm:w-[80%] lg:w-[45%] mx-auto lg:mr-0 lg:ml-3 my-5 lg:my-0 px-6 md:px-12 pt-6 pb-12 text-white bg-[#171717] rounded-lg justify-center text-center'>
               <h2 className='text-lg text-center font-semibold'>Enter credit card data</h2>
               <div className='h-[2px] mx-auto my-5 w-[50%] bg-[#ADADAD]'></div>
-              <ThemeProvider theme={cardTheme}> {/* Moved ThemeProvider here */}
+              <ThemeProvider theme={cardTheme}>
                 <form onSubmit={handleSubmit(onSubmit)} className='card_data_inputs space-y-6'>
                   <Controller
                     name="cardNumber"
@@ -280,9 +263,13 @@ const Booking: React.FC<BookingProps> = (props) => {
                         fullWidth 
                         required 
                         onChange={(e) => {
-                          field.onChange(e);
-                          setIsCardNumberValid(e.target.value.trim().length === 16);
+                          const value = e.target.value.replace(/\D/g, '');
+                          if (value.length <= 16) {
+                            field.onChange(value);
+                            setIsCardNumberValid(value.length === 16);
+                          }
                         }}
+                        value={field.value}
                       />
                     )}
                   />
@@ -327,9 +314,13 @@ const Booking: React.FC<BookingProps> = (props) => {
                           fullWidth 
                           required 
                           onChange={(e) => {
-                            field.onChange(e);
-                            setIsCvcValid(e.target.value.trim().length === 3 && !errors.cardNumber && !errors.expiryDate);
+                            const value = e.target.value.replace(/\D/g, '');
+                            if (value.length <= 3) {
+                              field.onChange(value);
+                              setIsCvcValid(value.length === 3);
+                            }
                           }}
+                          value={field.value}
                         />
                       )}
                     />
@@ -366,12 +357,48 @@ const Booking: React.FC<BookingProps> = (props) => {
 export default Booking;
 
 /*
-// For bookings of a single user
-const response = await fetch(`${url}/profiles/${user.name}/bookings`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`,
-            'X-Noroff-API-Key': apiKey,
-          },
-        });
+// For using the muo date picker
+
+export default function MaterialUIPickers() {
+  const [value, setValue] = React.useState<Dayjs | null>(
+    dayjs('2014-08-18T21:11:54'),
+  );
+
+  const handleChange = (newValue: Dayjs | null) => {
+    setValue(newValue);
+  };
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Stack spacing={3}>
+        <DesktopDatePicker
+          label="Date desktop"
+          inputFormat="MM/DD/YYYY"
+          value={value}
+          onChange={handleChange}
+          renderInput={(params) => <TextField {...params} />}
+        />
+        <MobileDatePicker
+          label="Date mobile"
+          inputFormat="MM/DD/YYYY"
+          value={value}
+          onChange={handleChange}
+          renderInput={(params) => <TextField {...params} />}
+        />
+        <TimePicker
+          label="Time"
+          value={value}
+          onChange={handleChange}
+          renderInput={(params) => <TextField {...params} />}
+        />
+        <DateTimePicker
+          label="Date&Time picker"
+          value={value}
+          onChange={handleChange}
+          renderInput={(params) => <TextField {...params} />}
+        />
+      </Stack>
+    </LocalizationProvider>
+  );
+}
 */

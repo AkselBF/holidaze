@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { url } from '../../constants/apiUrl';
 import { Link } from 'react-router-dom';
-import { Venue, useVenuesStore } from '../../storage/venuesStore';
+import { useVenuesStore } from '../../storage/venuesStore';
+import { Venue } from '../../interfaces/Venue/venueInterface';
 import RatingStars from '../../components/RatingStars';
 
 import VenueFilters from './VenueFilters/index';
@@ -39,7 +40,8 @@ const Venues: React.FC = () => {
         const data = await response.json();
         setVenues(data.data);
         setTotalPages(data.meta.pageCount);
-      } catch (error) {
+      } 
+      catch (error) {
         console.error('Error fetching venues:', error);
       }
     };
@@ -52,35 +54,28 @@ const Venues: React.FC = () => {
   }, [currentPage]);
 
   useEffect(() => {
-    // let filtered = venues;
     let filtered = venues.filter(venue => {
-      // Filter out venues with invalid image URLs
       return venue.media.some(media => {
         return media.url && media.url.trim() !== '' && media.alt && media.alt.trim() !== '';
       });
     });
 
-    // Filter by country
     if (selectedCountry !== 'Default') {
       filtered = filtered.filter(venue => venue.location.country === selectedCountry);
     }
 
-    // Filter by max guests
     if (selectedGuests !== 0) {
       filtered = filtered.filter(venue => venue.maxGuests === selectedGuests);
     }
 
-    // Filter by rating
     if (selectedRating !== 0) {
       filtered = filtered.filter(venue => venue.rating >= selectedRating && venue.rating < selectedRating + 1);
     }
 
-    // Filter by price
     if (selectedPriceRange[0] !== 0) {
       filtered = filtered.filter(venue => venue.price >= selectedPriceRange[0] && venue.price <= selectedPriceRange[1]);
     }
 
-    // Filter by search query
     if (searchQuery.trim() !== '') {
       filtered = filtered.filter(venue => venue.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }
@@ -88,12 +83,15 @@ const Venues: React.FC = () => {
     if (isWifiChecked) {
       filtered = filtered.filter(venue => venue.meta.wifi);
     }
+
     if (isParkingChecked) {
       filtered = filtered.filter(venue => venue.meta.parking);
     }
+
     if (isBreakfastChecked) {
       filtered = filtered.filter(venue => venue.meta.breakfast);
     }
+
     if (isPetsChecked) {
       filtered = filtered.filter(venue => venue.meta.pets);
     }

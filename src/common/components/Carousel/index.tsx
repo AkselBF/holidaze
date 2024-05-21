@@ -55,13 +55,13 @@ const Carousel: React.FC = () => {
 
   const calculatePosition = (index: number): number => {
     let position = (index * 60 + currdeg) % 360;
+
     if (position < 0) {
       position += 360;
     }
     return position;
   };
 
-  // Modify calculateOpacity function
   const calculateOpacity = (index: number): number => {
     const position = calculatePosition(index);
     const screenWidth = window.innerWidth;
@@ -74,7 +74,6 @@ const Carousel: React.FC = () => {
     }
   };
 
-  // Modify calculateBlur function
   const calculateBlur = (index: number): string => {
     const position = calculatePosition(index);
     const screenWidth = window.innerWidth;
@@ -82,7 +81,8 @@ const Carousel: React.FC = () => {
 
     if (screenWidth < lgBreakpoint) {
       return "blur(0)";
-    } else {
+    } 
+    else {
       return position === 60 || position === 300 ? "blur(3px)" : "blur(0)";
     }
   };
@@ -143,19 +143,19 @@ const Carousel: React.FC = () => {
               </div>
               <div className='flex flex-row'>
                 <WifiIcon />
-                <p className='ml-2'>{centeredVenue.meta.wifi ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+                <p className='ml-2'>{centeredVenue.meta.wifi ? <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Allowed} alt="Allowed" /> : <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Unallowed} alt="Not allowed" />}</p>
               </div>
               <div className='flex flex-row'>
                 <LocalParkingIcon />
-                <p className='ml-2'>{centeredVenue.meta.parking ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+                <p className='ml-2'>{centeredVenue.meta.parking ? <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Allowed} alt="Allowed" /> : <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Unallowed} alt="Not allowed" />}</p>
               </div>
               <div className='flex flex-row'>
                 <FreeBreakfastIcon />
-                <p className='ml-2'>{centeredVenue.meta.breakfast ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+                <p className='ml-2'>{centeredVenue.meta.breakfast ? <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Allowed} alt="Allowed" /> : <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Unallowed} alt="Not allowed" />}</p>
               </div>
               <div className='flex flex-row'>
                 <PetsIcon />
-                <p className='ml-2'>{centeredVenue.meta.pets ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+                <p className='ml-2'>{centeredVenue.meta.pets ? <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Allowed} alt="Allowed" /> : <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Unallowed} alt="Not allowed" />}</p>
               </div>
             </div>
             <p className="line-clamp-2 mt-3">{centeredVenue.description}</p>

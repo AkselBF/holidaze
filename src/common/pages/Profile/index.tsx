@@ -2,69 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../storage/authStore';
 import background from '../../images/backgroundImg.png';
-import { url, apiKey } from '../../constants/apiUrl';
 import Booking from '../Booking';
 import BookingsSection from './BookingsSection';
 import VenueSection from './VenueSection';
 import ToggleSectionButton from '../../components/ToggleSectionButton';
+import { fetchUserBookings } from '../../requests/Profiles/profileBookings';
+import { Booking as BookingInterface } from '../../interfaces/Booking/bookingInterface';
 import './Modal.css';
 import '../../components/Scrollbars/ProfileScrollbar.css';
 
-interface Booking {
-  id: string;
-  dateFrom: string;
-  dateTo: string;
-  guests: number;
-  venue: {
-    name: string;
-    rating: number;
-  }
-}
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout, updateUserAvatar } = useAuthStore();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<BookingInterface[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newAvatarUrl, setNewAvatarUrl] = useState('');
   const [avatarInputError, setAvatarInputError] = useState('');
   const [isVenueManager, setIsVenueManager] = useState(false);
   const [showBookings, setShowBookings] = useState<boolean>(true);
+  const [hoveringAvatar, setHoveringAvatar] = useState(false); 
 
   useEffect(() => {
     if (!user) {
       navigate('/login');
-    } 
-    else {
-      fetchUserBookings();
-      setIsVenueManager(user.venueManager || false);
+    } else {
+      const fetchBookings = async () => {
+        try {
+          if (user.name && user.token) {
+            const fetchedBookings = await fetchUserBookings(user.name, user.token);
+            setBookings(fetchedBookings);
+            setIsVenueManager(user.venueManager || false);
+          } else {
+            console.error('User name or token is missing');
+          }
+        } catch (error) {
+          console.error('Error fetching user bookings:', error);
+        }
+      };
+
+      fetchBookings();
     }
   }, [user, navigate]);
-
-  const fetchUserBookings = async () => {
-    try {
-      if (user && user.token) {
-        const response = await fetch(`${url}/profiles/${user.name}/?_bookings=true&_venues=true`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`,
-            'X-Noroff-API-Key': apiKey,
-          },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch user bookings');
-        }
-        const responseData = await response.json();
-        setBookings(responseData.data.bookings);
-      } else {
-        throw new Error('User not found or token missing');
-      }
-    } catch (error) {
-      console.error('Error fetching user bookings:', error);
-    }
-  };
 
   const toggleSection = () => {
     setShowBookings(!showBookings);
@@ -113,12 +93,23 @@ const Profile: React.FC = () => {
         <div className='mt-[100px] mb-[80px]'>
           <div className='flex flex-col md:flex-row w-full md:w-[95%] justify-between'>
             <div className='w-[120px] md:ml-[5%] mx-auto relative'>
-              <img
-                src={user.avatar}
-                alt='Avatar'
-                className='h-[120px] rounded-full cursor-pointer'
+              <div 
+                className="avatar-container relative w-[120px] h-[120px] overflow-hidden rounded-full"
                 onClick={toggleModal}
-              />
+                onMouseEnter={() => setHoveringAvatar(true)}
+                onMouseLeave={() => setHoveringAvatar(false)}
+              >
+                <img
+                  src={user.avatar}
+                  alt='Avatar'
+                  className='h-[120px] rounded-full cursor-pointer'
+                />
+                {hoveringAvatar && (
+                  <div className='absolute cursor-pointer top-0 left-0 w-full h-full bg-[#171717cc] flex justify-center items-center'>
+                    <p className='text-white font-semibold'>Change avatar</p>
+                  </div>
+                )}
+              </div>
               <button onClick={openModal}></button>
                 {isModalOpen && (
                   <>

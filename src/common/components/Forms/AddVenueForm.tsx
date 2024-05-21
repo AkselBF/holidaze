@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button, ThemeProvider } from '@mui/material';
 import { useAuthStore } from '../../storage/authStore';
@@ -8,22 +8,22 @@ import { theme, StyledTextField, StyledTextArea, StyledCheckbox } from '../Style
 import '../../components/Scrollbars/FormsScrollbar.css';
 
 interface VenueFormData {
-  name: string; // minimum of 3 characters
-  description: string; // minimum of 16 characters
+  name: string;
+  description: string;
   media?: { url?: string; alt?: string }[];
-  price: string; // numbers only with a maximum of 10000, two decimal digits
-  maxGuests: string; // numbers only with a maximum of 12, no decimal numbers
-  rating: string; // numbers only, one decimal digit (optional)
+  price: string;
+  maxGuests: string;
+  rating: string;
   meta?: {
-    wifi?: boolean; // optional (default: false)
-    parking?: boolean; // optional (default: false)
-    breakfast?: boolean; // optional (default: false)
-    pets?: boolean; // optional (default: false)
+    wifi?: boolean;
+    parking?: boolean;
+    breakfast?: boolean;
+    pets?: boolean;
   };
   location?: {
-    city?: string; // optional
-    country?: string; // optional
-    continent?: string; // optional
+    city?: string;
+    country?: string;
+    continent?: string;
   };
 }
 
@@ -37,11 +37,27 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
   const { fetchVenues } = useVenuesStore();
   const user = useAuthStore();
 
+  const [mediaFields, setMediaFields] = useState([{ url: '', alt: '' }]);
+
+  const addMediaField = () => {
+    if (mediaFields.length < 6) {
+      setMediaFields([...mediaFields, { url: '', alt: '' }]);
+    }
+  };
+
+  const removeMediaField = (index: number) => {
+    const newMediaFields = mediaFields.filter((_, idx) => idx !== index);
+    setMediaFields(newMediaFields);
+  };
+
   const onSubmit: SubmitHandler<VenueFormData> = async (data) => {
     const requestData = {
       name: data.name,
       description: data.description,
-      media: data.media,
+      media: mediaFields.map((_, index) => ({
+        url: data.media?.[index]?.url || '',
+        alt: data.media?.[index]?.alt || '',
+      })),
       price: parseFloat(data.price),
       maxGuests: parseFloat(data.maxGuests),
       rating: parseFloat(data.rating),
@@ -57,7 +73,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
         continent: data.location?.continent || '',
       },
     };
-    // Handle form submission
+    
     try {
       if (user && user.token) {
         const response = await fetch(`${url}/venues`, {
@@ -69,16 +85,18 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
           },
           body: JSON.stringify(requestData),
         });
+
         if (!response.ok) {
-          // Handle error
           console.error('Failed to add venue:', response.statusText);
           return;
         }
+
         await fetchVenues();
         onAdd();
         onClose();
       }
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Error adding venue:', error);
     }
   };
@@ -116,30 +134,48 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
               {errors.description && <p className="error">Description is required and must be at least 16 characters long</p>}
             </div>
 
-            {/* Image URL */}
-            <div className='w-[80%] mx-auto text-white py-3'>
-              <Controller
-                name="media.0.url" // Assuming you're only adding one image
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <StyledTextField {...field} label="Image URL" variant="outlined" type="url" />
+            {/* Media inputs */}
+            {mediaFields.map((_, index) => (
+              <div key={index} className='w-[80%] mx-auto text-white py-3 flex items-center'>
+                <Controller
+                  name={`media.${index}.url`}
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <StyledTextField {...field} label={`Image URL ${index + 1}`} variant="outlined" type="url" className='w-full' />
+                  )}
+                />
+                <Controller
+                  name={`media.${index}.alt`}
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <StyledTextField {...field} label={`Image Alt Text ${index + 1}`} variant="outlined" className='w-full' />
+                  )}
+                />
+                {index > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => removeMediaField(index)}
+                    className="text-white text-3xl font-bold bg-red-500 hover:bg-red-700 px-5 h-12 rounded-r-lg"
+                  >
+                    -
+                  </button>
                 )}
-              />
-            </div>
+              </div>
+            ))}
 
-            {/* Image Alt Text */}
-            <div className='w-[80%] mx-auto text-white py-3'>
-              <Controller
-                name="media.0.alt" // Ensure the name matches the property in VenueFormData
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <StyledTextField {...field} label="Image Alt Text" variant="outlined" />
-                )}
-              />
-            </div>
-            {/* Additional image inputs can be added here */}
+            {mediaFields.length < 6 && (
+              <div className='w-[80%] mx-auto text-white py-3'>
+                <button
+                  type="button"
+                  onClick={addMediaField}
+                  className="text-blue-500 hover:text-blue-700"
+                >
+                  Add Another Image
+                </button>
+              </div>
+            )}
 
             <div className='w-[80%] space-x-2 flex flex-row mx-auto text-white mt-6 py-3 '>
               {/* Price */}

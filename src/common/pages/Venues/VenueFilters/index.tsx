@@ -67,7 +67,6 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
   };
 
   useEffect(() => {
-    // Fetch venues data to populate the countries dropdown
     if (venues.length > 0) {
       const uniqueCountries = Array.from(new Set(venues.map((venue: Venue) => venue.location.country)));
       setCountries(['Default', ...uniqueCountries]);
@@ -77,30 +76,30 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
   const handleCountryChange = (country: string) => {
     setSelectedCountry(country);
     setIsCountryDropdownOpen(false);
-    onChangeCountry(country); // Call onChangeCountry function
+    onChangeCountry(country);
   };
 
   const handleGuestsChange = (guests: number) => {
     setSelectedGuests(guests);
     setIsGuestDropdownOpen(false);
-    onChangeGuests(guests); // Call onChangeGuests function
+    onChangeGuests(guests);
   };
 
   const handleRatingChange = (rating: number) => {
     setSelectedRating(rating);
     setIsRatingDropdownOpen(false);
-    onChangeRating(rating); // Call onChangeRating function
+    onChangeRating(rating);
   };
 
   const handlePriceRangeChange = (minPrice: number, maxPrice: number) => {
     setSelectedPriceRange([minPrice, maxPrice]);
     setIsPriceDropdownOpen(false);
-    onChangePriceRange([minPrice, maxPrice]); // Call onChangePriceRange function
+    onChangePriceRange([minPrice, maxPrice]);
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    onSearch(query); // Call onSearch function
+    onSearch(query);
   };
   
   const handleWifiChange = (checked: boolean) => {

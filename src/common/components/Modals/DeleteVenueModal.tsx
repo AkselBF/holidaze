@@ -1,8 +1,7 @@
 import React from 'react';
 import { useAuthStore } from '../../storage/authStore';
-//import { useVenuesStore } from '../../storage/venuesStore';
 import { url, apiKey } from '../../constants/apiUrl';
-import '../../pages/Hotel/Modal.css';
+import './Modal.css';
 
 interface DeleteVenueModalProps {
   id: string;
@@ -13,6 +12,7 @@ interface DeleteVenueModalProps {
 
 const DeleteVenueModal: React.FC<DeleteVenueModalProps> = ({ id, name, onDelete, onClose }) => {
   const user = useAuthStore();
+
   const handleDelete = async () => {
     try {
       const response = await fetch(`${url}/venues/${id}`, {
@@ -23,14 +23,17 @@ const DeleteVenueModal: React.FC<DeleteVenueModalProps> = ({ id, name, onDelete,
           'X-Noroff-API-Key': apiKey,
         },
       });
+
       if (!response.ok) {
         throw new Error('Failed to delete venue');
       }
       
       onDelete(id);
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Error deleting venue:', error);
-    } finally {
+    } 
+    finally {
       onClose();
     }
   };

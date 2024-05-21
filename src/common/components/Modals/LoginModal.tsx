@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../storage/authStore';
 import { useNavigate } from 'react-router-dom';
-import './Modal.css'; // Import your modal styles
+import './Modal.css';
 
 const LoginModal: React.FC<{ onClose: () => void; id: string }> = ({ onClose, id }) => {
   const [email, setEmail] = useState('');
@@ -15,14 +15,14 @@ const LoginModal: React.FC<{ onClose: () => void; id: string }> = ({ onClose, id
     try {
       await login(email, password);
       navigate(`/booking/${id}`);
-      onClose(); // Close the modal after successful login
-    } catch (error) {
+      onClose();
+    } 
+    catch (error) {
       setError('Invalid email or password');
     }
   };
 
   const closeModal = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Close the modal only if the click target is the modal overlay
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -31,7 +31,7 @@ const LoginModal: React.FC<{ onClose: () => void; id: string }> = ({ onClose, id
   return (
     <div className="modal-overlay" onClick={closeModal}>
       <div className="modal-container">
-        <h2 className="text-2xl font-semibold mb-4">Login</h2>
+        <h2 className="text-2xl text-white font-semibold mb-4">Login</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <input
           type="email"

@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { url, apiKey } from '../../constants/apiUrl';
 import { useAuthStore } from '../../storage/authStore';
 import { formatDate } from '../../components/DateFormatter/formatDate';
+import { fetchVenueDetails } from '../../requests/Venues/venueDetails';
+import { Venue } from '../../interfaces/Venue/venueInterface';
+import LoginModal from '../../components/Modals/LoginModal';
+import '../../components/Scrollbars/HotelScrollbar.css';
 
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Allowed from '../../images/allowed.png';
 import Unallowed from '../../images/unallowed.png';
 
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import StarIcon from '@mui/icons-material/Star';
 import WifiIcon from '@mui/icons-material/Wifi';
 import LocalParkingIcon from '@mui/icons-material/LocalParking';
@@ -18,92 +21,32 @@ import WomanIcon from '@mui/icons-material/Woman';
 import BoyIcon from '@mui/icons-material/Boy';
 import GirlIcon from '@mui/icons-material/Girl';
 
-import LoginModal from './LoginModal';
-import '../../components/Scrollbars/HotelScrollbar.css';
-
-interface Customer {
-  name: string;
-  email: string;
-  bio: string;
-  avatar: {
-    url: string;
-    alt: string;
-  };
-  banner: {
-    url: string;
-    alt: string;
-  };
-}
-
-interface Booking {
-  id: string;
-  dateFrom: string;
-  dateTo: string;
-  guests: number;
-  created: string;
-  updated: string;
-  customer: Customer;
-}
-
-interface Venue {
-  id: string;
-  name: string;
-  description: string;
-  media: { url: string; alt: string }[];
-  rating: number;
-  price: number;
-  location: { country: string; city: string };
-  meta: { wifi: boolean; parking: boolean; breakfast: boolean; pets: boolean };
-  owner: {
-    name: string;
-    email: string;
-    bio: string;
-    avatar: {
-      url: string;
-      alt: string;
-    };
-    banner: {
-      url: string;
-      alt: string;
-    };
-  };
-  bookings: Booking[];
-}
 
 const Hotel: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [venue, setVenue] = useState<Venue | null>(null);
-  //const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const [primaryImage, setPrimaryImage] = useState<string>('');
   const discountedPrice = venue ? venue.price * 0.7 : 0;
 
   useEffect(() => {
-    const fetchVenueDetails = async () => {
+    const fetchVenue = async () => {
       try {
-        const response = await fetch(`${url}/venues/${id}?_bookings=true`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user?.token}`,
-            'X-Noroff-API-Key': apiKey,
-          },
-        });
-  
-        if (!response.ok) {
-          throw new Error('Failed to fetch venue details');
+        if (id) {
+          const fetchedVenue = await fetchVenueDetails(id, user?.token ?? undefined);
+          setVenue(fetchedVenue);
+          if (fetchedVenue.media.length > 0) {
+            setPrimaryImage(fetchedVenue.media[0].url);
+          }
         }
-  
-        const responseData = await response.json();
-        const fetchedVenue = responseData.data;
-        setVenue(fetchedVenue);
       } catch (error) {
         console.error('Error fetching venue details:', error);
       }
     };
-  
-    fetchVenueDetails();
+
+    fetchVenue();
   }, [id, user?.token]);
 
   const handleBookVenue = () => {
@@ -130,8 +73,26 @@ const Hotel: React.FC = () => {
       <div className='h-[3px] bg-[#ADADAD] w-[80%] justify-center mx-auto my-5'></div>
       
       <div className='w-[90%] md:w-[80%] mx-auto flex flex-col lg:flex-row'>
-        <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} 
-        className='w-full md:w-[80%] lg:w-[50%] mx-auto lg:max-h-[280px] object-cover' />
+        <div className='w-full md:w-[80%] lg:w-[50%] mx-auto'>
+          <img src={primaryImage} alt={venue.name} 
+          className='w-full lg:max-h-[280px] object-cover' />
+          {venue.media.length > 1 && ( // Add this conditional rendering
+            <div className='scrollbar-hotel-desc mt-4 overflow-x-auto'>
+              <div className='flex space-x-2'>
+                {venue.media.map((mediaItem, index) => (
+                  <img
+                    key={index}
+                    src={mediaItem.url}
+                    alt={mediaItem.alt || `Venue Image ${index + 1}`}
+                    className='h-20 w-28 min-w-28 object-cover cursor-pointer mb-3'
+                    onClick={() => setPrimaryImage(mediaItem.url)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        
         <div className='w-full md:w-[80%] lg:w-[50%] mx-auto mt-6 lg:my-0 lg:ml-6 lg:mr-auto relative'>
           <div className="flex flex-col md:flex-row">
             <div className='flex flex-col space-y-1 mr-10 mb-5 md:mb-0'>
@@ -146,14 +107,14 @@ const Hotel: React.FC = () => {
                 <p>Wifi</p>
                 <div className='flex flex-row'>
                   <WifiIcon />
-                  <p className='ml-2'>{venue.meta.wifi ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+                  <p className='ml-2'>{venue.meta.wifi ? <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Allowed} alt="Allowed" /> : <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Unallowed} alt="Not allowed" />}</p>
                 </div>
               </div>
               <div className='flex flex-col space-y-1 mr-8'>
                 <p>Parking</p>
                 <div className='flex flex-row'>
                   <LocalParkingIcon />
-                  <p className='ml-2'>{venue.meta.parking ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+                  <p className='ml-2'>{venue.meta.parking ? <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Allowed} alt="Allowed" /> : <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Unallowed} alt="Not allowed" />}</p>
                 </div>
               </div>
             </div>
@@ -163,14 +124,14 @@ const Hotel: React.FC = () => {
                 <p>Breakfast</p>
                 <div className='flex flex-row'>
                   <FreeBreakfastIcon />
-                  <p className='ml-2'>{venue.meta.breakfast ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+                  <p className='ml-2'>{venue.meta.breakfast ? <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Allowed} alt="Allowed" /> : <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Unallowed} alt="Not allowed" />}</p>
                 </div>
               </div>
               <div className='flex flex-col space-y-1 mr-8'>
                 <p>Pets</p>
                 <div className='flex flex-row'>
                   <PetsIcon />
-                  <p className='ml-2'>{venue.meta.pets ? <img className="h-6" src={Allowed} alt="Allowed" /> : <img className="h-6" src={Unallowed} alt="Not allowed" />}</p>
+                  <p className='ml-2'>{venue.meta.pets ? <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Allowed} alt="Allowed" /> : <img className="h-6 min-h-6 max-h-6 min-w-6 max-w-6" src={Unallowed} alt="Not allowed" />}</p>
                 </div>
               </div>
             </div>
@@ -198,7 +159,8 @@ const Hotel: React.FC = () => {
               </div>
             </div>
           </div>
-          <p className='scrollbar-hotel-desc max-h-[200px] lg:max-h-[72px] overflow-y-auto px-2'>{venue.description}</p>
+          
+          <p className={`scrollbar-hotel-desc max-h-[200px] lg:max-h-${venue.media.length > 1 ? '[96px]' : '[72px]'} overflow-y-auto px-2`}>{venue.description}</p>
 
           <div className='justify-end text-right'>
             <button 

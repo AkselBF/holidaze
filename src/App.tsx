@@ -13,12 +13,9 @@ import { useAuthStore } from './common/storage/authStore';
 
 const App: React.FC = () => {
   const { user } = useAuthStore();
-  //const accessToken = localStorage.getItem('accessToken');
 
   const handleNewBooking = () => {
-    // Define what happens when a new booking is made
     console.log('New booking made!');
-    // You can add more logic here, like updating state or performing actions
   };
 
   return (

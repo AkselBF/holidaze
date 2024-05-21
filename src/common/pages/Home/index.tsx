@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from 'react-router-dom';
+import Carousel from "../../components/Carousel";
 
 import darkLogo from "../../images/Finished_logo_dark.png"
 import hero from "../../images/heroOne.png";
 
-import Carousel from "../../components/Carousel";
 
 const Home: React.FC = () => {
   return (
