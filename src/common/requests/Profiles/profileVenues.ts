@@ -7,7 +7,7 @@ export const fetchVenues = async (user: User): Promise<Venue[]> => {
     throw new Error('User is not authenticated');
   }
 
-  const response = await fetch(`${url}/profiles/${user.name}/venues`, {
+  const response = await fetch(`${url}/profiles/${user.name}/venues?_bookings=true&_venues=true`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

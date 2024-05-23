@@ -35,7 +35,7 @@ const Home: React.FC = () => {
           <p className="text-right text-white font-semibold">Holidaze</p>
         </div>
         <Link to={'/venues'}>
-          <button className="text-white text-lg font-semibold bg-[#01BBE4] px-16 py-2 rounded-lg my-10">See venues</button>
+          <button className="text-white text-lg font-semibold bg-[#42A4FF] px-16 py-2 rounded-lg my-10">See venues</button>
         </Link>
       </div>
     </div>

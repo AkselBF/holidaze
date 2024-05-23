@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@100..900&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Inria+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+
+/*
+  Big shoulders
+*/
+.big-shoulders-display {
+  font-family: "Big Shoulders Display", sans-serif;
+  font-weight: 500;
+}
+
+/*
+  IBM
+*/
+.ibm-plex-sans-thai-regular {
+  font-family: "IBM Plex Sans Thai", sans-serif;
+  font-weight: 400;
+}
+
+.ibm-plex-sans-thai-medium {
+  font-family: "IBM Plex Sans Thai", sans-serif;
+  font-weight: 500;
+}
+
+.ibm-plex-sans-thai-semibold {
+  font-family: "IBM Plex Sans Thai", sans-serif;
+  font-weight: 600;
+}
+
+.ibm-plex-sans-thai-bold {
+  font-family: "IBM Plex Sans Thai", sans-serif;
+  font-weight: 700;
+}
+
+/*
+  Inria
+*/
+.inria-serif-regular {
+  font-family: "Inria Serif", serif;
+  font-weight: 400;
+}
+
+.inria-serif-bold {
+  font-family: "Inria Serif", serif;
+  font-weight: 700;
+}
+
+.inria-serif-regular-italic {
+  font-family: "Inria Serif", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.inria-serif-bold-italic {
+  font-family: "Inria Serif", serif;
+  font-weight: 700;
+  font-style: italic;
+}

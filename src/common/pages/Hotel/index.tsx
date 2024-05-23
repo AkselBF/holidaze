@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../storage/authStore';
 import { formatDate } from '../../components/DateFormatter/formatDate';
@@ -6,6 +6,7 @@ import { fetchVenueDetails } from '../../requests/Venues/venueDetails';
 import { Venue } from '../../interfaces/Venue/venueInterface';
 import LoginModal from '../../components/Modals/LoginModal';
 import '../../components/Scrollbars/HotelScrollbar.css';
+import '../../Fonts/Fonts.css';
 
 import Allowed from '../../images/allowed.png';
 import Unallowed from '../../images/unallowed.png';
@@ -29,7 +30,29 @@ const Hotel: React.FC = () => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const [primaryImage, setPrimaryImage] = useState<string>('');
+  const [mediaSlideshowHeight, setMediaSlideshowHeight] = useState<number>(0);
   const discountedPrice = venue ? venue.price * 0.7 : 0;
+
+  const mediaSlideshowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateMediaSlideshowHeight = () => {
+      if (mediaSlideshowRef.current) {
+        const slideshowHeight = mediaSlideshowRef.current.offsetHeight;
+        setMediaSlideshowHeight(slideshowHeight);
+      }
+    };
+  
+    // Update height on mount and when the venue or primary image changes
+    updateMediaSlideshowHeight();
+    window.addEventListener('resize', updateMediaSlideshowHeight);
+  
+    return () => {
+      window.removeEventListener('resize', updateMediaSlideshowHeight);
+    };
+  }, [venue, primaryImage]);
+  
+  const maxDescriptionHeight = mediaSlideshowHeight >= 290 ? 120 : 72;
 
   useEffect(() => {
     const fetchVenue = async () => {
@@ -64,8 +87,8 @@ const Hotel: React.FC = () => {
   return (
     <div>
       <div className='flex flex-col-reverse lg:flex-row relative my-5'>
-        <h1 className='text-3xl text-center font-semibold mt-10 lg:mt-0 justify-center mx-auto w-[80%] lg:w-[40%] line-clamp-3'>{venue.name}</h1>
-        <div className='absolute top-0 lg:top-2 right-[10%] flex flex-row'>
+        <h1 className='inria-serif-bold text-3xl text-center font-semibold mt-10 lg:mt-0 justify-center mx-auto w-[80%] lg:w-[40%] line-clamp-2'>{venue.name}</h1>
+        <div className='absolute top-0 lg:top-2 right-[10%] flex flex-row w-[10%] line-clamp-1'>
           <LocationOnIcon />
           <p className='ml-2'> {venue.location.city}, {venue.location.country}</p>
         </div>
@@ -73,7 +96,7 @@ const Hotel: React.FC = () => {
       <div className='h-[3px] bg-[#ADADAD] w-[80%] justify-center mx-auto my-5'></div>
       
       <div className='w-[90%] md:w-[80%] mx-auto flex flex-col lg:flex-row'>
-        <div className='w-full md:w-[80%] lg:w-[50%] mx-auto'>
+        <div ref={mediaSlideshowRef} className='media-slideshow w-full md:w-[80%] lg:w-[50%] mx-auto'>
           <img src={primaryImage} alt={venue.name} 
           className='w-full lg:max-h-[280px] object-cover rounded-lg' />
           {venue.media.length > 1 && (
@@ -99,7 +122,7 @@ const Hotel: React.FC = () => {
               <p>Rating</p>
               <div className='flex flex-row'>
                 <StarIcon />
-                <p className='ml-2 font-semibold text-[#FF5C00]'>{venue.rating}</p>
+                <p className='ml-2 font-semibold text-[#FF5C00]'>{venue.rating.toFixed(1)}</p>
               </div>
             </div>
             <div className='flex flex-row mb-3 md:mb-0'>
@@ -159,10 +182,9 @@ const Hotel: React.FC = () => {
               </div>
             </div>
           </div>
-          {/*
-          <p className={`scrollbar-hotel-desc max-h-[200px] lg:max-h-${venue.media.length > 1 ? '[96px]' : '[72px]'} overflow-y-auto px-2`}>{venue.description}</p>
-          */}
-          <p className='scrollbar-hotel-desc max-h-[200px] lg:max-h-[72px] overflow-y-auto px-2'>{venue.description}</p>
+          <p className={`scrollbar-hotel-desc max-h-[200px] lg:max-h-[${maxDescriptionHeight}px] overflow-y-auto px-2`}>
+            {venue.description}
+          </p>
 
           <div className='justify-end text-right'>
             <button 
@@ -197,7 +219,6 @@ const Hotel: React.FC = () => {
                   <div className="mt-2">
                     <p className="text-sm text-gray-600">Customer:</p>
                     <p className="text-lg font-medium">{booking.customer.name}</p>
-                    <p className="text-sm text-gray-500">{booking.customer.email}</p>
                   </div>
                 </div>
               ))}

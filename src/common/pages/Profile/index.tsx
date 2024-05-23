@@ -131,11 +131,11 @@ const Profile: React.FC = () => {
                 )}
               <h1 className='text-2xl text-white text-center font-semibold'>{user.name}</h1>
             </div>
-            <div className='mt-4 md:-mt-16 flex flex-col-reverse lg:flex-col'>
+            <div className='mt-4 md:-mt-16 flex flex-col'>
+              <button onClick={logout} className='text-white text-lg font-semibold bg-black w-[200px] h-[50px] rounded-lg md:mr-[5%] mx-auto mt-10 -mb-4 md:mt-20 md:-mb-16'>Logout</button>
               {isVenueManager && (
                 <ToggleSectionButton onClick={toggleSection} showBookings={showBookings} />
               )}
-              <button onClick={logout} className='text-white text-lg font-semibold bg-black w-[200px] h-[50px] rounded-lg md:mr-[5%] mx-auto mt-10 md:mt-24 md:-mb-14 lg:mb-0 lg:mt-10'>Logout</button>
             </div>
           </div>
           {showBookings ? (

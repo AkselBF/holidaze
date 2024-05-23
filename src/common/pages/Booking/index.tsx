@@ -8,28 +8,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { cardTheme, StyledTextField } from '../../components/StyledComponents';
 import { fetchVenueDetails, createBooking } from '../../requests/Bookings/bookingVenue';
 import { Venue } from '../../interfaces/Venue/venueInterface';
-//import { User } from '../../interfaces/User/userInterface';
-
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-/*
-//imports for mui date picker:
-
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-*/
-
-/*
-//npm installs for date mui:
-
-npm install @mui/x-date-pickers
-// Install date library (if not already installed)
-npm install dayjs
-*/
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import StarIcon from '@mui/icons-material/Star';
 import ManIcon from '@mui/icons-material/Man';
@@ -37,11 +17,10 @@ import WomanIcon from '@mui/icons-material/Woman';
 import BoyIcon from '@mui/icons-material/Boy';
 import GirlIcon from '@mui/icons-material/Girl';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-//import CreditCardIcon from '@mui/icons-material/CreditCard';
-
 import './Booking.css';
 import '../../components/Scrollbars/BookingScrollbar.css';
 import '../../components/Scrollbars/HotelScrollbar.css';
+import '../../Fonts/Fonts.css';
 
 interface BookingFormValues {
   cardNumber: string;
@@ -142,93 +121,98 @@ const Booking: React.FC<BookingProps> = (props) => {
       {venue && (
         <div className='p-2'>
           <div className='flex flex-grow w-full mb-3 relative'>
-            <h1 className='text-3xl text-center font-semibold justify-center mx-auto line-clamp-1 leading-relaxed'>Booking: {venue.name}</h1>
+            <h1 className='inria-serif-bold text-3xl text-center font-semibold justify-center mx-auto line-clamp-1 leading-relaxed'>Booking: {venue.name}</h1>
           </div>
           <div className='flex flex-col lg:flex-row justify-center'>
             <div className='w-[90%] sm:w-[80%] lg:w-[45%] mx-auto lg:mx-0 justify-center lg:mr-3'>
-              <div className='scrollbar-booking-dates booking_options bg-[#171717cc] flex flex-row h-[80px] rounded-t-lg items-center px-2 overflow-x-auto'>
-                <div className="flex mx-auto items-center 2xl:justify-center" style={{ width: "100%" }}>
-                  <div className='flex flex-row bg-black text-white rounded-md mx-2 h-[40px]'>
-                    <div className='flex flex-row my-auto'>
-                      <ManIcon className='-mr-2' />
-                      <WomanIcon />
+              <div className='scrollbar-booking-dates booking_options bg-[#171717cc] flex flex-row rounded-t-lg items-center px-2 py-2 overflow-x-auto'>
+                <div className="flex flex-col sm:flex-row mx-auto items-center justify-center" style={{ width: "100%" }}>
+                  <div className='flex flex-col min-[850px]:flex-row lg:flex-col min-[1340px]:flex-row'>
+                    <div className='flex flex-row bg-black text-white rounded-md my-2 mx-2 h-[40px]'>
+                      <div className='flex flex-row my-auto'>
+                        <ManIcon className='-mr-2' />
+                        <WomanIcon />
+                      </div>
+                      <Select
+                        value={numAdults}
+                        onChange={(e) => setNumAdults(Number(e.target.value))}
+                        sx={{ color: 'white', '& .MuiSelect-icon': { color: 'white' } }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              backgroundColor: 'black',
+                            },
+                          },
+                          sx: {
+                            '& .MuiMenuItem-root': {
+                              color: 'white',
+                            },
+                          },
+                        }}
+                      >
+                        {[...Array(venue.maxGuests)].map((_, index) => (
+                          <MenuItem key={index + 1} value={index + 1}>{index + 1}</MenuItem>
+                        ))}
+                      </Select>
                     </div>
-                    <Select
-                      value={numAdults}
-                      onChange={(e) => setNumAdults(Number(e.target.value))}
-                      sx={{ color: 'white', '& .MuiSelect-icon': { color: 'white' } }}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            backgroundColor: 'black',
+                    <div className='flex flex-row bg-black text-white rounded-md mx-2 my-2 h-[40px]'>
+                      <div className='flex flex-row my-auto'>
+                        <BoyIcon className='-mr-2' />
+                        <GirlIcon />
+                      </div>
+                      <Select
+                        value={numChildren}
+                        onChange={(e) => setNumChildren(Number(e.target.value))}
+                        sx={{ color: 'white', '& .MuiSelect-icon': { color: 'white' } }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              backgroundColor: 'black',
+                            },
                           },
-                        },
-                        sx: {
-                          '& .MuiMenuItem-root': {
-                            color: 'white',
+                          sx: {
+                            '& .MuiMenuItem-root': {
+                              color: 'white',
+                            },
                           },
-                        },
-                      }}
-                    >
-                      {[...Array(venue.maxGuests)].map((_, index) => (
-                        <MenuItem key={index + 1} value={index + 1}>{index + 1}</MenuItem>
-                      ))}
-                    </Select>
-                  </div>
-                  <div className='flex flex-row bg-black text-white rounded-md mx-2 h-[40px]'>
-                    <div className='flex flex-row my-auto'>
-                      <BoyIcon className='-mr-2' />
-                      <GirlIcon />
+                        }}
+                      >
+                        {[...Array(venue.maxGuests)].map((_, index) => (
+                          <MenuItem key={index + 1} value={index}>{index}</MenuItem>
+                        ))}
+                      </Select>
                     </div>
-                    <Select
-                      value={numChildren}
-                      onChange={(e) => setNumChildren(Number(e.target.value))}
-                      sx={{ color: 'white', '& .MuiSelect-icon': { color: 'white' } }}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            backgroundColor: 'black',
-                          },
-                        },
-                        sx: {
-                          '& .MuiMenuItem-root': {
-                            color: 'white',
-                          },
-                        },
-                      }}
-                    >
-                      {[...Array(venue.maxGuests)].map((_, index) => (
-                        <MenuItem key={index + 1} value={index}>{index}</MenuItem>
-                      ))}
-                    </Select>
                   </div>
-                  <div className='flex flex-row bg-black text-white rounded-md mx-2 h-[40px]'>
-                    <CalendarMonthIcon className='mx-2 my-auto' />
-                    <input
-                      type="date"
-                      value={arrivalDate}
-                      min={new Date().toISOString().split('T')[0]}
-                      onChange={handleDateChange}
-                      name="arrivalDate" 
-                      className='rounded-r-md text-white bg-black'
-                    />
-                  </div>
-                  <div className='flex flex-row bg-black text-white rounded-md mx-2 h-[40px]'>
-                    <CalendarMonthIcon className='mx-2 my-auto' />
-                    <input
-                      type="date"
-                      value={departureDate}
-                      min={arrivalDate || new Date().toISOString().split('T')[0]}
-                      onChange={handleDateChange}
-                      name="departureDate"
-                      className='rounded-r-md text-white bg-black'
-                    />
+                  
+                  <div className='flex flex-col min-[850px]:flex-row lg:flex-col min-[1340px]:flex-row'>
+                    <div className='flex flex-row bg-black text-white rounded-md mx-2 my-2 h-[40px]'>
+                      <CalendarMonthIcon className='mx-2 my-auto' />
+                      <input
+                        type="date"
+                        value={arrivalDate}
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={handleDateChange}
+                        name="arrivalDate" 
+                        className='rounded-r-md text-white bg-black'
+                      />
+                    </div>
+                    <div className='flex flex-row bg-black text-white rounded-md mx-2 my-2 h-[40px]'>
+                      <CalendarMonthIcon className='mx-2 my-auto' />
+                      <input
+                        type="date"
+                        value={departureDate}
+                        min={arrivalDate || new Date().toISOString().split('T')[0]}
+                        onChange={handleDateChange}
+                        name="departureDate"
+                        className='rounded-r-md text-white bg-black'
+                      />
+                    </div>
                   </div>
                 </div>
                 
               </div>
-              <div className='bg-white rounded-b-lg px-8 pt-3 pb-12'>
-                <p className='mb-3'>Choose a number of extra treatments such as training, pool free access and spa. The options can be crossed bellow:</p>
+              <div className='bg-white rounded-b-lg px-8 py-3'>
+                <p className='mb-3'>Above, you'll see you can choose the amount of guests according to how many the venue provides. While there only needs to be one guest, choosing arrival and departure date is necessary for moving forward. Now, progress smoothly, then look forward to your trip.</p>
               </div>
 
               <div className='flex flex-col lg:flex-row mt-10 space-y-3'>
@@ -236,7 +220,7 @@ const Booking: React.FC<BookingProps> = (props) => {
                 <div>
                   <div className='flex flex-row'>
                     <StarIcon />
-                    <p className='ml-2 font-semibold text-[#FF5C00]'>{venue.rating}</p>
+                    <p className='ml-2 font-semibold text-[#FF5C00]'>{venue.rating.toFixed(1)}</p>
                   </div>
                   <div className='flex flex-row my-3'>
                     <LocationOnIcon />
@@ -329,7 +313,7 @@ const Booking: React.FC<BookingProps> = (props) => {
                   <p className='text-left my-3'>The total price varies depending on the amount of guests staying, and for how long. Once you are ready, enter your card information and confirm to complete your booking.</p>
                   <div className='h-[2px] mx-auto my-5 w-[50%] bg-[#ADADAD]'></div>
                   
-                  {totalPrice && <p className='text-[#FF5C00] text-right font-semibold my-6'>Total: {totalPrice} kr,-</p>}
+                  {totalPrice && <p className='text-[#FF5C00] text-right font-semibold my-6'>Total: {totalPrice.toFixed(2)} kr,-</p>}
                   
                   <Button 
                     type="submit" 
@@ -337,7 +321,6 @@ const Booking: React.FC<BookingProps> = (props) => {
                     style={{ 
                       fontWeight: 'bold', 
                       backgroundColor: isFormValid ? cardTheme.palette.primary.main : cardTheme.palette.secondary.main,
-                      /*color: isFormValid ? 'black' : 'black'*/
                     }} 
                     className='w-[60%] mx-auto'
                     disabled={!isFormValid}
@@ -355,6 +338,25 @@ const Booking: React.FC<BookingProps> = (props) => {
 };
 
 export default Booking;
+
+/*
+//imports for mui date picker:
+
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+*/
+
+/*
+//npm installs for date mui:
+
+npm install @mui/x-date-pickers
+// Install date library (if not already installed)
+npm install dayjs
+*/
 
 /*
 // For using the muo date picker

@@ -4,6 +4,7 @@ import RatingStars from "../RatingStars";
 import { Link } from "react-router-dom";
 
 import "./carousel.css";
+import '../../Fonts/Fonts.css';
 
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
@@ -141,9 +142,7 @@ const Carousel: React.FC = () => {
       className="carousel_container mb-[920px] lg:mb-[600px]"
     >
       <div className="carousel transform" style={{ transform: `rotateY(${currdeg}deg)` }}>
-        {venues
-          .filter(venue => venue.media.some(media => media.url && media.url.trim() !== ''))
-          .map((venue, index) => (
+        {venues.map((venue, index) => (
             <div
               key={venue.id}
               className={`venue_items ${String.fromCharCode(97 + index)} border-t-4`}
@@ -154,9 +153,9 @@ const Carousel: React.FC = () => {
                 alt={venue.name}
                 className="w-full h-full object-cover"
               />
-              <div className="venue_details h-[200px]">
-                <p className="text-lg">{venue.location.country}</p>
-                <p className="text-xl font-semibold">{venue.name}</p>
+              <div className="venue_details h-[200px] justify-center text-center">
+                <p className="big-shoulders-display text-md mx-auto mt-2">{venue.location.country}</p>
+                <p className="ibm-plex-sans-thai-bold text-xl w-[80%] mx-auto font-semibold line-clamp-2 mt-1">{venue.name}</p>
                 <div className="h-1 w-1 rounded-full bg-[#FF5C00] mx-auto mt-5 mb-3"></div>
                 <div className='flex flex-row justify-center h-5 my-3'>
                   {RatingStars(venue.rating)}
@@ -188,12 +187,12 @@ const Carousel: React.FC = () => {
             <img src={centeredVenue.media[0].url} alt={centeredVenue.name} className="w-full max-h-[280px] object-cover" />
           </div>
           <div className="w-full md:w-[80%] lg:w-[45%] mx-auto">
-            <p className="text-5xl font-semibold line-clamp-1">{centeredVenue.name}</p>
+            <p className="ibm-plex-sans-thai-bold text-5xl font-semibold line-clamp-1">{centeredVenue.name}</p>
             <div className=" h-1 bg-slate-400 my-5 w-full"></div>
             <div className="flex flex-col min-[420px]:flex-row">
               <div className='flex flex-row mr-10 mb-5 sm:mb-0'>
                 <StarIcon />
-                <p className='ml-2 font-semibold text-[#FF5C00]'>{centeredVenue.rating}</p>
+                <p className='ml-2 font-semibold text-[#FF5C00]'>{centeredVenue.rating.toFixed(1)}</p>
               </div>
               <div className="flex flex-row space-x-6">
                 <div className="flex flex-col sm:flex-row sm:space-x-6">

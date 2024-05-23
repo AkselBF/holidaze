@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../storage/authStore';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme, StyledTextField, StyledCheckbox } from '../StyledComponents';
@@ -16,7 +16,7 @@ interface RegistrationFormValues {
 
 const RegistrationForm: React.FC = () => {
   const { control, handleSubmit, setError, watch } = useForm<RegistrationFormValues>();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const { register: registerUser } = useAuthStore();
 
   const onSubmit: SubmitHandler<RegistrationFormValues> = async (data) => {
@@ -26,7 +26,7 @@ const RegistrationForm: React.FC = () => {
     }
 
     await registerUser(data.name, data.email, data.password, data.venueManager ? 'true' : undefined);
-    navigate(`/profiles/${data.name}`);
+    //navigate(`/profiles/${data.name}`);
   };
 
   const password = watch('password');

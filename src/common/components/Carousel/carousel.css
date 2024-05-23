@@ -27,15 +27,10 @@
 }
 
 .venue_details {
-  width: 100%;
   padding: 4px;
   background-color: #ffffff;
   color: #000000;
   font-size: 0.8rem;
-}
-
-.venue_details p {
-  margin: 2px 0;
 }
 
 .a {

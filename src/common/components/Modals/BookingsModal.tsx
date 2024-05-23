@@ -2,6 +2,7 @@ import React from "react";
 import { Venue } from "../../interfaces/Venue/venueInterface";
 import { formatDate } from "../DateFormatter/formatDate";
 import './Modal.css';
+import '../Scrollbars/FormsScrollbar.css';
 
 interface BookingsModalProps {
   venue: Venue | null;
@@ -13,11 +14,11 @@ const BookingsModal: React.FC<BookingsModalProps> = ({ venue, onClose }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-container text-white w-[90%] lg:w-[60%] h-[80%] overflow-y-auto p-6">
+      <div className="modal-container scrollbar-form mt-5 text-white w-[90%] lg:w-[60%] h-[80%] overflow-y-auto p-6">
         <div className='relative'>
-          <span className="text-xl font-semibold cursor-pointer absolute top-2 right-4" onClick={onClose}>&times;</span>
+          <span className="text-2xl font-semibold cursor-pointer absolute -top-2 right-1" onClick={onClose}>&times;</span>
         </div>
-        <h2 className='text-2xl text-center font-semibold mt-3 mb-10 w-[80%] line-clamp-2'>Bookings for {venue.name}</h2>
+        <h2 className='text-2xl mx-auto text-center font-semibold mt-3 mb-10 w-[80%] line-clamp-2'>Bookings for {venue.name}</h2>
         
         {venue.bookings && venue.bookings.length > 0 ? (
           <div className="space-y-4">
