@@ -1,9 +1,10 @@
 import React from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { TextField, Checkbox, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
+//import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../storage/authStore';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme, StyledTextField, StyledCheckbox } from '../StyledComponents';
 
 interface RegistrationFormValues {
   name: string;
@@ -13,48 +14,9 @@ interface RegistrationFormValues {
   venueManager?: boolean;
 }
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#ffffff',
-    },
-    secondary: {
-      main: '#FF5C00',
-    }
-  },
-});
-
-const StyledTextField = styled(TextField)({
-  '& .MuiInputLabel-root': {
-    color: '#d9d9d9',
-  },
-  '& .MuiInputBase-root': {
-    color: '#d9d9d9',
-    borderRadius: 0,
-    borderBottom: '2px solid #ffffff',
-    borderLeft: '2px solid transparent',
-    borderRight: '2px solid transparent',
-    borderTop: '2px solid transparent',
-    '&:hover': {
-      borderBottomColor: '#d9d9d9',
-    },
-    '&.Mui-focused': {
-      borderBottomColor: '#ffffff',
-    },
-  },
-  '& .MuiInputBase-input': {
-    color: '#d9d9d9',
-    height: '15px',
-  },
-});
-
-const StyledCheckbox = styled(Checkbox)({
-  color: '#ffffff',
-});
-
 const RegistrationForm: React.FC = () => {
-  const { control, handleSubmit, setError,/* clearErrors,*/ watch } = useForm<RegistrationFormValues>();
-  const navigate = useNavigate();
+  const { control, handleSubmit, setError, watch } = useForm<RegistrationFormValues>();
+  //const navigate = useNavigate();
   const { register: registerUser } = useAuthStore();
 
   const onSubmit: SubmitHandler<RegistrationFormValues> = async (data) => {
@@ -64,7 +26,7 @@ const RegistrationForm: React.FC = () => {
     }
 
     await registerUser(data.name, data.email, data.password, data.venueManager ? 'true' : undefined);
-    navigate(`/profiles/${data.name}`);
+    //navigate(`/profiles/${data.name}`);
   };
 
   const password = watch('password');

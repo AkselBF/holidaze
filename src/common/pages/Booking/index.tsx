@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { url, apiKey } from '../../constants/apiUrl';
 import { useAuthStore, User } from '../../storage/authStore';
-import { Venue } from '../../storage/venuesStore';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { TextField, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
-
+import { ThemeProvider } from '@mui/material/styles';
+import { cardTheme, StyledTextField } from '../../components/StyledComponents';
+import { fetchVenueDetails, createBooking } from '../../requests/Bookings/bookingVenue';
+import { Venue } from '../../interfaces/Venue/venueInterface';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import StarIcon from '@mui/icons-material/Star';
 import ManIcon from '@mui/icons-material/Man';
@@ -18,10 +17,10 @@ import WomanIcon from '@mui/icons-material/Woman';
 import BoyIcon from '@mui/icons-material/Boy';
 import GirlIcon from '@mui/icons-material/Girl';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-//import CreditCardIcon from '@mui/icons-material/CreditCard';
-
 import './Booking.css';
-import '../../components/Forms/Scrollbar.css';
+import '../../components/Scrollbars/BookingScrollbar.css';
+import '../../components/Scrollbars/HotelScrollbar.css';
+import '../../Fonts/Fonts.css';
 
 interface BookingFormValues {
   cardNumber: string;
@@ -44,46 +43,33 @@ const Booking: React.FC<BookingProps> = (props) => {
   const [arrivalDate, setArrivalDate] = useState('');
   const [departureDate, setDepartureDate] = useState('');
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
-  //const [isFormValid, setIsFormValid] = useState(false);
-  //const [cardNumber, setCardNumber] = useState('');
-  //const [expiryDate, setExpiryDate] = useState('');
-  //const [cvc, setCvc] = useState('');
   const [isCardNumberValid, setIsCardNumberValid] = useState(false);
   const [isExpiryDateValid, setIsExpiryDateValid] = useState(false);
   const [isCvcValid, setIsCvcValid] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(false); // Add this state variable
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const { user } = useAuthStore();
 
-  // Determine overall form validity
   useEffect(() => {
     setIsFormValid(isCardNumberValid && isExpiryDateValid && isCvcValid && !!arrivalDate && !!departureDate);
   }, [isCardNumberValid, isExpiryDateValid, isCvcValid, arrivalDate, departureDate]);
 
   useEffect(() => {
-    const fetchVenueDetails = async () => {
+    const fetchVenue = async () => {
       try {
-        if (!id) {
-          // If id is undefined, don't make the fetch request
-          return;
+        if (id) {
+          const fetchedVenue = await fetchVenueDetails(id);
+          setVenue(fetchedVenue);
         }
-        const response = await fetch(`${url}/venues/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch venue details');
-        }
-        const responseData = await response.json();
-        const fetchedVenue = responseData.data;
-        setVenue(fetchedVenue);
       } catch (error) {
         console.error('Error fetching venue details:', error);
       }
     };
 
-    fetchVenueDetails();
+    fetchVenue();
   }, [id]);
 
   useEffect(() => {
-    // Calculate total price when any of the relevant inputs change
     if (venue && arrivalDate && departureDate) {
       const durationInDays = Math.ceil((new Date(departureDate).getTime() - new Date(arrivalDate).getTime()) / (1000 * 60 * 60 * 24));
       const basePricePerAdult = venue.price;
@@ -94,224 +80,139 @@ const Booking: React.FC<BookingProps> = (props) => {
       const totalPriceForChildren = totalPricePerChild * numChildren;
       const totalPrice = totalPriceForAdults + totalPriceForChildren;
       setTotalPrice(totalPrice);
-    } else {
-      // If any required input is missing, set the total price back to the default price
+    } 
+    else {
       setTotalPrice(venue ? venue.price : null);
     }
   }, [venue, numAdults, numChildren, arrivalDate, departureDate]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const dateValue = e.target.value;
-    // Check if the selected date is not in the past
     const currentDate = new Date().toISOString().split('T')[0];
     if (dateValue >= currentDate) {
       if (e.target.name === 'arrivalDate') {
         setArrivalDate(dateValue);
-      } else {
+      } 
+      else {
         setDepartureDate(dateValue);
       }
-    } else {
+    } 
+    else {
       alert('Please select a future date.');
     }
   };
-
-  /*
-  // Regex patterns
-  const cardNumberPattern = /^\d{16}$/;
-  const expiryDatePattern = /^(0[1-9]|1[0-2])\/\d{2}$/;
-  const cvcPattern = /^\d{3}$/;
-
-  // Check if all input fields are valid
-  const areInputsValid = () => {
-    return (
-      cardNumberPattern.test(cardNumber) &&
-      expiryDatePattern.test(expiryDate) &&
-      cvcPattern.test(cvc)
-    );
-  };
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCardNumber(e.target.value);
-  };
-
-  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setExpiryDate(e.target.value);
-  };
-
-  const handleCvcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCvc(e.target.value);
-  };
-  */
-
 
   const onSubmit: SubmitHandler<BookingFormValues> = async () => {
     try {
       if (!user || !venue) {
         throw new Error('User or venue is not available');
       }
-  
-      // Create new booking
-      const newBooking = {
-        venueId: venue.id,
-        dateFrom: arrivalDate, // Assuming arrivalDate is set elsewhere in your component
-        dateTo: departureDate, // Assuming departureDate is set elsewhere in your component
-        guests: numAdults + numChildren, // Total number of guests
-      };
 
-      const response = await fetch(`${url}/bookings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
-            'X-Noroff-API-Key': apiKey,
-        },
-        body: JSON.stringify(newBooking),
-      });
-
-      if (!response.ok) {
-        if (response.status === 409) {
-          // Handle conflict
-          console.error('Booking conflict: There is already a booking for this venue during the specified time period.');
-          // Display a message to the user or suggest alternative dates
-        } else {
-          throw new Error('Failed to create booking');
-        }
-      } else {
-        props.onNewBooking();
-        navigate('/success');
-      }
+      await createBooking(user, venue.id, arrivalDate, departureDate, numAdults + numChildren);
+      props.onNewBooking();
+      navigate('/success');
     } catch (error) {
       console.error('Error processing booking:', error);
     }
   };
-
-  const cardTheme = createTheme({
-    palette: {
-      primary: {
-        main: '#42A4FF', 
-      },
-      secondary: {
-        main: '#42A4FF80',
-      },
-    },
-  });
-  
-  const StyledTextField = styled(TextField)({
-    '& .MuiInputLabel-root': {
-      color: '#d9d9d9',
-    },
-    '& .MuiInputBase-root': {
-      color: '#d9d9d9',
-      borderRadius: 0,
-      borderBottom: '2px solid #ADADAD',
-      borderLeft: '2px solid transparent',
-      borderRight: '2px solid transparent',
-      borderTop: '2px solid transparent',
-      '&:hover': {
-        borderBottomColor: '#d9d9d9',
-      },
-      '&.Mui-focused': {
-        borderBottomColor: '#ffffff',
-      },
-    },
-    '& .MuiInputBase-input': {
-      color: '#d9d9d9',
-      height: '15px',
-    },
-  });
 
   return (
     <div>
       {venue && (
         <div className='p-2'>
           <div className='flex flex-grow w-full mb-3 relative'>
-            <h1 className='text-3xl text-center font-semibold justify-center mx-auto line-clamp-1 leading-relaxed'>Booking: {venue.name}</h1>
+            <h1 className='inria-serif-bold text-3xl text-center font-semibold justify-center mx-auto line-clamp-1 leading-relaxed'>Booking: {venue.name}</h1>
           </div>
           <div className='flex flex-col lg:flex-row justify-center'>
             <div className='w-[90%] sm:w-[80%] lg:w-[45%] mx-auto lg:mx-0 justify-center lg:mr-3'>
-              <div className='scrollbar-hide booking_options bg-[#171717cc] flex flex-row h-[80px] rounded-t-lg items-center px-2 overflow-x-auto'>
-                <div className="flex mx-auto items-center 2xl:justify-center" style={{ width: "100%" }}>
-                  <div className='flex flex-row bg-black text-white rounded-md mx-2 h-[40px]'>
-                    <div className='flex flex-row my-auto'>
-                      <ManIcon className='-mr-2' />
-                      <WomanIcon />
+              <div className='scrollbar-booking-dates booking_options bg-[#171717cc] flex flex-row rounded-t-lg items-center px-2 py-2 overflow-x-auto'>
+                <div className="flex flex-col sm:flex-row mx-auto items-center justify-center" style={{ width: "100%" }}>
+                  <div className='flex flex-col min-[850px]:flex-row lg:flex-col min-[1340px]:flex-row'>
+                    <div className='flex flex-row bg-black text-white rounded-md my-2 mx-2 h-[40px]'>
+                      <div className='flex flex-row my-auto'>
+                        <ManIcon className='-mr-2' />
+                        <WomanIcon />
+                      </div>
+                      <Select
+                        value={numAdults}
+                        onChange={(e) => setNumAdults(Number(e.target.value))}
+                        sx={{ color: 'white', '& .MuiSelect-icon': { color: 'white' } }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              backgroundColor: 'black',
+                            },
+                          },
+                          sx: {
+                            '& .MuiMenuItem-root': {
+                              color: 'white',
+                            },
+                          },
+                        }}
+                      >
+                        {[...Array(venue.maxGuests)].map((_, index) => (
+                          <MenuItem key={index + 1} value={index + 1}>{index + 1}</MenuItem>
+                        ))}
+                      </Select>
                     </div>
-                    <Select
-                      value={numAdults}
-                      onChange={(e) => setNumAdults(Number(e.target.value))}
-                      sx={{ color: 'white', '& .MuiSelect-icon': { color: 'white' } }}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            backgroundColor: 'black', // Change the background color here
+                    <div className='flex flex-row bg-black text-white rounded-md mx-2 my-2 h-[40px]'>
+                      <div className='flex flex-row my-auto'>
+                        <BoyIcon className='-mr-2' />
+                        <GirlIcon />
+                      </div>
+                      <Select
+                        value={numChildren}
+                        onChange={(e) => setNumChildren(Number(e.target.value))}
+                        sx={{ color: 'white', '& .MuiSelect-icon': { color: 'white' } }}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              backgroundColor: 'black',
+                            },
                           },
-                        },
-                        sx: {
-                          '& .MuiMenuItem-root': {
-                            color: 'white', // Change the color of the menu items
+                          sx: {
+                            '& .MuiMenuItem-root': {
+                              color: 'white',
+                            },
                           },
-                        },
-                      }}
-                    >
-                      {[...Array(venue.maxGuests)].map((_, index) => (
-                        <MenuItem key={index + 1} value={index + 1}>{index + 1}</MenuItem>
-                      ))}
-                    </Select>
-                  </div>
-                  <div className='flex flex-row bg-black text-white rounded-md mx-2 h-[40px]'>
-                    <div className='flex flex-row my-auto'>
-                      <BoyIcon className='-mr-2' />
-                      <GirlIcon />
+                        }}
+                      >
+                        {[...Array(venue.maxGuests)].map((_, index) => (
+                          <MenuItem key={index + 1} value={index}>{index}</MenuItem>
+                        ))}
+                      </Select>
                     </div>
-                    <Select
-                      value={numChildren}
-                      onChange={(e) => setNumChildren(Number(e.target.value))}
-                      sx={{ color: 'white', '& .MuiSelect-icon': { color: 'white' } }}
-                      MenuProps={{
-                        PaperProps: {
-                          style: {
-                            backgroundColor: 'black', // Change the background color here
-                          },
-                        },
-                        sx: {
-                          '& .MuiMenuItem-root': {
-                            color: 'white', // Change the color of the menu items
-                          },
-                        },
-                      }}
-                    >
-                      {[...Array(venue.maxGuests)].map((_, index) => (
-                        <MenuItem key={index + 1} value={index}>{index}</MenuItem>
-                      ))}
-                    </Select>
                   </div>
-                  <div className='flex flex-row bg-black text-white rounded-md mx-2 h-[40px]'>
-                    <CalendarMonthIcon className='mx-2 my-auto' />
-                    <input
-                      type="date"
-                      value={arrivalDate}
-                      min={new Date().toISOString().split('T')[0]} // Disable past dates
-                      onChange={handleDateChange}
-                      name="arrivalDate" 
-                      className='rounded-r-md text-white bg-black'
-                    />
-                  </div>
-                  <div className='flex flex-row bg-black text-white rounded-md mx-2 h-[40px]'>
-                    <CalendarMonthIcon className='mx-2 my-auto' />
-                    <input
-                      type="date"
-                      value={departureDate}
-                      min={arrivalDate || new Date().toISOString().split('T')[0]} // Disable past dates and ensure departure is after arrival
-                      onChange={handleDateChange}
-                      name="departureDate"
-                      className='rounded-r-md text-white bg-black'
-                    />
+                  
+                  <div className='flex flex-col min-[850px]:flex-row lg:flex-col min-[1340px]:flex-row'>
+                    <div className='flex flex-row bg-black text-white rounded-md mx-2 my-2 h-[40px]'>
+                      <CalendarMonthIcon className='mx-2 my-auto' />
+                      <input
+                        type="date"
+                        value={arrivalDate}
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={handleDateChange}
+                        name="arrivalDate" 
+                        className='rounded-r-md text-white bg-black'
+                      />
+                    </div>
+                    <div className='flex flex-row bg-black text-white rounded-md mx-2 my-2 h-[40px]'>
+                      <CalendarMonthIcon className='mx-2 my-auto' />
+                      <input
+                        type="date"
+                        value={departureDate}
+                        min={arrivalDate || new Date().toISOString().split('T')[0]}
+                        onChange={handleDateChange}
+                        name="departureDate"
+                        className='rounded-r-md text-white bg-black'
+                      />
+                    </div>
                   </div>
                 </div>
                 
               </div>
-              <div className='bg-white rounded-b-lg px-8 pt-3 pb-12'>
-                <p className='mb-3'>Choose a number of extra treatments such as training, pool free access and spa. The options can be crossed bellow:</p>
+              <div className='bg-white rounded-b-lg px-8 py-3'>
+                <p className='mb-3'>Above, you'll see you can choose the amount of guests according to how many the venue provides. While there only needs to be one guest, choosing arrival and departure date is necessary for moving forward. Now, progress smoothly, then look forward to your trip.</p>
               </div>
 
               <div className='flex flex-col lg:flex-row mt-10 space-y-3'>
@@ -319,20 +220,20 @@ const Booking: React.FC<BookingProps> = (props) => {
                 <div>
                   <div className='flex flex-row'>
                     <StarIcon />
-                    <p className='ml-2 font-semibold text-[#FF5C00]'>{venue.rating}</p>
+                    <p className='ml-2 font-semibold text-[#FF5C00]'>{venue.rating.toFixed(1)}</p>
                   </div>
                   <div className='flex flex-row my-3'>
                     <LocationOnIcon />
                     <p className='ml-2'> {venue.location.city}, {venue.location.country}</p>
                   </div>
-                  <p>{venue.description}</p>
+                  <p className='scrollbar-hotel-desc max-h-[100px] overflow-y-auto px-2'>{venue.description}</p>
                 </div>
               </div>
             </div>
             <div className='w-[90%] sm:w-[80%] lg:w-[45%] mx-auto lg:mr-0 lg:ml-3 my-5 lg:my-0 px-6 md:px-12 pt-6 pb-12 text-white bg-[#171717] rounded-lg justify-center text-center'>
               <h2 className='text-lg text-center font-semibold'>Enter credit card data</h2>
               <div className='h-[2px] mx-auto my-5 w-[50%] bg-[#ADADAD]'></div>
-              <ThemeProvider theme={cardTheme}> {/* Moved ThemeProvider here */}
+              <ThemeProvider theme={cardTheme}>
                 <form onSubmit={handleSubmit(onSubmit)} className='card_data_inputs space-y-6'>
                   <Controller
                     name="cardNumber"
@@ -346,9 +247,13 @@ const Booking: React.FC<BookingProps> = (props) => {
                         fullWidth 
                         required 
                         onChange={(e) => {
-                          field.onChange(e);
-                          setIsCardNumberValid(e.target.value.trim().length === 16);
+                          const value = e.target.value.replace(/\D/g, '');
+                          if (value.length <= 16) {
+                            field.onChange(value);
+                            setIsCardNumberValid(value.length === 16);
+                          }
                         }}
+                        value={field.value}
                       />
                     )}
                   />
@@ -365,9 +270,19 @@ const Booking: React.FC<BookingProps> = (props) => {
                           fullWidth 
                           required 
                           onChange={(e) => {
-                            field.onChange(e);
-                            setIsExpiryDateValid(e.target.value.trim().length === 5 && !errors.cardNumber);
+                            let value = e.target.value;
+                            value = value.replace(/\D/g, '');
+
+                            if (value.length >= 3) {
+                              value = value.slice(0, 2) + '/' + value.slice(2);
+                            }
+
+                            value = value.slice(0, 5);
+                            
+                            field.onChange(value);
+                            setIsExpiryDateValid(value.trim().length === 5 && !errors.cardNumber);
                           }}
+                          value={field.value}
                         />
                       )}
                     />
@@ -383,9 +298,13 @@ const Booking: React.FC<BookingProps> = (props) => {
                           fullWidth 
                           required 
                           onChange={(e) => {
-                            field.onChange(e);
-                            setIsCvcValid(e.target.value.trim().length === 3 && !errors.cardNumber && !errors.expiryDate);
+                            const value = e.target.value.replace(/\D/g, '');
+                            if (value.length <= 3) {
+                              field.onChange(value);
+                              setIsCvcValid(value.length === 3);
+                            }
                           }}
+                          value={field.value}
                         />
                       )}
                     />
@@ -394,7 +313,7 @@ const Booking: React.FC<BookingProps> = (props) => {
                   <p className='text-left my-3'>The total price varies depending on the amount of guests staying, and for how long. Once you are ready, enter your card information and confirm to complete your booking.</p>
                   <div className='h-[2px] mx-auto my-5 w-[50%] bg-[#ADADAD]'></div>
                   
-                  {totalPrice && <p className='text-[#FF5C00] text-right font-semibold my-6'>Total: {totalPrice} kr,-</p>}
+                  {totalPrice && <p className='text-[#FF5C00] text-right font-semibold my-6'>Total: {totalPrice.toFixed(2)} kr,-</p>}
                   
                   <Button 
                     type="submit" 
@@ -402,7 +321,6 @@ const Booking: React.FC<BookingProps> = (props) => {
                     style={{ 
                       fontWeight: 'bold', 
                       backgroundColor: isFormValid ? cardTheme.palette.primary.main : cardTheme.palette.secondary.main,
-                      /*color: isFormValid ? 'black' : 'black'*/
                     }} 
                     className='w-[60%] mx-auto'
                     disabled={!isFormValid}
@@ -420,3 +338,69 @@ const Booking: React.FC<BookingProps> = (props) => {
 };
 
 export default Booking;
+
+/*
+//imports for mui date picker:
+
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+*/
+
+/*
+//npm installs for date mui:
+
+npm install @mui/x-date-pickers
+// Install date library (if not already installed)
+npm install dayjs
+*/
+
+/*
+// For using the muo date picker
+
+export default function MaterialUIPickers() {
+  const [value, setValue] = React.useState<Dayjs | null>(
+    dayjs('2014-08-18T21:11:54'),
+  );
+
+  const handleChange = (newValue: Dayjs | null) => {
+    setValue(newValue);
+  };
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Stack spacing={3}>
+        <DesktopDatePicker
+          label="Date desktop"
+          inputFormat="MM/DD/YYYY"
+          value={value}
+          onChange={handleChange}
+          renderInput={(params) => <TextField {...params} />}
+        />
+        <MobileDatePicker
+          label="Date mobile"
+          inputFormat="MM/DD/YYYY"
+          value={value}
+          onChange={handleChange}
+          renderInput={(params) => <TextField {...params} />}
+        />
+        <TimePicker
+          label="Time"
+          value={value}
+          onChange={handleChange}
+          renderInput={(params) => <TextField {...params} />}
+        />
+        <DateTimePicker
+          label="Date&Time picker"
+          value={value}
+          onChange={handleChange}
+          renderInput={(params) => <TextField {...params} />}
+        />
+      </Stack>
+    </LocalizationProvider>
+  );
+}
+*/

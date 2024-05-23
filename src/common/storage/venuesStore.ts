@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { url } from '../constants/apiUrl'
+import { url } from '../constants/apiUrl';
+//import { Venue } from '../interfaces/Venue/venueInterface';
 
 export interface Venue {
   id: string;
@@ -22,7 +23,7 @@ export const useVenuesStore = create<VenuesState>((set) => ({
   venues: [],
   fetchVenues: async () => {
     try {
-      const response = await fetch(`${url}/venues`);
+      const response = await fetch(`${url}/venues?sort=created`);
       const data = await response.json();
       set({ venues: data.data });
     } catch (error) {

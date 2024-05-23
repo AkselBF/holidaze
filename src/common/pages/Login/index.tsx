@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import LoginForm from './LoginForm';
-import RegistrationForm from './RegistrationForm';
+import LoginForm from '../../components/Forms/LoginForm';
+import RegistrationForm from '../../components/Forms/RegistrationForm';
 
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
@@ -24,10 +24,6 @@ const Login: React.FC = () => {
               <KeyboardArrowLeftRoundedIcon className='mt-[2px]' />
             </div>
           }
-          {/*
-          {isLoginForm ? <p className='absolute top-[128px] right-[34%] text-white px-2'>Register</p> : <p className='absolute top-[128px] left-[34%] text-white px-2'>Login</p>}
-          {isLoginForm ? <ChevronRightRoundedIcon className="absolute top-[130px] right-[32%] text-white bg-black rounded-full" /> : <KeyboardArrowLeftRoundedIcon className="absolute top-[130px] left-[30%] text-white bg-black rounded-full" />}
-          */}
         </button>
       </div>
       {isLoginForm ? <LoginForm /> : <RegistrationForm />}

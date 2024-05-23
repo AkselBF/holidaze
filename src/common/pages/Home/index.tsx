@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from 'react-router-dom';
+import Carousel from "../../components/Carousel";
 
 import darkLogo from "../../images/Finished_logo_dark.png"
 import hero from "../../images/heroOne.png";
 
-import Carousel from "../../components/Carousel";
 
 const Home: React.FC = () => {
   return (
@@ -25,7 +25,7 @@ const Home: React.FC = () => {
       </div>
       
       <div className="bg-[#171717] w-full py-8 justify-center text-center">
-        <div className="w-[50%] mx-auto">
+        <div className="w-[90%] md:w-[50%] mx-auto">
           <img src={darkLogo} alt="dark logo version" className="mt-6 mb-10 h-[100px] mx-auto" />
           <p className="text-white my-2">Dear guest, welcome to our holiday-themed app and do we have deals that will not disappoint.</p>
           <p className="text-white my-2">In this site, resorts from all over the world are being published and ready to welcome you with open arms. If you are quick and decisive, your place in your desired resort is next to guaranteed.</p>
@@ -35,7 +35,7 @@ const Home: React.FC = () => {
           <p className="text-right text-white font-semibold">Holidaze</p>
         </div>
         <Link to={'/venues'}>
-          <button className="text-white text-lg font-semibold bg-[#01BBE4] px-16 py-2 rounded-lg my-10">See venues</button>
+          <button className="text-white text-lg font-semibold bg-[#42A4FF] px-16 py-2 rounded-lg my-10">See venues</button>
         </Link>
       </div>
     </div>

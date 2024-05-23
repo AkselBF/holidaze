@@ -1,55 +1,16 @@
 import React from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { TextField, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../storage/authStore';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme, StyledTextField } from '../StyledComponents';
 
-/*
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-*/
 
 interface LoginFormValues {
   email: string;
   password: string;
 }
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#ffffff', 
-    },
-    secondary: {
-      main: '#FF5C00',
-    }
-  },
-});
-
-const StyledTextField = styled(TextField)({
-  '& .MuiInputLabel-root': {
-    color: '#d9d9d9',
-  },
-  '& .MuiInputBase-root': {
-    color: '#d9d9d9',
-    borderRadius: 0,
-    borderBottom: '2px solid #ffffff',
-    borderLeft: '2px solid transparent',
-    borderRight: '2px solid transparent',
-    borderTop: '2px solid transparent',
-    '&:hover': {
-      borderBottomColor: '#d9d9d9',
-    },
-    '&.Mui-focused': {
-      borderBottomColor: '#ffffff',
-    },
-  },
-  '& .MuiInputBase-input': {
-    color: '#d9d9d9',
-    height: '15px',
-  },
-});
 
 const LoginForm: React.FC = () => {
   const { control, handleSubmit } = useForm<LoginFormValues>();
@@ -59,14 +20,12 @@ const LoginForm: React.FC = () => {
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     try {
       await login(data.email, data.password);
-      // After successful login, extract the username from the response data
       const userData = localStorage.getItem('userData');
       if (userData) {
         const { name } = JSON.parse(userData);
-        // Redirect to the user's profile page using the extracted username
         navigate(`/profiles/${name}`);
-      } else {
-        // Handle error if user data is not available
+      } 
+      else {
         console.error('User data not found after login');
       }
     } catch (error) {
