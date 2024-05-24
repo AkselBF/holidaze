@@ -92,7 +92,7 @@ const Carousel: React.FC = () => {
       } else {
         setHoverSide(null);
       }
-    };
+    }; 
 
     window.addEventListener("click", handleClick);
     window.addEventListener("mousemove", handleMouseMove);
