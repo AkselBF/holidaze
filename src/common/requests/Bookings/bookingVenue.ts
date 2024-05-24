@@ -4,7 +4,7 @@ import { User } from "../../storage/authStore";
 
 export const fetchVenueDetails = async (id: string): Promise<Venue> => {
   try {
-    const response = await fetch(`${url}/venues/${id}`);
+    const response = await fetch(`${url}/venues/${id}/?_bookings=true`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch venue details');

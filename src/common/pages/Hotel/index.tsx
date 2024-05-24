@@ -98,7 +98,7 @@ const Hotel: React.FC = () => {
       <div className='w-[90%] md:w-[80%] mx-auto flex flex-col lg:flex-row'>
         <div ref={mediaSlideshowRef} className='media-slideshow w-full md:w-[80%] lg:w-[50%] mx-auto'>
           <img src={primaryImage} alt={venue.name} 
-          className='w-full lg:max-h-[280px] object-cover rounded-lg' />
+          className='w-full lg:max-h-[280px] lg:min-h-[280px] object-cover rounded-lg' />
           {venue.media.length > 1 && (
             <div className='scrollbar-hotel-desc mt-4 overflow-x-auto'>
               <div className='flex space-x-2'>
