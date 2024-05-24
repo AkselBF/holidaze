@@ -102,11 +102,14 @@ const VenueSection: React.FC = () => {
             <p>Review any venues you have made as venue manager. All those successfully made will be kept in your profile in this part of the page.</p>
             <p>To close the venues, simply press the close button on the far right corner of this part.</p>
           </div>
-          <div className='w-full lg:w-[45%] mt-5 lg:mt-0 lg:mr-5 text-right'>
-            <button className='relative bg-[#FF5C00] p-6 rounded-full' onClick={handleAddVenue}>
-              <HotelRoundedIcon style={{ fontSize: '2rem' }} className='absolute text-black top-[20%] left-[18%]' />
-              <p className='absolute font-bold text-3xl top-[30%] left-[50%]'>+</p>
-            </button>
+          <div className='w-full lg:w-[45%] mt-5 lg:mt-0 lg:mr-5'>
+            <div className='flex flex-row text-right justify-end'>
+              <p className='text-white text-right font-semibold text-xl mt-1.5'>Add venue</p>
+              <button className='relative bg-[#FF5C00] p-6 rounded-full ml-5' onClick={handleAddVenue}>
+                <HotelRoundedIcon style={{ fontSize: '2rem' }} className='absolute text-black top-[20%] left-[18%]' />
+                <p className='absolute font-bold text-3xl top-[30%] left-[50%]'>+</p>
+              </button>
+            </div>
           </div>
         </div>
         
@@ -120,7 +123,7 @@ const VenueSection: React.FC = () => {
               <div className="relative">
                 <div className="venue-hover-overlay absolute inset-0 bg-black opacity-0 hover:opacity-50 transition-opacity"></div>
                 <div className="venue-buttons absolute inset-0 flex flex-col items-center justify-center top-[240px]">
-                  <button onClick={() => handleUpdateVenue(venue)} className="venue-button-update mx-auto text-lg text-white font-semibold bg-[#FF5C00] py-2 w-[160px] rounded-md">Update</button>
+                  <button onClick={() => handleUpdateVenue(venue)} className="venue-button-update mx-auto text-lg text-white font-semibold bg-[#FF5C00] py-2 w-[160px] rounded-md">Edit</button>
                   <button onClick={() => openDeleteModal(venue.id)} className="venue-button-delete mx-auto mt-2 text-lg text-white font-semibold bg-red-500 py-2 w-[160px] rounded-md">Delete</button>
                   <button onClick={() => openBookingsModal(venue)} className="venue-button-bookings mx-auto mt-2 text-lg text-white font-semibold bg-blue-500 py-2 w-[160px] rounded-md">Bookings</button>
                 </div>

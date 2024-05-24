@@ -126,13 +126,13 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
     <ThemeProvider theme={theme}>
       <div className='relative'>
         <button
-          className="lg:hidden fixed w-16 h-16 top-24 left-2 bg-black text-white px-4 py-2 rounded-full z-10 border border-transparent bg-clip-border overflow-hidden"
+          className="lg:hidden fixed w-16 h-16 top-24 left-2 bg-black text-white px-4 py-2 rounded-full z-20 border border-transparent bg-clip-border overflow-hidden"
           onClick={toggleDropdown}
         >
           <SortRoundedIcon style={{ fontSize: '2rem', color: 'white' }} />
         </button>
 
-        <div className={`fixed lg:absolute bg-[#171717cc] text-white w-[95%] sm:w-[300px] lg:w-[90%] left-2 lg:left-[5%] top-24 lg:-top-10 xl:-top-20 lg:-mt-20 rounded-b-lg rounded-tr-lg rounded-tl-[32px] lg:rounded-lg lg:px-16 pt-24 pb-6 lg:py-6 flex flex-col xl:flex-row space-y-4 lg:space-y-0 ${isDropdownOpen ? 'block' : 'hidden'} lg:block`}>
+        <div className={`fixed lg:absolute bg-[#171717cc] text-white w-[95%] sm:w-[300px] lg:w-[90%] left-2 lg:left-[5%] top-24 lg:-top-10 xl:-top-20 lg:-mt-20 rounded-b-lg z-10 rounded-tr-lg rounded-tl-[32px] lg:rounded-lg lg:px-16 pt-24 pb-6 lg:py-6 flex flex-col xl:flex-row space-y-4 lg:space-y-0 ${isDropdownOpen ? 'block' : 'hidden'} lg:block`}>
           <div className='flex flex-col lg:flex-row lg:justify-center xl:justify-normal items-center space-x-0 lg:space-x-3 space-y-4 lg:space-y-0'>
             {/* Country filter */}
             <div className='filter bg-black rounded-md flex flex-row py-2 px-3 cursor-pointer' onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}>
