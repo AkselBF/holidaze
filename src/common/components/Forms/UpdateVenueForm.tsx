@@ -6,6 +6,7 @@ import { useAuthStore } from '../../storage/authStore';
 import { Venue } from '../../interfaces/Venue/venueInterface';
 import { url, apiKey } from '../../constants/apiUrl';
 import { theme, StyledTextField, StyledTextArea, StyledCheckbox } from '../StyledComponents';
+import ScrollLock from '../ScrollLock';
 import '../../components/Scrollbars/FormsScrollbar.css';
 
 interface VenueFormData {
@@ -40,6 +41,7 @@ const UpdateVenueForm: React.FC<UpdateVenueFormProps> = ({ isOpen, onClose, venu
   const user = useAuthStore();
 
   const [mediaFields, setMediaFields] = useState<{ url: string; alt?: string }[]>([]);
+  const [lockScroll] = useState(true);
 
   useEffect(() => {
     if (venue) {
@@ -127,6 +129,7 @@ const UpdateVenueForm: React.FC<UpdateVenueFormProps> = ({ isOpen, onClose, venu
 
   return (
     <ThemeProvider theme={theme}>
+      <ScrollLock lock={lockScroll} />
       <div className="modal-overlay">
         {isOpen && (
           <div className="modal-container scrollbar-form w-[90%] h-[70%] overflow-y-auto">

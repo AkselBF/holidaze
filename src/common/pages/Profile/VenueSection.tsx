@@ -105,7 +105,7 @@ const VenueSection: React.FC = () => {
           <div className='w-full lg:w-[45%] mt-5 lg:mt-0 lg:mr-5'>
             <div className='flex flex-row text-right justify-end'>
               <p className='text-white text-right font-semibold text-xl mt-1.5'>Add venue</p>
-              <button className='relative bg-[#FF5C00] p-6 rounded-full ml-5' onClick={handleAddVenue}>
+              <button className='relative bg-[#FF5C00] p-6 rounded-full ml-5 hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.6)] transition-all' onClick={handleAddVenue}>
                 <HotelRoundedIcon style={{ fontSize: '2rem' }} className='absolute text-black top-[20%] left-[18%]' />
                 <p className='absolute font-bold text-3xl top-[30%] left-[50%]'>+</p>
               </button>

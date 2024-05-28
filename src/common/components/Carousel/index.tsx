@@ -184,10 +184,10 @@ const Carousel: React.FC = () => {
       {centeredVenue && centeredVenue.media && centeredVenue.media.length > 0 && (
         <div className="centered_venue_data absolute top-[480px] lg:top-[460px] w-full flex flex-col lg:flex-row justify-between mx-auto">
           <div className="w-full md:w-[80%] lg:w-[45%] mx-auto mb-5">
-            <img src={centeredVenue.media[0].url} alt={centeredVenue.name} className="w-full max-h-[280px] object-cover" />
+            <img src={centeredVenue.media[0].url} alt={centeredVenue.name} className="w-full max-h-[220px] sm:max-h-[280px] object-cover" />
           </div>
           <div className="w-full md:w-[80%] lg:w-[45%] mx-auto">
-            <p className="ibm-plex-sans-thai-bold text-5xl font-semibold line-clamp-1">{centeredVenue.name}</p>
+            <p className="ibm-plex-sans-thai-bold text-3xl sm:text-5xl font-semibold line-clamp-1">{centeredVenue.name}</p>
             <div className=" h-1 bg-slate-400 my-5 w-full"></div>
             <div className="flex flex-col min-[420px]:flex-row">
               <div className='flex flex-row mr-10 mb-5 sm:mb-0'>

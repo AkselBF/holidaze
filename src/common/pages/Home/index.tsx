@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from 'react-router-dom';
 import Carousel from "../../components/Carousel";
-
+import ImageSlider from "../../components/HeroSlider";
 import darkLogo from "../../images/Finished_logo_dark.png"
-import hero from "../../images/heroOne.png";
+//import hero from "../../images/heroOne.png";
 
 
 const Home: React.FC = () => {
@@ -15,8 +15,9 @@ const Home: React.FC = () => {
           style={{ background: 'radial-gradient(ellipse at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 90%)' }}>Welcome to Holidaze</h1>
         </div>
         
-        <div className="w-full -mt-[80px]">
-          <img src={hero} alt="top hero" className="w-full min-h-[260px] max-h-[580px] object-cover" />
+        <div className="w-full -mt-[80px] max-h-[520px]">
+          {/*<img src={hero} alt="top hero" className="w-full min-h-[260px] max-h-[520px] object-cover" />*/}
+          <ImageSlider />
         </div>
       </div>
 

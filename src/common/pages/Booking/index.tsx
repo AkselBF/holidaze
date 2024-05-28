@@ -5,7 +5,7 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
-import { cardTheme, StyledTextField } from '../../components/StyledComponents';
+import { cardTheme, StyledTextField, StyledDatePicker } from '../../components/StyledComponents';
 import { fetchVenueDetails, createBooking } from '../../requests/Bookings/bookingVenue';
 import { Venue } from '../../interfaces/Venue/venueInterface';
 import Select from '@mui/material/Select';
@@ -16,11 +16,19 @@ import ManIcon from '@mui/icons-material/Man';
 import WomanIcon from '@mui/icons-material/Woman';
 import BoyIcon from '@mui/icons-material/Boy';
 import GirlIcon from '@mui/icons-material/Girl';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+//import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import './Booking.css';
 import '../../components/Scrollbars/BookingScrollbar.css';
 import '../../components/Scrollbars/HotelScrollbar.css';
+import '../../components/Scrollbars/FilterScrollbar.css';
 import '../../Fonts/Fonts.css';
+
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
+//import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+//import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+//import { TextFieldProps } from '@mui/material';
 
 interface BookingFormValues {
   cardNumber: string;
@@ -40,13 +48,14 @@ const Booking: React.FC<BookingProps> = (props) => {
   const [venue, setVenue] = useState<Venue | null>(null);
   const [numAdults, setNumAdults] = useState(1);
   const [numChildren, setNumChildren] = useState(0);
-  const [arrivalDate, setArrivalDate] = useState('');
-  const [departureDate, setDepartureDate] = useState('');
+  const [arrivalDate, setArrivalDate] = useState<Dayjs | null>(null);
+  const [departureDate, setDepartureDate] = useState<Dayjs | null>(null);
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const [isCardNumberValid, setIsCardNumberValid] = useState(false);
   const [isExpiryDateValid, setIsExpiryDateValid] = useState(false);
   const [isCvcValid, setIsCvcValid] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [disabledDates, setDisabledDates] = useState<Dayjs[]>([]);
 
   const { user } = useAuthStore();
 
@@ -70,8 +79,23 @@ const Booking: React.FC<BookingProps> = (props) => {
   }, [id]);
 
   useEffect(() => {
+    if (venue) {
+      const disabledDates = venue.bookings.flatMap(booking => {
+        const dateFrom = dayjs(booking.dateFrom);
+        const dateTo = dayjs(booking.dateTo);
+        const dates = [];
+        for (let d = dateFrom; d.isBefore(dateTo) || d.isSame(dateTo, 'day'); d = d.add(1, 'day')) {
+          dates.push(d);
+        }
+        return dates;
+      });
+      setDisabledDates(disabledDates);
+    }
+  }, [venue]);
+
+  useEffect(() => {
     if (venue && arrivalDate && departureDate) {
-      const durationInDays = Math.ceil((new Date(departureDate).getTime() - new Date(arrivalDate).getTime()) / (1000 * 60 * 60 * 24));
+      const durationInDays = Math.ceil((departureDate.toDate().getTime() - arrivalDate.toDate().getTime()) / (1000 * 60 * 60 * 24));
       const basePricePerAdult = venue.price;
       const basePricePerChild = basePricePerAdult * 0.7;
       const totalPricePerAdult = basePricePerAdult * durationInDays;
@@ -80,26 +104,28 @@ const Booking: React.FC<BookingProps> = (props) => {
       const totalPriceForChildren = totalPricePerChild * numChildren;
       const totalPrice = totalPriceForAdults + totalPriceForChildren;
       setTotalPrice(totalPrice);
-    } 
-    else {
+    } else {
       setTotalPrice(venue ? venue.price : null);
     }
   }, [venue, numAdults, numChildren, arrivalDate, departureDate]);
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const dateValue = e.target.value;
-    const currentDate = new Date().toISOString().split('T')[0];
-    if (dateValue >= currentDate) {
-      if (e.target.name === 'arrivalDate') {
-        setArrivalDate(dateValue);
-      } 
-      else {
-        setDepartureDate(dateValue);
-      }
-    } 
-    else {
-      alert('Please select a future date.');
+  const handleDateChange = (date: Dayjs | null, name: string) => {
+    if (date && isDateDisabled(date)) {
+      alert('Selected date is already booked.');
+      return;
     }
+    if (name === 'arrivalDate') {
+      setArrivalDate(date);
+    } else {
+      setDepartureDate(date);
+    }
+  };
+
+  const isDateDisabled = (date: Dayjs) => {
+    const today = dayjs().startOf('day');
+    return date.isBefore(today) || disabledDates.some(disabledDate => 
+      disabledDate.toISOString().split('T')[0] === date.toDate().toISOString().split('T')[0]
+    );
   };
 
   const onSubmit: SubmitHandler<BookingFormValues> = async () => {
@@ -108,7 +134,7 @@ const Booking: React.FC<BookingProps> = (props) => {
         throw new Error('User or venue is not available');
       }
 
-      await createBooking(user, venue.id, arrivalDate, departureDate, numAdults + numChildren);
+      await createBooking(user, venue.id, arrivalDate!.toISOString(), departureDate!.toISOString(), numAdults + numChildren);
       props.onNewBooking();
       navigate('/success');
     } catch (error) {
@@ -141,7 +167,10 @@ const Booking: React.FC<BookingProps> = (props) => {
                           PaperProps: {
                             style: {
                               backgroundColor: 'black',
+                              overflowY: 'auto',
+                              maxHeight: '150px',
                             },
+                            className: 'filter-container',
                           },
                           sx: {
                             '& .MuiMenuItem-root': {
@@ -151,7 +180,9 @@ const Booking: React.FC<BookingProps> = (props) => {
                         }}
                       >
                         {[...Array(venue.maxGuests)].map((_, index) => (
-                          <MenuItem key={index + 1} value={index + 1}>{index + 1}</MenuItem>
+                          <MenuItem key={index} value={index} disabled={index + numChildren > venue.maxGuests}>
+                            {index}
+                          </MenuItem>
                         ))}
                       </Select>
                     </div>
@@ -168,7 +199,10 @@ const Booking: React.FC<BookingProps> = (props) => {
                           PaperProps: {
                             style: {
                               backgroundColor: 'black',
+                              overflowY: 'auto',
+                              maxHeight: '150px',
                             },
+                            className: 'filter-container',
                           },
                           sx: {
                             '& .MuiMenuItem-root': {
@@ -178,35 +212,33 @@ const Booking: React.FC<BookingProps> = (props) => {
                         }}
                       >
                         {[...Array(venue.maxGuests)].map((_, index) => (
-                          <MenuItem key={index + 1} value={index}>{index}</MenuItem>
+                          <MenuItem key={index} value={index} disabled={index + numAdults > venue.maxGuests}>
+                            {index}
+                          </MenuItem>
                         ))}
                       </Select>
                     </div>
                   </div>
                   
                   <div className='flex flex-col min-[850px]:flex-row lg:flex-col min-[1340px]:flex-row'>
-                    <div className='flex flex-row bg-black text-white rounded-md mx-2 my-2 h-[40px]'>
-                      <CalendarMonthIcon className='mx-2 my-auto' />
-                      <input
-                        type="date"
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <StyledDatePicker
+                        label="Arrival Date"
+                        format="YYYY-MM-DD"
                         value={arrivalDate}
-                        min={new Date().toISOString().split('T')[0]}
-                        onChange={handleDateChange}
-                        name="arrivalDate" 
-                        className='rounded-r-md text-white bg-black'
+                        onChange={(date) => handleDateChange(date, 'arrivalDate')}
+                        shouldDisableDate={isDateDisabled}
                       />
-                    </div>
-                    <div className='flex flex-row bg-black text-white rounded-md mx-2 my-2 h-[40px]'>
-                      <CalendarMonthIcon className='mx-2 my-auto' />
-                      <input
-                        type="date"
+                    </LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <StyledDatePicker
+                        label="Departure Date"
+                        format="YYYY-MM-DD"
                         value={departureDate}
-                        min={arrivalDate || new Date().toISOString().split('T')[0]}
-                        onChange={handleDateChange}
-                        name="departureDate"
-                        className='rounded-r-md text-white bg-black'
+                        onChange={(date) => handleDateChange(date, 'departureDate')}
+                        shouldDisableDate={isDateDisabled}
                       />
-                    </div>
+                    </LocalizationProvider>
                   </div>
                 </div>
                 
@@ -216,7 +248,7 @@ const Booking: React.FC<BookingProps> = (props) => {
               </div>
 
               <div className='flex flex-col lg:flex-row mt-10 space-y-3'>
-                <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} className='lg:w-[50%] max-h-[260px] lg:mr-5 object-contain' />
+                <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} className='lg:w-[50%] max-h-[260px] lg:mr-5 object-contain rounded-lg' />
                 <div>
                   <div className='flex flex-row'>
                     <StarIcon />
@@ -338,69 +370,3 @@ const Booking: React.FC<BookingProps> = (props) => {
 };
 
 export default Booking;
-
-/*
-//imports for mui date picker:
-
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-*/
-
-/*
-//npm installs for date mui:
-
-npm install @mui/x-date-pickers
-// Install date library (if not already installed)
-npm install dayjs
-*/
-
-/*
-// For using the muo date picker
-
-export default function MaterialUIPickers() {
-  const [value, setValue] = React.useState<Dayjs | null>(
-    dayjs('2014-08-18T21:11:54'),
-  );
-
-  const handleChange = (newValue: Dayjs | null) => {
-    setValue(newValue);
-  };
-
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Stack spacing={3}>
-        <DesktopDatePicker
-          label="Date desktop"
-          inputFormat="MM/DD/YYYY"
-          value={value}
-          onChange={handleChange}
-          renderInput={(params) => <TextField {...params} />}
-        />
-        <MobileDatePicker
-          label="Date mobile"
-          inputFormat="MM/DD/YYYY"
-          value={value}
-          onChange={handleChange}
-          renderInput={(params) => <TextField {...params} />}
-        />
-        <TimePicker
-          label="Time"
-          value={value}
-          onChange={handleChange}
-          renderInput={(params) => <TextField {...params} />}
-        />
-        <DateTimePicker
-          label="Date&Time picker"
-          value={value}
-          onChange={handleChange}
-          renderInput={(params) => <TextField {...params} />}
-        />
-      </Stack>
-    </LocalizationProvider>
-  );
-}
-*/

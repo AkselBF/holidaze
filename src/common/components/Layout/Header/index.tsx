@@ -1,24 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../../../images/finished_logo.png';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import HotelRoundedIcon from '@mui/icons-material/HotelRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
-import DarkModeSharpIcon from '@mui/icons-material/DarkModeSharp';
+//import DarkModeSharpIcon from '@mui/icons-material/DarkModeSharp';
 //import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { useAuthStore } from '../../../storage/authStore';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [atTop, setAtTop] = useState(true);
   const { user } = useAuthStore();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleScroll = () => {
+    if (window.scrollY === 0) {
+      setAtTop(true);
+    } else {
+      setAtTop(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <header className="sticky top-2 bg-[#171717] text-white m-2 px-4 lg:px-2 py-2 rounded-lg z-50">
+    <header className={`sticky top-2 text-white m-2 px-4 lg:px-2 rounded-lg z-50 transition-all duration-300 ${atTop ? 'bg-transparent py-2 top-4' : 'bg-[#171717] py-2'}`}>
       <nav className="container mx-auto flex justify-between items-center">
         <div className="hidden lg:flex flex-grow justify-start mx-4">
           <Link to="/" className="text-md mx-4 p-2 bg-black rounded-full">
@@ -34,6 +50,9 @@ const Header: React.FC = () => {
         </Link>
 
         <div className="hidden lg:flex flex-grow justify-end mx-4">
+          <div className="text-md mx-4 cursor-pointer p-2 rounded-full">
+            <div className='w-[24px]'></div>
+          </div>
           {user ? (
             <Link to={`/profiles/${user.name}`} className="text-md mx-4 p-2 bg-black rounded-full">
               <PersonRoundedIcon />
@@ -43,9 +62,11 @@ const Header: React.FC = () => {
               <PersonRoundedIcon />
             </Link>
           )}
+          {/*
           <div className="text-md mx-4 cursor-pointer p-2 bg-black rounded-full">
             <DarkModeSharpIcon />
           </div>
+          */}
         </div>
 
         <div className="flex items-center">
@@ -75,10 +96,12 @@ const Header: React.FC = () => {
                   <p className='ml-3'>Login</p>
                 </Link>
               )}
+              {/*
               <div className="text-md my-3 flex flex-row cursor-pointer" onClick={toggleMenu}>
                 <DarkModeSharpIcon />
                 <p className='ml-3'>Dark</p>
               </div>
+              */}
             </div>
           </div>
         </div>

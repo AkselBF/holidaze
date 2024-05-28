@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../storage/authStore';
 import { useNavigate } from 'react-router-dom';
+import ScrollLock from '../ScrollLock';
 import './Modal.css';
 
 const LoginModal: React.FC<{ onClose: () => void; id: string }> = ({ onClose, id }) => {
@@ -10,6 +11,7 @@ const LoginModal: React.FC<{ onClose: () => void; id: string }> = ({ onClose, id
   const navigate = useNavigate();
 
   const { login } = useAuthStore();
+  const [lockScroll] = useState(true);
 
   const handleLogin = async () => {
     try {
@@ -48,6 +50,7 @@ const LoginModal: React.FC<{ onClose: () => void; id: string }> = ({ onClose, id
 
   return (
     <div className="modal-overlay">
+      <ScrollLock lock={lockScroll} />
       <div className="modal-container w-[95%] sm:w-[400px]">
         <h2 className="text-2xl text-white text-center font-semibold mb-4">Login</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}

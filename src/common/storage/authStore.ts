@@ -99,11 +99,12 @@ export const useAuthStore = create<AuthState>((set) => {
         });
 
         if (response.ok) {
-          const data = await response.json();
-          const token = data.data.accessToken;
+          //const data = await response.json();
+          //setUser({ ...data.data });
+          /*const token = data.data.accessToken;
           localStorage.setItem('accessToken', token);
           const avatar = data.data.avatar?.url || avatarImage;
-          setUser({ ...data.data, token, avatar });
+          setUser({ ...data.data, token, avatar });*/
         } 
         else {
           throw new Error('Registration failed');
