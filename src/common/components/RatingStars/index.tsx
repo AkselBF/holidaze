@@ -1,7 +1,7 @@
 //import React from 'react';
-import StarIcon from '../../images/starIcon.png';
-import HalfStarIcon from '../../images/halfStarIcon.png';
-import EmptyStarIcon from '../../images/emptyStarIcon.png';
+import StarIcon from '../../../assets/images/starIcon.png';
+import HalfStarIcon from '../../../assets/images/halfStarIcon.png';
+import EmptyStarIcon from '../../../assets/images/emptyStarIcon.png';
 
 const RatingStars = (rating: number) => {
   const totalStars = 5;

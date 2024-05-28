@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Logo from '../../../images/finished_logo.png';
+import Logo from '../../../../assets/images/finished_logo.png';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import HotelRoundedIcon from '@mui/icons-material/HotelRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';

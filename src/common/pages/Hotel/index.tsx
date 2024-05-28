@@ -8,8 +8,8 @@ import LoginModal from '../../components/Modals/LoginModal';
 import '../../components/Scrollbars/HotelScrollbar.css';
 import '../../Fonts/Fonts.css';
 
-import Allowed from '../../images/allowed.png';
-import Unallowed from '../../images/unallowed.png';
+import Allowed from '../../../assets/images/allowed.png';
+import Unallowed from '../../../assets/images/unallowed.png';
 
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import StarIcon from '@mui/icons-material/Star';
@@ -52,7 +52,7 @@ const Hotel: React.FC = () => {
     };
   }, [venue, primaryImage]);
   
-  const maxDescriptionHeight = mediaSlideshowHeight >= 290 ? 120 : 72;
+  const maxDescriptionHeight = mediaSlideshowHeight >= 280 ? 120 : 72;
 
   useEffect(() => {
     const fetchVenue = async () => {
@@ -182,7 +182,7 @@ const Hotel: React.FC = () => {
               </div>
             </div>
           </div>
-          <p className={`scrollbar-hotel-desc max-h-[200px] lg:max-h-[${maxDescriptionHeight}px] overflow-y-auto px-2`}>
+          <p className={`scrollbar-hotel-desc max-h-[200px] lg:h-[${maxDescriptionHeight}px] lg:max-h-[120px] overflow-y-auto px-2`}>
             {venue.description}
           </p>
 

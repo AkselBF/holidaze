@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAuthStore, User } from '../../storage/authStore';
+import { useAuthStore } from '../../storage/authStore';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { cardTheme, StyledTextField, StyledDatePicker } from '../../components/StyledComponents';
 import { fetchVenueDetails, createBooking } from '../../requests/Bookings/bookingVenue';
 import { Venue } from '../../interfaces/Venue/venueInterface';
+import { User } from '../../interfaces/User/userInterface';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import LocationOnIcon from '@mui/icons-material/LocationOn';

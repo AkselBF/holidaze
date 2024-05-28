@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from 'react-router-dom';
 import Carousel from "../../components/Carousel";
 import ImageSlider from "../../components/HeroSlider";
-import darkLogo from "../../images/Finished_logo_dark.png"
+import darkLogo from "../../../assets/images/Finished_logo_dark.png"
 //import hero from "../../images/heroOne.png";
 
 

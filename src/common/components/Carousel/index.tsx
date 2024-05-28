@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useCarouselStore, Venue } from "../../storage/carouselStore";
+import { useCarouselStore } from "../../storage/carouselStore";
+import { Venue } from "../../interfaces/Venue/venueInterface";
 import RatingStars from "../RatingStars";
 import { Link } from "react-router-dom";
 
@@ -9,8 +10,8 @@ import '../../Fonts/Fonts.css';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 
-import Allowed from '../../images/allowed.png';
-import Unallowed from '../../images/unallowed.png';
+import Allowed from '../../../assets/images/allowed.png';
+import Unallowed from '../../../assets/images/unallowed.png';
 
 import StarIcon from '@mui/icons-material/Star';
 import WifiIcon from '@mui/icons-material/Wifi';

@@ -1,6 +1,6 @@
 import { url, apiKey } from "../../constants/apiUrl";
 import { Venue } from "../../interfaces/Venue/venueInterface";
-import { User } from "../../storage/authStore";
+import { User } from "../../interfaces/User/userInterface";
 
 export const fetchVenueDetails = async (id: string): Promise<Venue> => {
   try {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../storage/authStore';
-import background from '../../images/backgroundImg.png';
 import Booking from '../Booking';
 import BookingsSection from './BookingsSection';
 import VenueSection from './VenueSection';
@@ -9,7 +8,8 @@ import ToggleSectionButton from '../../components/ToggleSectionButton';
 import { fetchUserBookings } from '../../requests/Profiles/profileBookings';
 import { Booking as BookingInterface } from '../../interfaces/Booking/bookingInterface';
 import ScrollLock from '../../components/ScrollLock';
-import './Modal.css';
+import background from '../../../assets/images/backgroundImg.png';
+import '../../components/Modals/Modal.css'
 import '../../components/Scrollbars/ProfileScrollbar.css';
 
 
@@ -82,7 +82,7 @@ const Profile: React.FC = () => {
   };
 
   const isValidImageUrl = (url: string) => {
-    return /^(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)$/.test(url);
+    return /^(http(s?):)([/|.|\w|\s|-])*/.test(url);
   };
 
   const handleNewBooking = () => {
@@ -107,8 +107,9 @@ const Profile: React.FC = () => {
                   className='h-[120px] rounded-full cursor-pointer'
                 />
                 {hoveringAvatar && (
-                  <div className='absolute cursor-pointer top-0 left-0 w-full h-full bg-[#171717cc] flex justify-center items-center'>
-                    <p className='text-white font-semibold'>Change avatar</p>
+                  <div className='absolute cursor-pointer top-0 left-0 w-full h-full bg-[#171717cc] flex flex-col justify-center items-center'>
+                    <p className='text-white font-semibold'>Edit avatar</p>
+                    <p className='text-white text-xs mt-1'>jpg only</p>
                   </div>
                 )}
               </div>
@@ -123,11 +124,14 @@ const Profile: React.FC = () => {
                         value={newAvatarUrl}
                         onChange={(e) => setNewAvatarUrl(e.target.value)}
                         className="modal-input"
-                        placeholder="Enter Image URL"
+                        placeholder="Enter Image address url"
                       />
                       {avatarInputError && <p className="modal-error">{avatarInputError}</p>}
-                      <button onClick={handleAvatarChange} className="modal-confirm-button">
-                        Confirm
+                      <button 
+                        onClick={handleAvatarChange} 
+                        disabled={!isValidImageUrl(newAvatarUrl)} 
+                        className={`modal-confirm-button ${!isValidImageUrl(newAvatarUrl) ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                          Confirm
                       </button>
                     </div>
                   </>

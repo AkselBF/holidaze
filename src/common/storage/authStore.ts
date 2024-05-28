@@ -1,16 +1,8 @@
 import { create } from 'zustand';
 import { loginUrl, registerUrl, url, apiKey } from '../constants/apiUrl';
-//import { User } from '../interfaces/User/userInterface';
-import avatarImage from '../images/avatarBase.png';
+import { User } from '../interfaces/User/userInterface';
+import avatarImage from '../../assets/images/avatarBase.png';
 
-export interface User {
-  id?: string;
-  name?: string;
-  email?: string;
-  avatar?: string;
-  venueManager?: boolean;
-  token: string | null;
-}
 
 interface AuthState {
   user: User | null;

@@ -6,7 +6,9 @@ import { useVenuesStore } from '../../storage/venuesStore';
 import { url, apiKey } from '../../constants/apiUrl';
 import { theme, StyledTextField, StyledTextArea, StyledCheckbox } from '../StyledComponents';
 import ScrollLock from '../ScrollLock';
+import { handleNumberInput } from '../HandleNumberInput';
 import '../../components/Scrollbars/FormsScrollbar.css';
+import './InputArrows.css';
 
 interface VenueFormData {
   name: string;
@@ -34,7 +36,7 @@ interface AddVenueFormProps {
 }
 
 const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
-  const { control, handleSubmit, setError, watch, trigger, formState: { errors } } = useForm<VenueFormData>();
+  const { control, handleSubmit, setError, clearErrors, watch, formState: { errors } } = useForm<VenueFormData>();
   const nameValue = watch('name', '');
   const descriptionValue = watch('description', '');
   const priceValue = watch('price', '');
@@ -69,7 +71,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
 
   const onSubmit: SubmitHandler<VenueFormData> = async (data) => {
     if (data.name.length < 3) {
-      setError('name', { type: 'manual', message: 'Name must be at least 3 characters' });
+      setError('name', { type: 'manual', message: 'Name must be at least 4 characters' });
       return;
     }
 
@@ -79,7 +81,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
       media: mediaFields.map((_, index) => ({
         url: data.media?.[index]?.url || '',
         alt: data.media?.[index]?.alt || '',
-      })),
+      })).filter(({ url }) => url !== ''),
       price: parseFloat(data.price),
       maxGuests: parseFloat(data.maxGuests),
       rating: parseFloat(data.rating),
@@ -139,15 +141,15 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
       !errors.price &&
       !errors.maxGuests &&
       !errors.rating;
-
+  
     setIsButtonDisabled(!isFormValid);
   }, [
     nameValue,
     descriptionValue,
+    mediaValues,
     priceValue,
     maxGuestsValue,
     ratingValue,
-    mediaValues,
     mediaFields,
     errors
   ]);
@@ -158,7 +160,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
       <div className="modal-overlay">
         <div className="modal-container scrollbar-form w-[90%] h-[70%] overflow-y-auto">
           <h3 className='text-[#FF5C00] text-2xl font-semibold text-center mt-3'>Add Venue</h3>
-          <button className="close-button text-white bg-[#42A4FF] py-1 px-5 rounded-md" onClick={onClose}>Close</button>
+          <button className="close-button text-white text-xl bg-red-500 py-0.5 px-2 rounded-full" onClick={onClose}>&times;</button>
           <form className='text-white flex flex-col' onSubmit={handleSubmit(onSubmit)}>
 
             {/* Name */}
@@ -184,12 +186,14 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                       if (e.target.value.length < 3) {
                         setError('name', { type: 'manual', message: 'Name must be at least 3 characters' });
                       } else {
-                        trigger('name');
+                        clearErrors('name');
                       }
                     }}
                     onBlur={() => {
                       if (field.value.length < 3) {
                         setError('name', { type: 'manual', message: 'Name must be at least 3 characters' });
+                      } else {
+                        clearErrors('name');
                       }
                     }}
                   />
@@ -218,12 +222,14 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                         if (e.target.value.length < 16) {
                           setError('description', { type: 'manual', message: 'Description must be at least 16 characters' });
                         } else {
-                          trigger('description');
+                          clearErrors('description');
                         }
                       }}
                       onBlur={() => {
                         if (field.value.length < 16) {
                           setError('description', { type: 'manual', message: 'Description must be at least 16 characters' });
+                        } else {
+                          clearErrors('description');
                         }
                       }}
                     />
@@ -241,26 +247,17 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                   control={control}
                   defaultValue=""
                   rules={{
-                    pattern: {
-                      value: /\.(jpg|jpeg|png|gif|bmp)$/i,
-                      message: 'Must be a valid image URL (jpg, jpeg, png, gif, bmp)',
-                    },
+                    validate: (value) => !value || /\.(jpg|jpeg|png|gif|bmp)$/i.test(value) || 'Invalid URL or file type',
                   }}
                   render={({ field, fieldState }) => (
                     <StyledTextField
                       {...field}
                       label={`Media URL ${index + 1}`}
+                      type='text'
                       variant="outlined"
                       fullWidth
                       error={!!fieldState.error}
                       helperText={fieldState.error ? fieldState.error.message : ''}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        trigger(`media.${index}.url`);
-                      }}
-                      onBlur={() => {
-                        trigger(`media.${index}.url`);
-                      }}
                     />
                   )}
                 />
@@ -303,26 +300,40 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                   name="price"
                   control={control}
                   defaultValue=""
-                  rules={{ required: 'Price needed' }}
+                  rules={{ 
+                    required: 'Required', 
+                    min: { value: 0, message: 'Min 0' }, 
+                    max: { value: 99999, message: 'Max 99999' } 
+                  }}
                   render={({ field, fieldState }) => (
                     <StyledTextField
-                      {...field}
-                      label="Price"
-                      variant="outlined"
-                      type="number"
-                      required
-                      fullWidth
-                      autoComplete="off"
-                      error={!!fieldState.error}
-                      helperText={fieldState.error ? fieldState.error.message : ' '}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        trigger('price');
-                      }}
-                      onBlur={() => {
-                        trigger('price');
-                      }}
-                    />
+  {...field}
+  label="Price"
+  variant="outlined"
+  type="number"
+  required
+  fullWidth
+  autoComplete="off"
+  error={!!fieldState.error}
+  helperText={fieldState.error ? fieldState.error.message : ' '}
+  onChange={(e) => {
+    handleNumberInput(e, 0, 99999);
+    field.onChange(e);
+    if (e.target.value === '' || parseFloat(e.target.value) < 0 || parseFloat(e.target.value) > 99999) {
+      setError('price', { type: 'manual', message: 'Price must be between 0 and 99999' });
+    } else {
+      clearErrors('price');
+    }
+  }}
+  onBlur={() => {
+    if (field.value === '' || parseFloat(field.value) < 0 || parseFloat(field.value) > 99999) {
+      setError('price', { type: 'manual', message: 'Price must be between 0 and 99999' });
+    } else {
+      clearErrors('price');
+    }
+  }}
+  inputProps={{ min: 0, max: 99999 }}
+/>
                   )}
                 />
               </div>
@@ -333,26 +344,40 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                   name="maxGuests"
                   control={control}
                   defaultValue=""
-                  rules={{ required: 'Max guests needed' }}
+                  rules={{ 
+                    required: 'Required', 
+                    min: { value: 1, message: 'Min 1' }, 
+                    max: { value: 12, message: 'Max 12' } 
+                  }}
                   render={({ field, fieldState }) => (
                     <StyledTextField
-                      {...field}
-                      label="Max Guests"
-                      variant="outlined"
-                      type="number"
-                      required
-                      fullWidth
-                      autoComplete="off"
-                      error={!!fieldState.error}
-                      helperText={fieldState.error ? fieldState.error.message : ' '}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        trigger('maxGuests');
-                      }}
-                      onBlur={() => {
-                        trigger('maxGuests');
-                      }}
-                    />
+  {...field}
+  label="Max Guests"
+  variant="outlined"
+  type="number"
+  required
+  fullWidth
+  autoComplete="off"
+  error={!!fieldState.error}
+  helperText={fieldState.error ? fieldState.error.message : ' '}
+  onChange={(e) => {
+    handleNumberInput(e, 1, 12);
+    field.onChange(e);
+    if (e.target.value === '' || parseFloat(e.target.value) < 1 || parseFloat(e.target.value) > 12) {
+      setError('maxGuests', { type: 'manual', message: 'Max Guests must be between 1 and 12' });
+    } else {
+      clearErrors('maxGuests');
+    }
+  }}
+  onBlur={() => {
+    if (field.value === '' || parseFloat(field.value) < 1 || parseFloat(field.value) > 12) {
+      setError('maxGuests', { type: 'manual', message: 'Max Guests must be between 1 and 12' });
+    } else {
+      clearErrors('maxGuests');
+    }
+  }}
+  inputProps={{ min: 1, max: 12 }}
+/>
                   )}
                 />
               </div>
@@ -363,26 +388,40 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                   name="rating"
                   control={control}
                   defaultValue=""
-                  rules={{ required: 'Rating needed' }}
+                  rules={{ 
+                    required: 'Required', 
+                    min: { value: 0, message: 'Min 0' }, 
+                    max: { value: 5, message: 'Max 5' } 
+                  }}
                   render={({ field, fieldState }) => (
                     <StyledTextField
-                      {...field}
-                      label="Rating"
-                      variant="outlined"
-                      type="number"
-                      required
-                      fullWidth
-                      autoComplete="off"
-                      error={!!fieldState.error}
-                      helperText={fieldState.error ? fieldState.error.message : ' '}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        trigger('rating');
-                      }}
-                      onBlur={() => {
-                        trigger('rating');
-                      }}
-                    />
+  {...field}
+  label="Rating"
+  variant="outlined"
+  type="number"
+  required
+  fullWidth
+  autoComplete="off"
+  error={!!fieldState.error}
+  helperText={fieldState.error ? fieldState.error.message : ' '}
+  onChange={(e) => {
+    handleNumberInput(e, 0, 5);
+    field.onChange(e);
+    if (e.target.value === '' || parseFloat(e.target.value) < 0 || parseFloat(e.target.value) > 5) {
+      setError('rating', { type: 'manual', message: 'Rating must be between 0 and 5' });
+    } else {
+      clearErrors('rating');
+    }
+  }}
+  onBlur={() => {
+    if (field.value === '' || parseFloat(field.value) < 0 || parseFloat(field.value) > 5) {
+      setError('rating', { type: 'manual', message: 'Rating must be between 0 and 5' });
+    } else {
+      clearErrors('rating');
+    }
+  }}
+  inputProps={{ min: 0, max: 5 }}
+/>
                   )}
                 />
               </div>
@@ -473,9 +512,6 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
               </div>
             </div>
 
-            {/* City, Country, Continent (optional) */}
-            {/* Add input fields for City, Country, Continent here if needed */}
-
             {/*<button type="submit">Submit</button>*/}
             <div className='mx-auto justify-center text-center w-full my-6'>
               <Button 
@@ -484,7 +520,10 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                 color="secondary" 
                 className='w-[50%] mx-auto' 
                 disabled={isButtonDisabled}
-                style={{ opacity: isButtonDisabled ? 0.8 : 1 }}>
+                style={{ 
+                  opacity: isButtonDisabled ? 1 : 1,
+                  backgroundColor: isButtonDisabled ? '#FF5C0080' : theme.palette.secondary.main,
+                }}>
                   Confirm
               </Button>
             </div>

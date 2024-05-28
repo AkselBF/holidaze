@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button, ThemeProvider } from '@mui/material';
 import { useAuthStore } from '../../storage/authStore';
-//import { Venue } from '../../storage/venuesStore';
 import { Venue } from '../../interfaces/Venue/venueInterface';
 import { url, apiKey } from '../../constants/apiUrl';
 import { theme, StyledTextField, StyledTextArea, StyledCheckbox } from '../StyledComponents';
@@ -134,7 +133,7 @@ const UpdateVenueForm: React.FC<UpdateVenueFormProps> = ({ isOpen, onClose, venu
         {isOpen && (
           <div className="modal-container scrollbar-form w-[90%] h-[70%] overflow-y-auto">
             <h3 className='text-[#FF5C00] text-2xl font-semibold text-center mt-3'>Update Venue</h3>
-            <button className="close-button text-white bg-[#42A4FF] py-1 px-5 rounded-md" onClick={onClose}>Close</button>
+            <button className="close-button text-white text-xl bg-red-500 py-0.5 px-2 rounded-full" onClick={onClose}>&times;</button>
             <form className='text-white flex flex-col' onSubmit={handleSubmit(onSubmit)}>
               {/* Name */}
               <div className='w-[80%] mx-auto text-white pt-8 pb-3'>
