@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuthStore } from '../../storage/authStore';
 import { url, apiKey } from '../../constants/apiUrl';
+import ScrollLock from '../ScrollLock';
 import './Modal.css';
 
 interface DeleteVenueModalProps {
@@ -12,6 +13,7 @@ interface DeleteVenueModalProps {
 
 const DeleteVenueModal: React.FC<DeleteVenueModalProps> = ({ id, name, onDelete, onClose }) => {
   const user = useAuthStore();
+  const [lockScroll] = useState(true);
 
   const handleDelete = async () => {
     try {
@@ -40,6 +42,7 @@ const DeleteVenueModal: React.FC<DeleteVenueModalProps> = ({ id, name, onDelete,
 
   return (
     <div className="modal-overlay">
+      <ScrollLock lock={lockScroll} />
       <div className="modal-container text-white">
         <div className='relative'>
           <span className="text-xl font-semibold cursor-pointer absolute -top-2 right-0" onClick={onClose}>&times;</span>

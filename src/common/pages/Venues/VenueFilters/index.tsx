@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { url } from '../../../constants/apiUrl';
 import { theme, StyledCheckbox } from '../../../components/StyledComponents';
 import { ThemeProvider } from '@mui/material';
 
@@ -61,6 +62,7 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
   const [isParkingChecked, setIsParkingChecked] = useState<boolean>(false);
   const [isBreakfastChecked, setIsBreakfastChecked] = useState<boolean>(false);
   const [isPetsChecked, setIsPetsChecked] = useState<boolean>(false);
+  const [noMatches, setNoMatches] = useState<boolean>(false);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -97,9 +99,31 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
     onChangePriceRange([minPrice, maxPrice]);
   };
 
-  const handleSearch = (query: string) => {
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value;
     setSearchQuery(query);
     onSearch(query);
+  };
+
+  const handleSearch = async () => {
+    if (searchQuery.trim() === '') {
+      setNoMatches(false);
+      onSearch(searchQuery);
+      return;
+    }
+    try {
+      const response = await fetch(`${url}/venues/search?q=${searchQuery}`);
+      const data = await response.json();
+      if (data.length === 0) {
+        setNoMatches(true);
+      } else {
+        setNoMatches(false);
+        onSearch(data);
+        console.log(noMatches, handleSearch);
+      }
+    } catch (error) {
+      console.error('Error fetching venues:', error);
+    }
   };
   
   const handleWifiChange = (checked: boolean) => {
@@ -121,6 +145,8 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
     setIsPetsChecked(checked);
     onFilterPets(checked);
   };
+
+  //console.log(noMatches, handleSearch);
 
   return (
     <ThemeProvider theme={theme}>
@@ -214,8 +240,8 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
                 type='text'
                 placeholder='Search venues...'
                 value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                className='bg-[#00000000] xl:absolute lg:right-0 lg:bottom-0 py-2 px-3 text-white focus:outline-none border-b-2 lg:mt-4 xl:mt-auto border-[#B9B9B9] lg:w-[400px] xl:w-[205px]'
+                onChange={handleSearchChange}
+                className='bg-[#00000000] xl:absolute lg:right-0 lg:bottom-0 py-2 px-3 text-white focus:outline-none border-b-2 lg:mt-4 xl:mt-auto border-[#B9B9B9] lg:w-[400px] xl:w-[310px]'
               />
               <SearchIcon className='absolute top-1/2 lg:top-9 xl:-top-5 right-2 lg:left-[371px] xl:right-2 xl:left-auto transform -translate-y-1/2 text-white' />
             </div>

@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Venue } from "../../interfaces/Venue/venueInterface";
 import { formatDate } from "../DateFormatter/formatDate";
+import ScrollLock from '../ScrollLock';
 import './Modal.css';
 import '../Scrollbars/FormsScrollbar.css';
 
@@ -11,9 +12,11 @@ interface BookingsModalProps {
 
 const BookingsModal: React.FC<BookingsModalProps> = ({ venue, onClose }) => {
   if (!venue) return null;
+  const [lockScroll] = useState(true);
 
   return (
     <div className="modal-overlay">
+      <ScrollLock lock={lockScroll} />
       <div className="modal-container scrollbar-form mt-5 text-white w-[90%] lg:w-[60%] h-[80%] overflow-y-auto p-6">
         <div className='relative'>
           <span className="text-2xl font-semibold cursor-pointer absolute -top-2 right-1" onClick={onClose}>&times;</span>

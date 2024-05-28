@@ -10,6 +10,10 @@ import background from '../../images/backgroundImg.png';
 const Login: React.FC = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
 
+  const handleRegisterSuccess = () => {
+    setIsLoginForm(true);
+  };
+
   return (
     <div className='p-2' style={{ backgroundImage: `url(${background})`, backgroundSize: 'cover', height: '100vh', marginTop: '-80px' }}>
       <div className='flex flex-row relative'>
@@ -26,7 +30,7 @@ const Login: React.FC = () => {
           }
         </button>
       </div>
-      {isLoginForm ? <LoginForm /> : <RegistrationForm />}
+      {isLoginForm ? <LoginForm /> : <RegistrationForm onRegisterSuccess={handleRegisterSuccess} />}
     </div>
   );
 };

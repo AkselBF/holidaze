@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button, ThemeProvider } from '@mui/material';
 import { useAuthStore } from '../../storage/authStore';
 import { useVenuesStore } from '../../storage/venuesStore';
 import { url, apiKey } from '../../constants/apiUrl';
 import { theme, StyledTextField, StyledTextArea, StyledCheckbox } from '../StyledComponents';
+import ScrollLock from '../ScrollLock';
 import '../../components/Scrollbars/FormsScrollbar.css';
 
 interface VenueFormData {
@@ -33,11 +34,20 @@ interface AddVenueFormProps {
 }
 
 const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
-  const { control, handleSubmit, formState: { errors } } = useForm<VenueFormData>();
+  const { control, handleSubmit, setError, watch, trigger, formState: { errors } } = useForm<VenueFormData>();
+  const nameValue = watch('name', '');
+  const descriptionValue = watch('description', '');
+  const priceValue = watch('price', '');
+  const maxGuestsValue = watch('maxGuests', '');
+  const ratingValue = watch('rating', '');
+  const mediaValues = watch('media', [{ url: '', alt: '' }]);
+
   const { fetchVenues } = useVenuesStore();
   const user = useAuthStore();
 
   const [mediaFields, setMediaFields] = useState([{ url: '', alt: '' }]);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [lockScroll] = useState(true);
 
   const addMediaField = () => {
     if (mediaFields.length < 6) {
@@ -50,7 +60,19 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
     setMediaFields(newMediaFields);
   };
 
+  /*
+  const validateMediaUrl = (value: string | undefined) => {
+    if (!value) return true;
+    return /\.(jpg|jpeg|png|gif|bmp)$/i.test(value) || 'Invalid image URL';
+  };
+  */
+
   const onSubmit: SubmitHandler<VenueFormData> = async (data) => {
+    if (data.name.length < 3) {
+      setError('name', { type: 'manual', message: 'Name must be at least 3 characters' });
+      return;
+    }
+
     const requestData = {
       name: data.name,
       description: data.description,
@@ -101,48 +123,145 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
     }
   };
 
+  useEffect(() => {
+    const isFormValid =
+      nameValue.length >= 3 &&
+      descriptionValue.length >= 16 &&
+      priceValue !== '' &&
+      maxGuestsValue !== '' &&
+      ratingValue !== '' &&
+      mediaFields.every(({ url }) => {
+        const mediaUrl = url || '';
+        return mediaUrl === '' || /\.(jpg|jpeg|png|gif|bmp)$/i.test(mediaUrl);
+      }) &&
+      !errors.name &&
+      !errors.description &&
+      !errors.price &&
+      !errors.maxGuests &&
+      !errors.rating;
+
+    setIsButtonDisabled(!isFormValid);
+  }, [
+    nameValue,
+    descriptionValue,
+    priceValue,
+    maxGuestsValue,
+    ratingValue,
+    mediaValues,
+    mediaFields,
+    errors
+  ]);
+
   return (
     <ThemeProvider theme={theme}>
+      <ScrollLock lock={lockScroll} />
       <div className="modal-overlay">
         <div className="modal-container scrollbar-form w-[90%] h-[70%] overflow-y-auto">
           <h3 className='text-[#FF5C00] text-2xl font-semibold text-center mt-3'>Add Venue</h3>
           <button className="close-button text-white bg-[#42A4FF] py-1 px-5 rounded-md" onClick={onClose}>Close</button>
           <form className='text-white flex flex-col' onSubmit={handleSubmit(onSubmit)}>
+
             {/* Name */}
-            <div className='w-[80%] mx-auto text-white pt-8 pb-3'>
+            <div className='w-[80%] mx-auto text-white pt-8 pb-1'>
               <Controller
                 name="name"
                 control={control}
                 defaultValue=""
-                render={({ field }) => (
-                  <StyledTextField {...field} label="Name" variant="outlined" className='w-full' />
+                rules={{ required: 'Name needed', minLength: { value: 3, message: 'Name must be at least 3 characters' } }}
+                render={({ field, fieldState }) => (
+                  <StyledTextField
+                    {...field}
+                    label="Name"
+                    variant="outlined"
+                    type="text"
+                    required
+                    fullWidth
+                    autoComplete="off"
+                    error={!!fieldState.error}
+                    helperText={fieldState.error ? fieldState.error.message : ' '}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      if (e.target.value.length < 3) {
+                        setError('name', { type: 'manual', message: 'Name must be at least 3 characters' });
+                      } else {
+                        trigger('name');
+                      }
+                    }}
+                    onBlur={() => {
+                      if (field.value.length < 3) {
+                        setError('name', { type: 'manual', message: 'Name must be at least 3 characters' });
+                      }
+                    }}
+                  />
                 )}
               />
-              {errors.name && <p className="error">Name is required and must be at least 3 characters long</p>}
             </div>
             
             {/* Description */}
-            <div className='w-[80%] mx-auto text-white py-3'>
+            <div className='w-[80%] mx-auto text-white py-1'>
+              <label htmlFor="description">Description</label>
               <Controller
                 name="description"
                 control={control}
                 defaultValue=""
-                render={({ field }) => (
-                  <StyledTextArea {...field} placeholder="Description" className='w-full' />
+                rules={{ required: 'Description needed', minLength: { value: 16, message: 'Description must be at least 16 characters' } }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <StyledTextArea
+                      {...field}
+                      id="description"
+                      required
+                      autoComplete="off"
+                      className="w-full h-24"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        if (e.target.value.length < 16) {
+                          setError('description', { type: 'manual', message: 'Description must be at least 16 characters' });
+                        } else {
+                          trigger('description');
+                        }
+                      }}
+                      onBlur={() => {
+                        if (field.value.length < 16) {
+                          setError('description', { type: 'manual', message: 'Description must be at least 16 characters' });
+                        }
+                      }}
+                    />
+                    {fieldState.error && <p className="text-sm text-red-500">{fieldState.error.message}</p>}
+                  </>
                 )}
               />
-              {errors.description && <p className="error">Description is required and must be at least 16 characters long</p>}
             </div>
 
             {/* Media inputs */}
             {mediaFields.map((_, index) => (
-              <div key={index} className='w-[80%] mx-auto text-white py-3 flex items-center'>
+              <div key={index} className='w-[80%] mx-auto text-white py-2 flex items-center'>
                 <Controller
                   name={`media.${index}.url`}
                   control={control}
                   defaultValue=""
-                  render={({ field }) => (
-                    <StyledTextField {...field} label={`Image URL ${index + 1}`} variant="outlined" type="url" className='w-full' />
+                  rules={{
+                    pattern: {
+                      value: /\.(jpg|jpeg|png|gif|bmp)$/i,
+                      message: 'Must be a valid image URL (jpg, jpeg, png, gif, bmp)',
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <StyledTextField
+                      {...field}
+                      label={`Media URL ${index + 1}`}
+                      variant="outlined"
+                      fullWidth
+                      error={!!fieldState.error}
+                      helperText={fieldState.error ? fieldState.error.message : ''}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        trigger(`media.${index}.url`);
+                      }}
+                      onBlur={() => {
+                        trigger(`media.${index}.url`);
+                      }}
+                    />
                   )}
                 />
                 <Controller
@@ -157,7 +276,7 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                   <button
                     type="button"
                     onClick={() => removeMediaField(index)}
-                    className="text-white text-3xl font-bold bg-red-500 hover:bg-red-700 px-5 h-12 rounded-r-lg"
+                    className="text-white text-3xl font-bold bg-red-500 hover:bg-red-700 px-3 h-12 rounded-r-lg"
                   >
                     -
                   </button>
@@ -177,24 +296,35 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
               </div>
             )}
 
-            <div className='w-[80%] space-x-2 flex flex-row mx-auto text-white mt-6 py-3 '>
+            <div className='w-[80%] space-x-2 flex flex-row mx-auto text-white mt-6 py-1 '>
               {/* Price */}
               <div className='text-white'>
                 <Controller
                   name="price"
                   control={control}
-                  defaultValue=''
-                  render={({ field }) => (
-                    <StyledTextField {...field} label="Price" variant="outlined" type="number" InputProps={{
-                      inputProps: {
-                        min: 0,
-                        max: 10000,
-                        step: 0.01,
-                      },
-                    }} />
+                  defaultValue=""
+                  rules={{ required: 'Price needed' }}
+                  render={({ field, fieldState }) => (
+                    <StyledTextField
+                      {...field}
+                      label="Price"
+                      variant="outlined"
+                      type="number"
+                      required
+                      fullWidth
+                      autoComplete="off"
+                      error={!!fieldState.error}
+                      helperText={fieldState.error ? fieldState.error.message : ' '}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        trigger('price');
+                      }}
+                      onBlur={() => {
+                        trigger('price');
+                      }}
+                    />
                   )}
                 />
-                {errors.price && <p className="error">0 - 10000</p>}
               </div>
 
               {/* Max Guests */}
@@ -202,17 +332,29 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                 <Controller
                   name="maxGuests"
                   control={control}
-                  defaultValue=''
-                  render={({ field }) => (
-                    <StyledTextField {...field} label="Max guests" variant="outlined" type="number" InputProps={{
-                      inputProps: {
-                        min: 1,
-                        max: 12,
-                      },
-                    }} />
+                  defaultValue=""
+                  rules={{ required: 'Max guests needed' }}
+                  render={({ field, fieldState }) => (
+                    <StyledTextField
+                      {...field}
+                      label="Max Guests"
+                      variant="outlined"
+                      type="number"
+                      required
+                      fullWidth
+                      autoComplete="off"
+                      error={!!fieldState.error}
+                      helperText={fieldState.error ? fieldState.error.message : ' '}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        trigger('maxGuests');
+                      }}
+                      onBlur={() => {
+                        trigger('maxGuests');
+                      }}
+                    />
                   )}
                 />
-                {errors.maxGuests && <p className="error">1 - 12</p>}
               </div>
 
               {/* Rating */}
@@ -220,18 +362,29 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                 <Controller
                   name="rating"
                   control={control}
-                  defaultValue=''
-                  render={({ field }) => (
-                    <StyledTextField {...field} label="Rating" variant="outlined" type="number" InputProps={{
-                      inputProps: {
-                        min: 0,
-                        max: 5,
-                        step: 0.1,
-                      },
-                    }} />
+                  defaultValue=""
+                  rules={{ required: 'Rating needed' }}
+                  render={({ field, fieldState }) => (
+                    <StyledTextField
+                      {...field}
+                      label="Rating"
+                      variant="outlined"
+                      type="number"
+                      required
+                      fullWidth
+                      autoComplete="off"
+                      error={!!fieldState.error}
+                      helperText={fieldState.error ? fieldState.error.message : ' '}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        trigger('rating');
+                      }}
+                      onBlur={() => {
+                        trigger('rating');
+                      }}
+                    />
                   )}
                 />
-                {errors.rating && <p className="error">0 - 5</p>}
               </div>
             </div>
 
@@ -325,7 +478,15 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
 
             {/*<button type="submit">Submit</button>*/}
             <div className='mx-auto justify-center text-center w-full my-6'>
-            <Button type="submit" variant="contained" color="secondary" className='w-[50%] mx-auto'>Confirm</Button>
+              <Button 
+                type="submit" 
+                variant="contained" 
+                color="secondary" 
+                className='w-[50%] mx-auto' 
+                disabled={isButtonDisabled}
+                style={{ opacity: isButtonDisabled ? 0.8 : 1 }}>
+                  Confirm
+              </Button>
             </div>
             
           </form>

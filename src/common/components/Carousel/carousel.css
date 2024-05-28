@@ -61,16 +61,16 @@
 .next_venue, .prev_venue {
   color: #ADADAD;
   position: absolute;
-  top: -10%;
-  transform: translateY(50%);
+  top: -20%;
   /*
+  transform: translateY(50%);
   padding: 1em 1em;
   cursor: pointer;
   background: #171717;
   border-radius: 100%;
   */
 }
-.next_venue:hover, .prev_venue:hover { color: #ffffff; }
+/*.next_venue:hover, .prev_venue:hover { color: #ffffff; }*/
 .next_venue { right: 0; }
 .prev_venue { left: 0; }
 
@@ -93,10 +93,10 @@
 
 .centered_venue_data {
   position: absolute;
-  bottom: 20px; /* Adjust the vertical position as needed */
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80%; /* Adjust the width of the container */
+  width: 80%;
   min-width: 80vw;
   padding: 20px;
   /*
@@ -105,6 +105,12 @@
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   */
+}
+
+@media (max-width: 640px) {
+  body {
+    overflow-x: hidden;
+  }
 }
 
 @keyframes fadeOutUp {
@@ -136,3 +142,4 @@
     transform: translateY(0);
   }
 }
+

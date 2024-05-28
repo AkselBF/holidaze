@@ -8,6 +8,7 @@ import VenueSection from './VenueSection';
 import ToggleSectionButton from '../../components/ToggleSectionButton';
 import { fetchUserBookings } from '../../requests/Profiles/profileBookings';
 import { Booking as BookingInterface } from '../../interfaces/Booking/bookingInterface';
+import ScrollLock from '../../components/ScrollLock';
 import './Modal.css';
 import '../../components/Scrollbars/ProfileScrollbar.css';
 
@@ -23,6 +24,7 @@ const Profile: React.FC = () => {
   const [isVenueManager, setIsVenueManager] = useState(false);
   const [showBookings, setShowBookings] = useState<boolean>(true);
   const [hoveringAvatar, setHoveringAvatar] = useState(false); 
+  const [lockScroll] = useState(true);
 
   useEffect(() => {
     if (!user) {
@@ -114,6 +116,7 @@ const Profile: React.FC = () => {
                 {isModalOpen && (
                   <>
                     <div className="modal-overlay" onClick={closeModal}></div>
+                    <ScrollLock lock={lockScroll} />
                     <div className="modal-container">
                       <input
                         type="text"
