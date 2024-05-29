@@ -162,7 +162,7 @@ const Profile: React.FC = () => {
 
       <Booking user={user} onNewBooking={handleNewBooking} />
 
-      {errorMessage && ( // Render the ErrorMessage component when there is an error message
+      {errorMessage && (
         <ErrorMessage message={errorMessage} onClose={() => setErrorMessage('')} />
       )}
     </div>

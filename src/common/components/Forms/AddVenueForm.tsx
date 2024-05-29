@@ -168,8 +168,9 @@ const AddVenueForm: React.FC<AddVenueFormProps> = ({ onClose, onAdd }) => {
                 style={{ 
                   opacity: isButtonDisabled ? 1 : 1,
                   backgroundColor: isButtonDisabled ? '#FF5C0080' : theme.palette.secondary.main,
-                }}>
-                  Confirm
+                }}
+              >
+                Confirm
               </Button>
             </div>
             
