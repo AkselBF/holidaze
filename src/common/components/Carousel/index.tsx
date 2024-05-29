@@ -146,7 +146,7 @@ const Carousel: React.FC = () => {
         {venues.map((venue, index) => (
             <div
               key={venue.id}
-              className={`venue_items ${String.fromCharCode(97 + index)} border-t-4`}
+              className={`venue_items ${String.fromCharCode(97 + index)} border-t-4 border-[#FF5C00]`}
               style={{ opacity: calculateOpacity(index), filter: calculateBlur(index) }}
             >
               <img

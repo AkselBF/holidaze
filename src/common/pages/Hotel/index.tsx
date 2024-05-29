@@ -27,6 +27,7 @@ const Hotel: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [venue, setVenue] = useState<Venue | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const [primaryImage, setPrimaryImage] = useState<string>('');
@@ -43,7 +44,6 @@ const Hotel: React.FC = () => {
       }
     };
   
-    // Update height on mount and when the venue or primary image changes
     updateMediaSlideshowHeight();
     window.addEventListener('resize', updateMediaSlideshowHeight);
   
@@ -59,12 +59,17 @@ const Hotel: React.FC = () => {
       try {
         if (id) {
           const fetchedVenue = await fetchVenueDetails(id, user?.token ?? undefined);
-          setVenue(fetchedVenue);
-          if (fetchedVenue.media.length > 0) {
-            setPrimaryImage(fetchedVenue.media[0].url);
+          if (fetchedVenue) {
+            setVenue(fetchedVenue);
+            if (fetchedVenue.media.length > 0) {
+              setPrimaryImage(fetchedVenue.media[0].url);
+            }
+          } else {
+            setError('Venue not found');
           }
         }
       } catch (error) {
+        setError('Error fetching venue details');
         console.error('Error fetching venue details:', error);
       }
     };
@@ -79,6 +84,10 @@ const Hotel: React.FC = () => {
       setIsLoginModalOpen(true);
     }
   };
+
+  if (error) {
+    return <div className="text-center text-red-500 mt-20">{error}</div>;
+  }
 
   if (!venue) {
     return <div>Loading...</div>;

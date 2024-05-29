@@ -129,6 +129,8 @@ export const useAuthStore = create<AuthState>((set) => {
         });
 
         if (!response.ok) {
+          const errorBody = await response.json();
+          console.error('Failed to update avatar:', response.status, response.statusText, errorBody);
           throw new Error('Failed to update avatar');
         }
 
@@ -140,6 +142,7 @@ export const useAuthStore = create<AuthState>((set) => {
         setUser(updatedUser);
       } catch (error) {
         console.error('Error updating avatar:', error);
+        throw error;
       }
     },
   };
