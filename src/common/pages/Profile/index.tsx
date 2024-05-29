@@ -13,7 +13,6 @@ import background from '../../../assets/images/backgroundImg.png';
 import '../../components/Modals/Modal.css'
 import '../../components/Scrollbars/ProfileScrollbar.css';
 
-
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout, updateUserAvatar } = useAuthStore();

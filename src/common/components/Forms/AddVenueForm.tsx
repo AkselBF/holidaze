@@ -9,13 +9,11 @@ import { theme } from '../StyledComponents';
 import ScrollLock from '../ScrollLock';
 import '../../components/Scrollbars/FormsScrollbar.css';
 import './InputArrows.css';
-
 import TextFields from '../VenueFormInputs/TextFields';
 import MediaField from '../VenueFormInputs/MediaField';
 import NumberFields from '../VenueFormInputs/NumberFields';
 import LocationFields from '../VenueFormInputs/LocationFields';
 import MetaField from '../VenueFormInputs/MetaField';
-
 
 interface AddVenueFormProps {
   onClose: () => void;

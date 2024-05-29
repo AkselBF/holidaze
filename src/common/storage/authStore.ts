@@ -3,7 +3,6 @@ import { loginUrl, registerUrl, url, apiKey } from '../constants/apiUrl';
 import { User } from '../interfaces/User/userInterface';
 import avatarImage from '../../assets/images/avatarBase.png';
 
-
 interface AuthState {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;

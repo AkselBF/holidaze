@@ -3,16 +3,12 @@ import { useCarouselStore } from "../../storage/carouselStore";
 import { Venue } from "../../interfaces/Venue/venueInterface";
 import RatingStars from "../RatingStars";
 import { Link } from "react-router-dom";
-
 import "./carousel.css";
 import '../../Fonts/Fonts.css';
-
-import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
-
 import Allowed from '../../../assets/images/allowed.png';
 import Unallowed from '../../../assets/images/unallowed.png';
-
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 import StarIcon from '@mui/icons-material/Star';
 import WifiIcon from '@mui/icons-material/Wifi';
 import LocalParkingIcon from '@mui/icons-material/LocalParking';

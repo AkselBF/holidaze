@@ -8,7 +8,6 @@ import { url, apiKey } from '../../constants/apiUrl';
 import { theme } from '../StyledComponents';
 import ScrollLock from '../ScrollLock';
 import '../../components/Scrollbars/FormsScrollbar.css';
-
 import TextFields from '../VenueFormInputs/TextFields';
 import MediaField from '../VenueFormInputs/MediaField';
 import NumberFields from '../VenueFormInputs/NumberFields';

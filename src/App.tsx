@@ -8,7 +8,6 @@ import Booking from './common/pages/Booking/index';
 import Success from './common/pages/Success/index';
 import Login from './common/pages/Login/index';
 import Profile from './common/pages/Profile/index';
-
 import { useAuthStore } from './common/storage/authStore';
 
 const App: React.FC = () => {

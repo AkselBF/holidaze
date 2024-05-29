@@ -17,7 +17,6 @@ import ManIcon from '@mui/icons-material/Man';
 import WomanIcon from '@mui/icons-material/Woman';
 import BoyIcon from '@mui/icons-material/Boy';
 import GirlIcon from '@mui/icons-material/Girl';
-//import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import './Booking.css';
 import '../../components/Scrollbars/BookingScrollbar.css';
 import '../../components/Scrollbars/HotelScrollbar.css';

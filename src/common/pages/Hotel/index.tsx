@@ -7,10 +7,8 @@ import { Venue } from '../../interfaces/Venue/venueInterface';
 import LoginModal from '../../components/Modals/LoginModal';
 import '../../components/Scrollbars/HotelScrollbar.css';
 import '../../Fonts/Fonts.css';
-
 import Allowed from '../../../assets/images/allowed.png';
 import Unallowed from '../../../assets/images/unallowed.png';
-
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import StarIcon from '@mui/icons-material/Star';
 import WifiIcon from '@mui/icons-material/Wifi';
@@ -21,7 +19,6 @@ import ManIcon from '@mui/icons-material/Man';
 import WomanIcon from '@mui/icons-material/Woman';
 import BoyIcon from '@mui/icons-material/Boy';
 import GirlIcon from '@mui/icons-material/Girl';
-
 
 const Hotel: React.FC = () => {
   const { id } = useParams<{ id: string }>();

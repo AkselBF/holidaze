@@ -2,9 +2,8 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import { url } from '../../../constants/apiUrl';
 import { theme, StyledCheckbox } from '../../../components/StyledComponents';
 import { ThemeProvider } from '@mui/material';
-
+import { Venue } from '../../../interfaces/Venue/venueInterface';
 import '../../../components/Scrollbars/FilterScrollbar.css';
-
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PersonIcon from '@mui/icons-material/Person';
@@ -17,21 +16,6 @@ import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import FreeBreakfastIcon from '@mui/icons-material/FreeBreakfast';
 import PetsIcon from '@mui/icons-material/Pets';
 
-interface Venue {
-  name: string;
-  location: {
-    country: string;
-  };
-  maxGuests: number;
-  rating: number;
-  price: number;
-  meta: {
-    wifi: boolean;
-    parking: boolean;
-    breakfast: boolean;
-    pets: boolean;
-  };
-}
 
 interface VenueFiltersProps {
   venues: Venue[];
