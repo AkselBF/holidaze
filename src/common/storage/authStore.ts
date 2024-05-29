@@ -1,16 +1,7 @@
 import { create } from 'zustand';
 import { loginUrl, registerUrl, url, apiKey } from '../constants/apiUrl';
-//import { User } from '../interfaces/User/userInterface';
-import avatarImage from '../images/avatarBase.png';
-
-export interface User {
-  id?: string;
-  name?: string;
-  email?: string;
-  avatar?: string;
-  venueManager?: boolean;
-  token: string | null;
-}
+import { User } from '../interfaces/User/userInterface';
+import avatarImage from '../../assets/images/avatarBase.png';
 
 interface AuthState {
   user: User | null;
@@ -137,6 +128,8 @@ export const useAuthStore = create<AuthState>((set) => {
         });
 
         if (!response.ok) {
+          const errorBody = await response.json();
+          console.error('Failed to update avatar:', response.status, response.statusText, errorBody);
           throw new Error('Failed to update avatar');
         }
 
@@ -148,6 +141,7 @@ export const useAuthStore = create<AuthState>((set) => {
         setUser(updatedUser);
       } catch (error) {
         console.error('Error updating avatar:', error);
+        throw error;
       }
     },
   };

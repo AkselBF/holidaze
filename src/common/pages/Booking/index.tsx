@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAuthStore, User } from '../../storage/authStore';
+import { useAuthStore } from '../../storage/authStore';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { cardTheme, StyledTextField, StyledDatePicker } from '../../components/StyledComponents';
 import { fetchVenueDetails, createBooking } from '../../requests/Bookings/bookingVenue';
 import { Venue } from '../../interfaces/Venue/venueInterface';
+import { User } from '../../interfaces/User/userInterface';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -16,7 +17,6 @@ import ManIcon from '@mui/icons-material/Man';
 import WomanIcon from '@mui/icons-material/Woman';
 import BoyIcon from '@mui/icons-material/Boy';
 import GirlIcon from '@mui/icons-material/Girl';
-//import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import './Booking.css';
 import '../../components/Scrollbars/BookingScrollbar.css';
 import '../../components/Scrollbars/HotelScrollbar.css';
@@ -95,13 +95,10 @@ const Booking: React.FC<BookingProps> = (props) => {
 
   useEffect(() => {
     if (venue && arrivalDate && departureDate) {
-      const durationInDays = Math.ceil((departureDate.toDate().getTime() - arrivalDate.toDate().getTime()) / (1000 * 60 * 60 * 24));
-      const basePricePerAdult = venue.price;
-      const basePricePerChild = basePricePerAdult * 0.7;
-      const totalPricePerAdult = basePricePerAdult * durationInDays;
-      const totalPricePerChild = basePricePerChild * durationInDays;
-      const totalPriceForAdults = totalPricePerAdult * numAdults;
-      const totalPriceForChildren = totalPricePerChild * numChildren;
+      const durationInDays = Math.ceil((departureDate.diff(arrivalDate, 'day')));
+      const actualDuration = Math.max(durationInDays, 1);
+      const totalPriceForAdults = venue.price * numAdults * actualDuration;
+      const totalPriceForChildren = venue.price * 0.7 * numChildren * actualDuration;
       const totalPrice = totalPriceForAdults + totalPriceForChildren;
       setTotalPrice(totalPrice);
     } else {
@@ -248,7 +245,7 @@ const Booking: React.FC<BookingProps> = (props) => {
               </div>
 
               <div className='flex flex-col lg:flex-row mt-10 space-y-3'>
-                <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} className='lg:w-[50%] max-h-[260px] lg:mr-5 object-contain rounded-lg' />
+                <img src={venue.media.length > 0 ? venue.media[0].url : ''} alt={venue.name} className='lg:w-[50%] max-h-[185px] lg:mr-5 object-contain rounded-lg' />
                 <div>
                   <div className='flex flex-row'>
                     <StarIcon />

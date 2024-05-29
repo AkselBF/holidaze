@@ -45,7 +45,7 @@ const DeleteVenueModal: React.FC<DeleteVenueModalProps> = ({ id, name, onDelete,
       <ScrollLock lock={lockScroll} />
       <div className="modal-container text-white">
         <div className='relative'>
-          <span className="text-xl font-semibold cursor-pointer absolute -top-2 right-0" onClick={onClose}>&times;</span>
+          <button className="text-xl font-semibold cursor-pointer absolute -top-2 right-0 bg-red-500 pb-0.5 px-2 rounded-full" onClick={onClose}>&times;</button>
         </div>
         <h2 className='text-xl text-center font-semibold mt-3'>Delete Venue</h2>
         <p className='my-5 line-clamp-2'>Are you sure you want to delete the venue "{name}"?</p>

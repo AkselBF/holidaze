@@ -28,7 +28,7 @@ const BookingsSection: React.FC<BookingsSectionProps> = ({ bookings }) => {
         {bookings ? (
           <ul className='scrollbar-profile-bookings text-white flex flex-row p-0 m-0'>
             {bookings.map((booking) => (
-              <li key={booking.id} className='flex-shrink-0 mr-5 w-[280px] h-[70px]'>
+              <li key={booking.id} className='flex-shrink-0 mr-5 w-[300px] h-[70px]'>
                 <div className='bg-black w-full h-full rounded-md flex flex-row justify-between'>
                   <div className='w-[52%] mx-4 my-2'>
                     <p className='font-semibold truncate'>{booking.venue.name}</p>

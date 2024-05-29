@@ -7,10 +7,8 @@ import { Venue } from '../../interfaces/Venue/venueInterface';
 import LoginModal from '../../components/Modals/LoginModal';
 import '../../components/Scrollbars/HotelScrollbar.css';
 import '../../Fonts/Fonts.css';
-
-import Allowed from '../../images/allowed.png';
-import Unallowed from '../../images/unallowed.png';
-
+import Allowed from '../../../assets/images/allowed.png';
+import Unallowed from '../../../assets/images/unallowed.png';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import StarIcon from '@mui/icons-material/Star';
 import WifiIcon from '@mui/icons-material/Wifi';
@@ -22,11 +20,11 @@ import WomanIcon from '@mui/icons-material/Woman';
 import BoyIcon from '@mui/icons-material/Boy';
 import GirlIcon from '@mui/icons-material/Girl';
 
-
 const Hotel: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [venue, setVenue] = useState<Venue | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const [primaryImage, setPrimaryImage] = useState<string>('');
@@ -43,7 +41,6 @@ const Hotel: React.FC = () => {
       }
     };
   
-    // Update height on mount and when the venue or primary image changes
     updateMediaSlideshowHeight();
     window.addEventListener('resize', updateMediaSlideshowHeight);
   
@@ -52,19 +49,24 @@ const Hotel: React.FC = () => {
     };
   }, [venue, primaryImage]);
   
-  const maxDescriptionHeight = mediaSlideshowHeight >= 290 ? 120 : 72;
+  const maxDescriptionHeight = mediaSlideshowHeight >= 280 ? 120 : 72;
 
   useEffect(() => {
     const fetchVenue = async () => {
       try {
         if (id) {
           const fetchedVenue = await fetchVenueDetails(id, user?.token ?? undefined);
-          setVenue(fetchedVenue);
-          if (fetchedVenue.media.length > 0) {
-            setPrimaryImage(fetchedVenue.media[0].url);
+          if (fetchedVenue) {
+            setVenue(fetchedVenue);
+            if (fetchedVenue.media.length > 0) {
+              setPrimaryImage(fetchedVenue.media[0].url);
+            }
+          } else {
+            setError('Venue not found');
           }
         }
       } catch (error) {
+        setError('Error fetching venue details');
         console.error('Error fetching venue details:', error);
       }
     };
@@ -79,6 +81,10 @@ const Hotel: React.FC = () => {
       setIsLoginModalOpen(true);
     }
   };
+
+  if (error) {
+    return <div className="text-center text-red-500 mt-20">{error}</div>;
+  }
 
   if (!venue) {
     return <div>Loading...</div>;
@@ -182,7 +188,7 @@ const Hotel: React.FC = () => {
               </div>
             </div>
           </div>
-          <p className={`scrollbar-hotel-desc max-h-[200px] lg:max-h-[${maxDescriptionHeight}px] overflow-y-auto px-2`}>
+          <p className={`scrollbar-hotel-desc max-h-[200px] lg:h-[${maxDescriptionHeight}px] lg:max-h-[120px] overflow-y-auto px-2`}>
             {venue.description}
           </p>
 

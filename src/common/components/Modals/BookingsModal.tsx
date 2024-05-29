@@ -19,7 +19,7 @@ const BookingsModal: React.FC<BookingsModalProps> = ({ venue, onClose }) => {
       <ScrollLock lock={lockScroll} />
       <div className="modal-container scrollbar-form mt-5 text-white w-[90%] lg:w-[60%] h-[80%] overflow-y-auto p-6">
         <div className='relative'>
-          <span className="text-2xl font-semibold cursor-pointer absolute -top-2 right-1" onClick={onClose}>&times;</span>
+          <button className="text-2xl font-semibold cursor-pointer absolute -top-2 right-1 bg-red-500 pb-0.5 px-2 rounded-full" onClick={onClose}>&times;</button>
         </div>
         <h2 className='text-2xl mx-auto text-center font-semibold mt-3 mb-10 w-[80%] line-clamp-2'>Bookings for {venue.name}</h2>
         

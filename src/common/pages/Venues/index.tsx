@@ -10,8 +10,8 @@ import Pagination from './Pagination/index';
 
 import '../../Fonts/Fonts.css';
 
-import venuesHero from '../../images/hotelBg.png';
-import noImage from '../../images/no_image.png';
+import venuesHero from '../../../assets/images/hotelBg.png';
+import noImage from '../../../assets/images/no_image.png';
 
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 

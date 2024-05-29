@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-import heroOne from "../../images/heroOne.png";
-import heroTwo from "../../images/heroTwo.png";
-import heroThree from "../../images/heroThree.png";
-import heroFour from "../../images/heroFour.png";
+import heroOne from "../../../assets/images/heroOne.png";
+import heroTwo from "../../../assets/images/heroTwo.png";
+import heroThree from "../../../assets/images/heroThree.png";
+import heroFour from "../../../assets/images/heroFour.png";
 
 const images = [heroOne, heroTwo, heroThree, heroFour];
 

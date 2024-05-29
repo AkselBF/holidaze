@@ -5,7 +5,7 @@ import RegistrationForm from '../../components/Forms/RegistrationForm';
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 
-import background from '../../images/backgroundImg.png';
+import background from '../../../assets/images/backgroundImg.png';
 
 const Login: React.FC = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);

@@ -1,24 +1,13 @@
 import { create } from 'zustand';
 import { url } from '../constants/apiUrl';
-//import { Venue } from '../interfaces/Venue/venueInterface';
+import { Venue } from '../interfaces/Venue/venueInterface';
 
-export interface Venue {
-  id: string;
-  name: string;
-  description: string;
-  media: { url: string; alt: string }[];
-  price: number;
-  maxGuests: number;
-  rating: number;
-  location: { address: string; city: string; country: string; continent: string };
-  meta: { wifi: boolean; parking: boolean; breakfast: boolean; pets: boolean };
-}
 
 interface VenuesState {
   venues: Venue[];
   fetchVenues: () => Promise<void>;
 }
-// const response = await fetch(`${url}/venues?sort=created`);
+
 export const useVenuesStore = create<VenuesState>((set) => ({
   venues: [],
   fetchVenues: async () => {

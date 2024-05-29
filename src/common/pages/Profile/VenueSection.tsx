@@ -8,7 +8,7 @@ import RatingStars from '../../components/RatingStars';
 import { fetchVenues as fetchVenuesAPI } from '../../requests/Profiles/profileVenues';
 import { Venue } from '../../interfaces/Venue/venueInterface';
 
-import noImage from '../../images/no_image.png';
+import noImage from '../../../assets/images/no_image.png';
 
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import HotelRoundedIcon from '@mui/icons-material/HotelRounded';
