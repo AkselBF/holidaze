@@ -107,22 +107,27 @@ const Booking: React.FC<BookingProps> = (props) => {
   }, [venue, numAdults, numChildren, arrivalDate, departureDate]);
 
   const handleDateChange = (date: Dayjs | null, name: string) => {
-    if (date && isDateDisabled(date)) {
-      alert('Selected date is already booked.');
+    if (date && isDateDisabled(date, name)) {
+      alert('Selected date is already booked or invalid.');
       return;
     }
     if (name === 'arrivalDate') {
       setArrivalDate(date);
+      if (departureDate && date && departureDate.isBefore(date)) {
+        setDepartureDate(null); // Clear the departure date if it's before the new arrival date
+      }
     } else {
       setDepartureDate(date);
     }
   };
-
-  const isDateDisabled = (date: Dayjs) => {
+  
+  const isDateDisabled = (date: Dayjs, name?: string) => {
     const today = dayjs().startOf('day');
+    const arrival = name === 'departureDate' ? arrivalDate : null;
+    const isBeforeArrivalDate = arrival ? date.isBefore(arrival, 'day') : false;
     return date.isBefore(today) || disabledDates.some(disabledDate => 
       disabledDate.toISOString().split('T')[0] === date.toDate().toISOString().split('T')[0]
-    );
+    ) || isBeforeArrivalDate;
   };
 
   const onSubmit: SubmitHandler<BookingFormValues> = async () => {
@@ -224,7 +229,7 @@ const Booking: React.FC<BookingProps> = (props) => {
                         format="YYYY-MM-DD"
                         value={arrivalDate}
                         onChange={(date) => handleDateChange(date, 'arrivalDate')}
-                        shouldDisableDate={isDateDisabled}
+                        shouldDisableDate={(date) => isDateDisabled(date, 'arrivalDate')}
                       />
                     </LocalizationProvider>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -233,7 +238,7 @@ const Booking: React.FC<BookingProps> = (props) => {
                         format="YYYY-MM-DD"
                         value={departureDate}
                         onChange={(date) => handleDateChange(date, 'departureDate')}
-                        shouldDisableDate={isDateDisabled}
+                        shouldDisableDate={(date) => isDateDisabled(date, 'departureDate')}
                       />
                     </LocalizationProvider>
                   </div>

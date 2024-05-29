@@ -32,7 +32,7 @@ const LoginForm: React.FC = () => {
       }
     } catch (error) {
       console.error('Error logging in:', error);
-      //setErrorMessage('Error logging in. Please check your credentials.');
+      setErrorMessage('Incorrect email or password. Please try again.');
     }
   };
 

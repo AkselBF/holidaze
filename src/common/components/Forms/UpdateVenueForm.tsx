@@ -44,7 +44,7 @@ const UpdateVenueForm: React.FC<UpdateVenueFormProps> = ({ isOpen, onClose, venu
     name: "media",
   });
 
-  const user = useAuthStore();
+  const { user } = useAuthStore(); // Corrected destructuring to access `user`
   const [lockScroll] = useState(true);
 
   useEffect(() => {
@@ -95,6 +95,10 @@ const UpdateVenueForm: React.FC<UpdateVenueFormProps> = ({ isOpen, onClose, venu
     };
 
     try {
+      if (!user?.token) {
+        throw new Error('User is not authenticated');
+      }
+
       const response = await fetch(`${url}/venues/${venue.id}`, {
         method: 'PUT',
         headers: {

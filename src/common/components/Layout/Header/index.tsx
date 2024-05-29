@@ -4,8 +4,6 @@ import Logo from '../../../../assets/images/finished_logo.png';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import HotelRoundedIcon from '@mui/icons-material/HotelRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
-//import DarkModeSharpIcon from '@mui/icons-material/DarkModeSharp';
-//import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { useAuthStore } from '../../../storage/authStore';
 
@@ -62,20 +60,15 @@ const Header: React.FC = () => {
               <PersonRoundedIcon />
             </Link>
           )}
-          {/*
-          <div className="text-md mx-4 cursor-pointer p-2 bg-black rounded-full">
-            <DarkModeSharpIcon />
-          </div>
-          */}
         </div>
 
         <div className="flex items-center">
           <div className="lg:hidden">
-            <button onClick={toggleMenu} className="text-white">
+            <button onClick={toggleMenu} className="text-white p-2 bg-[#171717] rounded-full">
               <MenuRoundedIcon />
             </button>
           </div>
-          <div className={`lg:hidden absolute rounded-bl-xl top-14 w-40 right-0 bg-[#171717cc] text-white pt-4 pb-6 ${isMenuOpen ? 'block' : 'hidden'}`}>
+          <div className={`lg:hidden absolute rounded-bl-xl rounded-t-md top-14 w-40 right-0 bg-[#171717cc] text-white pt-4 pb-6 ${isMenuOpen ? 'block' : 'hidden'}`}>
             <div className="container mx-auto flex flex-col px-6 items-start">
               <Link to="/" className="text-md my-3 flex flex-row" onClick={toggleMenu}>
                 <HomeRoundedIcon />
@@ -96,12 +89,6 @@ const Header: React.FC = () => {
                   <p className='ml-3'>Login</p>
                 </Link>
               )}
-              {/*
-              <div className="text-md my-3 flex flex-row cursor-pointer" onClick={toggleMenu}>
-                <DarkModeSharpIcon />
-                <p className='ml-3'>Dark</p>
-              </div>
-              */}
             </div>
           </div>
         </div>

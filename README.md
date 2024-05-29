@@ -88,9 +88,3 @@ In total, the features if the user registers as venue manager is:
 4. Logout button: Leads back to the login form. Must Login again to gain access to the app's key features
 
 *** 
-
-## Testing 
-
-### Unit testing
-
-### E2E testing

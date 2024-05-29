@@ -4,15 +4,11 @@ import { Link } from 'react-router-dom';
 import { useVenuesStore } from '../../storage/venuesStore';
 import { Venue } from '../../interfaces/Venue/venueInterface';
 import RatingStars from '../../components/RatingStars';
-
 import VenueFilters from './VenueFilters/index';
 import Pagination from './Pagination/index';
-
 import '../../Fonts/Fonts.css';
-
 import venuesHero from '../../../assets/images/hotelBg.png';
 import noImage from '../../../assets/images/no_image.png';
-
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const Venues: React.FC = () => {
@@ -21,7 +17,7 @@ const Venues: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [filteredVenues, setFilteredVenues] = useState<Venue[]>(venues);
-  const [selectedCountry, setSelectedCountry] = useState<string>('Default');
+  const [selectedCountry, setSelectedCountry] = useState<string>('Countries');
   const [selectedGuests, setSelectedGuests] = useState<number>(0);
   const [selectedRating, setSelectedRating] = useState<number>(0);
   const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number]>([0, 0]);
@@ -62,7 +58,7 @@ const Venues: React.FC = () => {
       });
     });
 
-    if (selectedCountry !== 'Default') {
+    if (selectedCountry !== 'Countries') {
       filtered = filtered.filter(venue => venue.location.country === selectedCountry);
     }
 
@@ -167,7 +163,7 @@ const Venues: React.FC = () => {
           </li>
         ))
       ) : (
-        <p>No venues found</p>
+        <p className='bg-[#171717cc] text-center text-white px-4 py-2 rounded-lg'>No venues found</p>
       )}
       </ul>
       
@@ -182,21 +178,3 @@ const Venues: React.FC = () => {
 };
 
 export default Venues;
-
-/*
-const [isLoading, setIsLoading] = useState(true);
-const [isError, setIsError] = useState(false);
-
-useEffect(() => {
-    const img = new Image();
-    img.src = venue.media[0]?.url;
-    img.alt = venue.media[0]?.alt;
-    img.onload = () => setIsLoading(false);
-    img.onerror = () => setIsError(true);
-  }, [venue]);
-
-  if (isError) {
-    return null;
-  }
-});
-*/
