@@ -48,6 +48,11 @@ export const StyledTextField = styled(TextField)({
     color: '#d9d9d9',
     height: '15px',
   },
+  '& input:-webkit-autofill': {
+    WebkitBoxShadow: '0 0 0 1000px #171717 inset',
+    WebkitTextFillColor: '#d9d9d9',
+    caretColor: '#d9d9d9',
+  },
 });
 
 export const StyledTextArea = styled('textarea')({

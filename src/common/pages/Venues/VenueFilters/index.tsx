@@ -31,7 +31,7 @@ interface VenueFiltersProps {
 }
 
 const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, onChangeGuests, onChangeRating, onChangePriceRange, onSearch, onFilterWifi, onFilterParking, onFilterBreakfast, onFilterPets }) => {
-  const [selectedCountry, setSelectedCountry] = useState<string>('Default');
+  const [selectedCountry, setSelectedCountry] = useState<string>('Countries');
   const [selectedGuests, setSelectedGuests] = useState<number>(0);
   const [selectedRating, setSelectedRating] = useState<number>(0);
   const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number]>([0, 0]);
@@ -55,7 +55,7 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
   useEffect(() => {
     if (venues.length > 0) {
       const uniqueCountries = Array.from(new Set(venues.map((venue: Venue) => venue.location.country)));
-      setCountries(['Default', ...uniqueCountries]);
+      setCountries(['Countries', ...uniqueCountries]);
     }
   }, [venues]);
 
@@ -161,11 +161,11 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
             {/* Guests filter */}
             <div className='filter bg-black rounded-md flex flex-row py-2 px-3 cursor-pointer' onClick={() => setIsGuestDropdownOpen(!isGuestDropdownOpen)}>
               <div><PersonIcon /></div>
-              <div className='mx-2 text-left w-24 lg:w-6 bg-transparent text-white outline-none'>{selectedGuests === 0 ? 'All' : selectedGuests}</div>
+              <div className='mx-2 text-left w-24 lg:w-10 bg-transparent text-white outline-none'>{selectedGuests === 0 ? 'Guests' : selectedGuests}</div>
               <div className='ml-2'><ArrowDropDownIcon /></div>
               {isGuestDropdownOpen && (
-                <div className='filter-container absolute top-[75%] lg:top-[58%] bg-black w-[192px] lg:w-[120px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[205px] lg:-mt-7 -ml-3 z-[12]'>
-                  <div className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleGuestsChange(0)}>All</div>
+                <div className='filter-container absolute top-[75%] lg:top-[58%] bg-black w-[192px] lg:w-[136px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[205px] lg:-mt-7 -ml-3 z-[12]'>
+                  <div className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleGuestsChange(0)}>Guests</div>
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((guests, index) => (
                     <div key={index} className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleGuestsChange(guests)}>{guests}</div>
                   ))}
@@ -176,11 +176,11 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
             {/* Rating filter */}
             <div className='filter bg-black rounded-md flex flex-row py-2 px-3 cursor-pointer' onClick={() => setIsRatingDropdownOpen(!isRatingDropdownOpen)}>
               <div><StarIcon /></div>
-              <div className='mx-2 text-left w-24 lg:w-6 bg-transparent text-white outline-none'>{selectedRating === 0 ? 'All' : selectedRating}</div>
+              <div className='mx-2 text-left w-24 lg:w-10 bg-transparent text-white outline-none'>{selectedRating === 0 ? 'Rating' : selectedRating}</div>
               <div className='ml-2'><ArrowDropDownIcon /></div>
               {isRatingDropdownOpen && (
-                <div className='filter-container absolute top-[75%] lg:top-[58%] bg-black w-[192px] lg:w-[120px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[140px] lg:-mt-7 -ml-3 z-[11]'>
-                  <div className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleRatingChange(0)}>All</div>
+                <div className='filter-container absolute top-[75%] lg:top-[58%] bg-black w-[192px] lg:w-[136px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[140px] lg:-mt-7 -ml-3 z-[11]'>
+                  <div className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleRatingChange(0)}>Rating</div>
                   {[1, 2, 3, 4, 5].map((rating, index) => (
                     <div key={index} className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handleRatingChange(rating)}>{rating}</div>
                   ))}
@@ -191,11 +191,11 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
             {/* Price range filter */}
             <div className='filter bg-black rounded-md flex flex-row py-2 px-3 cursor-pointer' onClick={() => setIsPriceDropdownOpen(!isPriceDropdownOpen)}>
               <div><AttachMoneyIcon /></div>
-              <div className='mx-2 text-left w-24 bg-transparent text-white outline-none'>{selectedPriceRange[0] === 0 ? 'All' : `${selectedPriceRange[0]}kr - ${selectedPriceRange[1]}kr`}</div>
+              <div className='mx-2 text-left w-24 bg-transparent text-white outline-none'>{selectedPriceRange[0] === 0 ? 'Price' : `${selectedPriceRange[0]}kr - ${selectedPriceRange[1]}kr`}</div>
               <div className='ml-2'><ArrowDropDownIcon /></div>
               {isPriceDropdownOpen && (
                 <div className='filter-container absolute top-[75%] lg:top-[58%] bg-black w-[192px] text-white p-2 rounded-b-lg overflow-y-auto max-h-[150px] text-left -mt-[85px] lg:-mt-7 -ml-3 z-[10]'>
-                  <div className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handlePriceRangeChange(0, 0)}>All</div>
+                  <div className='cursor-pointer hover:bg-gray-800 py-1 px-2 ml-7' onClick={() => handlePriceRangeChange(0, 0)}>Price</div>
                   {[
                     [10, 300],
                     [300, 600],

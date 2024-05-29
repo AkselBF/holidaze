@@ -18,12 +18,15 @@ export const useAuthStore = create<AuthState>((set) => {
   const user: User | null = accessToken && userData ? JSON.parse(userData) : null;
 
   const setUser = (newUser: User | null) => {
-    set({ user: newUser });
+    set({ user: newUser, token: newUser?.token || null });
     if (newUser) {
       localStorage.setItem('userData', JSON.stringify(newUser));
-    } 
-    else {
+      if (newUser.token) {
+        localStorage.setItem('accessToken', newUser.token);
+      }
+    } else {
       localStorage.removeItem('userData');
+      localStorage.removeItem('accessToken');
     }
   };
 
@@ -39,29 +42,28 @@ export const useAuthStore = create<AuthState>((set) => {
           },
           body: JSON.stringify({ email, password }),
         });
-        const data = await response.json();
 
-        if (response.ok) {
-          const token = data.data.accessToken;
-          const avatar = data.data.avatar?.url || avatarImage;
-          let venueManager = false;
-          if (data.data.venueManager !== undefined) {
-            venueManager = data.data.venueManager;
-          }
-          const userInfo: User = {
-            name: data.data.name,
-            email: data.data.email,
-            avatar,
-            venueManager,
-            token,
-          };
-          localStorage.setItem('accessToken', token);
-          setUser(userInfo);
-        } else {
+        if (!response.ok) {
           throw new Error('Login failed');
         }
+
+        const data = await response.json();
+        const token = data.data.accessToken;
+        const avatar = data.data.avatar?.url || avatarImage;
+        const venueManager = data.data.venueManager || false;
+
+        const userInfo: User = {
+          name: data.data.name,
+          email: data.data.email,
+          avatar,
+          venueManager,
+          token,
+        };
+
+        setUser(userInfo);
       } catch (error) {
         console.error('Error logging in:', error);
+        throw error;
       }
     },
     register: async (username, email, password, isVenueManager) => {
