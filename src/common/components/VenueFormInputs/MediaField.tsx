@@ -42,7 +42,7 @@ const MediaField: React.FC<MediaFieldProps> = ({ control, fields, append, remove
               <StyledTextField {...field} label={`Image Alt Text ${index + 1}`} variant="outlined" className='w-full' />
             )}
           />
-          {index > 0 && ( // Hide delete button for the first field
+          {index > 0 && (
             <button
               type="button"
               onClick={() => remove(index)}

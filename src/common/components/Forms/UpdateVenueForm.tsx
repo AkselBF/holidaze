@@ -44,7 +44,7 @@ const UpdateVenueForm: React.FC<UpdateVenueFormProps> = ({ isOpen, onClose, venu
     name: "media",
   });
 
-  const { user } = useAuthStore(); // Corrected destructuring to access `user`
+  const { user } = useAuthStore();
   const [lockScroll] = useState(true);
 
   useEffect(() => {

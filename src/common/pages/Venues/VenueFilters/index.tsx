@@ -130,8 +130,6 @@ const VenueFilters: React.FC<VenueFiltersProps> = ({ venues, onChangeCountry, on
     onFilterPets(checked);
   };
 
-  //console.log(noMatches, handleSearch);
-
   return (
     <ThemeProvider theme={theme}>
       <div className='relative'>

@@ -114,7 +114,7 @@ const Booking: React.FC<BookingProps> = (props) => {
     if (name === 'arrivalDate') {
       setArrivalDate(date);
       if (departureDate && date && departureDate.isBefore(date)) {
-        setDepartureDate(null); // Clear the departure date if it's before the new arrival date
+        setDepartureDate(null);
       }
     } else {
       setDepartureDate(date);

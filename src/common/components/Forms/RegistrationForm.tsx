@@ -190,7 +190,10 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegisterSuccess }
           color="secondary"
           className='w-[50%] mx-auto'
           disabled={isButtonDisabled}
-          style={{ opacity: isButtonDisabled ? 0.8 : 1 }}
+          style={{ 
+            opacity: isButtonDisabled ? 1 : 1,
+            backgroundColor: isButtonDisabled ? '#FF5C0080' : theme.palette.secondary.main,
+          }}
         >
           Register
         </Button>
